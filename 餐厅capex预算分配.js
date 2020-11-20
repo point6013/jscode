@@ -6,34 +6,29 @@ function AfterLoad(){
     debugger
     var Market = $('.dataSheetCon>div:eq(0)').find('select[aname=Market]').next().find('.form-check.active').find('input').val()
     var Market_des = $('.dataSheetCon>div:eq(0)').find('select[aname=Market]').next().find('button').attr('title')
+    var Scenario = $('.dataSheetCon>div:eq(0)').find('select[aname=Scenario]').next().find('.form-check.active').find('input').val()
+    var Year = $('.dataSheetCon>div:eq(0)').find('select[aname=year]').next().find('.form-check.active').find('input').val()
     // 先查状态对不对
-    var sqlstr = 'select status from app1_nit_i_prod_list where prod_code = "CTRE0701" and mkt = "'+ Market +'"';
-    var res = cfs.request.foundation.runComm(sqlstr).res
-    flag = true;
-    if (res.length > 0 && res[0].status == '1404'){
-        // 查syspaid
-        var sqlstr = 'select sys_pa_id from app1_project_apply_info where product_code = "CTRE0701" and mkt = "'+ Market +'"';
-        var res = cfs.request.foundation.runComm(sqlstr).res
-        if (res.length > 0 && res[0].sys_pa_id){
-            // 查市场金额
-            var sqlstr = 'select rep_total from app1_nit_m_srr_inv_total where sys_pa_id = "'+ res[0].sys_pa_id +'"';
-            var res = cfs.request.foundation.runComm(sqlstr).res
-            if (res.length > 0 && res[0].rep_total > 0){
-                market_total = res[0].rep_total
+    // var sqlstr = 'select status from app1_nit_i_prod_list where prod_code = "CTRE0701" and mkt = "'+ Market +'"';
+    var res = cfs.request.cube.queryCubeData('mcdcapex_cube_fin','Year{'+Year+'}->Scenario{'+Scenario+'}->Version{Working}->Status{FS09}->Period{YearSum}->Department{NoDept}->View{YTD}->Category{CTRE0701}->Entity{ET05}->Market{'+Market+'}->C3{C3OTH}->C4{Owner09}->Account{Inv06}');
 
-                // 获取市场对应的门店列表
-                var sqlstr = 'select us_code from pbcs_store_master where market_city_name_en = "'+ Market_des +'"';
-                var res = cfs.request.foundation.runComm(sqlstr).res
-                debugger;
-                if (res.length > 0){
-                    res.forEach((e, i) => {
-                        debugger;
-                        store_number_arr.push(e.us_code)
-                    })
-                    // store_number_arr = res[0].us_code
-                    flag = false;
-                }
-            }
+
+    // var res = cfs.request.foundation.runComm(sqlstr).res
+    flag = true;
+    if (res.res.data.length > 0 && res.res.data[0].data > 0){
+
+        market_total = res.res.data[0].data
+
+        // 获取市场对应的门店列表
+        var sqlstr = 'select us_code from pbcs_store_master where market_city_name_en = "'+ Market_des +'"';
+        var res = cfs.request.foundation.runComm(sqlstr).res
+
+        if (res.length > 0){
+            res.forEach((e, i) => {
+                store_number_arr.push(e.us_code)
+            })
+            // store_number_arr = res[0].us_code
+            flag = false;
         }
     }
     if(flag){
@@ -101,7 +96,7 @@ function BeforeSave(){
 
 
         var sheet1 = spread.getSheet(1);
-        var arr3 =  sheet1.getArray(1,2,sheet1.getRowcount(),1)
+        var arr3 =  sheet1.getArray(1,2,sheet1.getRowCount(),1)
         var sum1 = 0
         arr3.forEach((e,i)=>{
 
