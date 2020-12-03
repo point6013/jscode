@@ -2,6 +2,7 @@ var store_number_arr = []
 var market_total = 0;
 var flag
 var flag2 
+var flag3 =true
 function AfterLoad() {
     spread.suspendPaint();
     debugger
@@ -171,14 +172,14 @@ function BeforeSave() {
 
         // debugger;
 
-        function in_array(search, array) {
-            for (var i in array) {
-                if (array[i] == search) {
-                    return true;
-                }
-            }
-            return false;
-        }
+        // function in_array(search, array) {
+        //     for (var i in array) {
+        //         if (array[i] == search) {
+        //             return true;
+        //         }
+        //     }
+        //     return false;
+        // }
 
 
 
@@ -201,7 +202,7 @@ function BeforeSave() {
         // debugger;
         start_row = 1
         redata = JSON.parse(ex1_res.result)
-        if (redata.length > 0) {
+        if (redata.length > 0 && arr_check.length>0) {
             for (i=0;i<redata.length;i++){
             for (j = 0; j < l1.length; j++) {
                 // debugger;
@@ -231,11 +232,7 @@ function BeforeSave() {
                 sum += +(e[0])
             }
         })
-        arr2.forEach((e, i) => {
-            if (e[0]) {
-                sum += +(e[0])
-            }
-        })
+
 
 
         var sheet1 = spread.getSheet(1);
@@ -250,15 +247,15 @@ function BeforeSave() {
         }
         )
         sumall = sum + sum1
-
+        
         var arr2 = sheet1.getArray(1, 1, sheet1.getRowCount(), 1);
         let newArr = arr2.reduce((pre,cur)=>{
             return pre.concat(cur)},[])
         
         var r = newArr.filter(function (s) {
-            return s && s.trim(); // 注：IE9(不包含IE9)以下的版本没有trim()方法
+            return s && s.trim(); // 注：IE9(不包含IE9)以下的版本没有trim()方法,去掉非空
         });
-
+        
         function  statisticalFieldNumber(arr) {
             return arr.reduce(function (prev, next) {
                 prev[next] = (prev[next] + 1) || 1;
@@ -267,21 +264,18 @@ function BeforeSave() {
         }
         var new_count = statisticalFieldNumber(r)
         debugger;
-        
+        if(r.length>0){
         for ( let val of Object.values(new_count)){
             if (val>=2)
             flag3=false
+        }
         }
 
         debugger;
 
 
         
-        if (!flag3) {
-            ForSwal("请重新确认上传的项目名称是否重复");
-            spread.resumePaint();
-            return false
-        }
+
 
 
         if (sumall > market_total) {
@@ -289,7 +283,12 @@ function BeforeSave() {
             spread.resumePaint();
             return false
         }
-
+        
+        if (!flag3) {
+            ForSwal("请重新确认上传的项目名称是否重复");
+            spread.resumePaint();
+            return false
+        }
         if (!flag2) {
             ForSwal("请重新确认上传的项目金额是否正确");
             spread.resumePaint();
