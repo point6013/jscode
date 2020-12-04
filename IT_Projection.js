@@ -5,64 +5,62 @@ function IT_project(){
     var sheet =spread.getSheet(0);
     var strFormula = '';
     var strFormula1 = '';
+    var strFormula2 = '';
+    //G列列宽
+    sheet.setColumnWidth(6, 250);
+    //H列列宽
+    sheet.setColumnWidth(7, 200);
     sheet.setColumnVisible(0,false);
     // sheet.setColumnVisible(11,false);  //隐藏Budg Code
     
     // $('#excel_upload').hide()  // 隐藏上传按钮
     
-    // // 隐藏 ABCD
-    // sheet.setRowVisible(0, false, GC.Spread.Sheets.SheetArea.colHeader);
-    // // 隐藏 1234
-    // sheet.setColumnVisible(0, false, GC.Spread.Sheets.SheetArea.rowHeader);
-    // // 隐藏sheet页
-    // spread.options.tabStripVisible = false;
-    // spread.options.newTabVisible = false;
-    
-    // //关闭时确认提示
-    // $('#closeLayer').off('click');
-    // $('#closeLayer').on('click',function(e){
-    //     swal({
-    //         title: '',
-    //         text: '确认关闭',
-    //         type: 'info',
-    //         showCancelButton: true,
-    //         confirmButtonText: getLanguage('sure'),
-    //         cancelButtonText: getLanguage('cancel'),
-    //     }).then(function (value) {
-    //        if(value.value){
-    //             e.preventDefault();
-    //             try {
-    //                 parent.$('#contractList_table').DataTable().ajax.reload(null, false);
-    //             }
-    //             catch (error) { }
-    //             //刷新
-    //             var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-    //             parent.layer.close(index); //再执行关闭
-    //        }
-    //     });
-    // });
-    // // 非空行
-    // var rownum = getNonEmptyRowIndex(sheet);
 
-    // //2020年数据不可编辑
-    // // for (var i = 1; i <= rownum; i++) {
-    // //     if (sheet.getValue(i, 4) !== "" && sheet.getValue(i, 4) !== null) {
-    // //         sheet.getRange(i, 0, 1, 4, GC.Spread.Sheets.SheetArea.viewport).backColor("White"); //区域底色变白
-    // //         sheet.getRange(i, 0, 1, 4, GC.Spread.Sheets.SheetArea.viewport).locked(true);  //区域锁定
-    // //     }
-    // // }
+    
+        //将10进制转26进制
+      var Convert26=function(num){
+        var str="";
+        while (num > 0){
+            var m = num % 26;
+            if (m == 0){
+                m = 26;
+            }
+            str = String.fromCharCode(m + 64) + str;
+            num = (num - m) / 26;
+        }
+        return str;
+    }
+    //将26进制转10进制
+    var ConvertNum = function (str) {
+        var n = 0;
+        var s = str.match(/./g);//求出字符数组
+        var j = 0;
+        for (var i = str.length - 1, j = 1; i >= 0; i--, j *= 26) {
+            var c = s[i].toUpperCase();
+            if (c < 'A' || c > 'Z') {
+                return 0;
+            }
+            n += (c.charCodeAt(0) - 64) * j;
+        }
+        return n;
+    }
     
     //下拉值列表级联
     var rowCount = sheet.getRowCount();
     var startRow = 1;
-    // var ColQ1 = 'D';
-    strFormula += 'N' + (startRow+1) + ':' + 'N' + rowCount + '-'+'Q'+(startRow+1)+':'+'Q'+rowCount;
-    strFormula1 += 'S' + (startRow+1) + ':' + 'S' + rowCount + '-'+'N'+(startRow+1)+':'+'N'+rowCount;
+    var ColQ1 = 'N';
+    var col = ConvertNum(ColQ1)
+    strFormula += Convert26(col+2) + (startRow+1) + ':' + Convert26(col+2) + rowCount + '+'+ Convert26(col+3)+(startRow+1)+':'+Convert26(col+3)+rowCount;
+    strFormula1 += Convert26(col+4) + (startRow+1) + ':' + Convert26(col+4) + rowCount + '-'+ Convert26(col)+(startRow+1)+':'+Convert26(col)+rowCount;
+    strFormula2 += Convert26(col+4) + (startRow+1) + ':' + Convert26(col+4) + rowCount + '-'+ Convert26(col-2)+(startRow+1)+':'+Convert26(col-2)+rowCount;
+    // strFormula1 += 'P' + (startRow+1) + ':' + 'P' + rowCount + '-'+'Q'+(startRow+1)+':'+'Q'+rowCount;
+    // strFormula2 += 'S' + (startRow+1) + ':' + 'S' + rowCount + '-'+'N'+(startRow+1)+':'+'N'+rowCount;
     debugger;
 
     // 设置区域公式
-    sheet.setArrayFormula(1, 17, rowCount-1, 1, 'IFERROR(IF('+strFormula+'=0,"",'+strFormula+'),"")'); 
-    sheet.setArrayFormula(1, 19, rowCount-1, 1, 'IFERROR(IF('+strFormula1+'=0,"",'+strFormula1+'),"")'); 
+    sheet.setArrayFormula(1, col+3, rowCount-1, 1, 'IFERROR(IF('+strFormula+'=0,"",'+strFormula+'),"")'); 
+    sheet.setArrayFormula(1, col+4, rowCount-1, 1, 'IFERROR(IF('+strFormula1+'=0,"",'+strFormula1+'),"")'); 
+    sheet.setArrayFormula(1, col+5, rowCount-1, 1, 'IFERROR(IF('+strFormula2+'=0,"",'+strFormula2+'),"")'); 
     
     
     
