@@ -80,7 +80,7 @@ function BeforeSave(){
             if(e[0] && !store_number_arr.includes(String(e[0]))){
                 sheet.getRange(i+startRow, 0, 1, 1).setBorder(lineBorder1, { all: true });
                 // sheet.getRange(i+startRow, statusCol-1, 1, 1).borderRight(lineBorder1);
-                sheet.getRange(i+startRow-1, 0, 1, 1).borderBottom(lineBorder1);
+                sheet.getRange(i+startRow-1, 2, 1, 1).borderBottom(lineBorder1);
                 flag1 = false;
             }
         })

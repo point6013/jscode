@@ -64,7 +64,7 @@ function a() {
     }
 
 
-    var colI2 ='A'
+    var colI2 =''
     var strFormula ='';
 
     for (var i =9; i<=22;i++){

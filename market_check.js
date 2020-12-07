@@ -3,27 +3,36 @@ function a(){
     var sheet =spread.getSheet(1);
     
     var rowCount = sheet.getRowCount();
-    
+    // strFormula=''
+    // var startRow =3 ;
+    // // var ColQ1 = 'D';
+
+    // strFormula += 'L' + (startRow+1) + ':' + 'L' + rowCount +'*'+'M'+(startRow+1)+':'+'M'+rowCount;
+
+    // debugger;
+
+    // // // 设置区域公式
+    // sheet.setArrayFormula(3, 13, rowCount-3, 1, 'IFERROR(IF('+strFormula+'=0,"",'+strFormula+'),"")');  
+    // // sheet.setArrayFormula(1, 19, rowCount-1, 1, 'IFERROR(IF('+strFormula1+'=0,"",'+strFormula1+'),"")');
     var startRow =4 ;
     endrow=17
     for(i=0;i<=2;i++){
     strFormula=''
     strFormula += 'L' + (startRow) + ':' + 'L' + endrow +'*'+'M'+startRow+':'+'M'+endrow;
-    sheet.setArrayFormula(3, 13, rowCount-3, 1, 'IFERROR(IF('+strFormula+'=0,"",'+strFormula+'),"")');
+    sheet.setArrayFormula(startRow-1, 13, 14, 1, 'IFERROR(IF('+strFormula+'=0,"",'+strFormula+'),"")');
     startRow+=15
     endrow+=15
     }
-    debugger;
-
-    // // 设置区域公式
-      
-    // sheet.setArrayFormula(1, 19, rowCount-1, 1, 'IFERROR(IF('+strFormula1+'=0,"",'+strFormula1+'),"")'); 
-    var l1 = ['IoT','NP#','RAM']
+    
+    var l1 = ['IoT','NP#','RAM'];
+    var cm = spread.commandManager(); 
+    var l2 = ['IoT','NP#','RAM','Office PC & Others']
     var arr = sheet.getArray(1, 0, rowCount-1, 2);
+    var arr1 = sheet.getArray(1,4, rowCount-1, 2);
     arr.forEach((e, i) => {
         if (e[0]) {
             {
-                if (e[1]='TotalChina'){
+                if (e[1]=='TotalChina'){
                 sheet.getCell(i+1, 11).backColor("White"); //  区域底色变白
                 sheet.getCell(i+1, 12).backColor("White"); //  区域底色变白
                 sheet.getCell(i+1, 13).backColor("White"); //  区域底色变白
@@ -31,11 +40,20 @@ function a(){
                 sheet.getCell(i+1, 12).locked(true);  //区域锁定
                 sheet.getCell(i+1, 13).locked(true);  //区域锁定}
                 }
-                if (l1.includes(e[0])&&e[1]!='TotalChina'){
-                    // strFormula2=''
-                    // strFormula2 += 'L' + i  +'*'+'M'+i;
-                // sheet.getCell(i+1, 11).backColor("White"); //  区域底色变白
-                // sheet.getCell(i+1, 12).backColor("White"); //  区域底色变白
+                if (l2.includes(e[0])&&e[1]!='TotalChina'){
+                    if (e[0]=='Office PC & Others')
+                    {
+                        console.log(e)
+                        // cm.execute({cmd: "editCell", row:e.row, col:e.col+7, newValue: e[0], sheetName: sheet.name()});
+                        cm.execute({cmd: "editCell", row:(i+1), col:13, newValue: arr1[i][0], sheetName: sheet.name()});
+                        sheet.getCell(i+1, 13).backColor("White"); //  区域底色变白
+                        // sheet.getCell(i+1, 11).locked(true);  //区域锁定
+                        // sheet.getCell(i+1, 12).locked(true);  //区域锁定
+                        sheet.getCell(i+1, 13).locked(true);  //区域锁定}
+                        debugger;
+
+                    }
+                     else{   
                 sheet.getCell(i+1, 13).backColor("White"); //  区域底色变白
                 // sheet.getCell(i+1, 11).locked(true);  //区域锁定
                 // sheet.getCell(i+1, 12).locked(true);  //区域锁定
@@ -43,6 +61,7 @@ function a(){
 
                 // sheet.setFormula(i-1,13,'IFERROR(IF('+strFormula2+'=0,"",'+strFormula2+'),"")')
                 }
+            }
                 if (!l1.includes(e[0])&&e[1]!='TotalChina'){
                     // strFormula2=''
                     // strFormula2 += 'L' + i  +'*'+'M'+i;
