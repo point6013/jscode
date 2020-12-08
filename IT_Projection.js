@@ -58,9 +58,9 @@ function IT_project(){
     debugger;
 
     // 设置区域公式
-    sheet.setArrayFormula(1, col+3, rowCount-1, 1, 'IFERROR(IF('+strFormula+'=0,"",'+strFormula+'),"")'); 
-    sheet.setArrayFormula(1, col+4, rowCount-1, 1, 'IFERROR(IF('+strFormula1+'=0,"",'+strFormula1+'),"")'); 
-    sheet.setArrayFormula(1, col+5, rowCount-1, 1, 'IFERROR(IF('+strFormula2+'=0,"",'+strFormula2+'),"")'); 
+    // sheet.setArrayFormula(1, col+3, rowCount-1, 1, 'IFERROR(IF('+strFormula+'=0,"",'+strFormula+'),"")'); 
+    sheet.setArrayFormula(1, col+4, rowCount-1, 1, 'IFERROR(IF('+strFormula1+'=0,"",'+strFormula2+'),"")'); 
+    sheet.setArrayFormula(1, col+5, rowCount-1, 1, 'IFERROR(IF('+strFormula2+'=0,"",'+strFormula1+'),"")'); 
     
     
     
