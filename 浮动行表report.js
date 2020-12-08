@@ -3,12 +3,6 @@ function a() {
     $('div.sheetInsertRow').hide();//隐藏插入行
     var sheet = spread.getActiveSheet();
 
-    for (var x = 0; x <= 15; x++) {
-        sheet.autoFitColumn(x);
-    }
-
-    //H列列宽
-    // sheet.setColumnWidth(7, 300);
 
     //隐藏Budg Code
     // sheet.setColumnVisible(18,false);
@@ -19,7 +13,7 @@ function a() {
     // sheet.setColumnVisible(0, false, GC.Spread.Sheets.SheetArea.rowHeader);
 
     // // 隐藏上传按钮
-    // $('#excel_upload').hide()
+    $('#excel_upload').hide()
 
     var rownum = 0;
     function getNonEmptyRowIndex(sheet) {
@@ -46,7 +40,8 @@ function a() {
             num = (num - m) / 26;
         }
         return str;
-
+    }
+    debugger;
 
     //将26进制转10进制
     var ConvertNum = function (str) {
@@ -61,28 +56,35 @@ function a() {
             n += (c.charCodeAt(0) - 64) * j;
         }
         return n;
-    }
+     }
 
 
-    var colI2 =''
-    var strFormula ='';
-
-    for (var i =9; i<=22;i++){
-        var col =Convert26(ConvertNum(colI2)+i);
-        strFormula+='SUM('+col +2+":"+col+")"
-        debugger;
-    }
+    var colI2 ='A'
 
 
+    // for (var i =9; i<=22;i++){
+    //     var col =Convert26(ConvertNum(colI2)+i);
+    //     strFormula+='SUM('+col +2+":"+col+")"
+    //     debugger;
+    // }
+
+    //     debugger;
 
         // 最后一行添加Total
         sheet.setValue(rno, 0, "Total")
         sheet.getCell(rno, 0).font('bold normal 13px normal')
-        for (var i = 9; i <= 23; i++) {
-            sheet.setFormula(rno, i, 'SUM(I' + 2 + ':I' + rno + ')');
+        for (var i = 9; i <= 22; i++) {
+            var strFormula ='';
+            var col =Convert26(ConvertNum(colI2)+i);
+            strFormula+='SUM('+col +2+":"+col+rno+")"
+            sheet.setFormula(rno, i, strFormula);
+            debugger;
             sheet.getCell(rno, i).font('bold normal 13px normal')
         }
 
+    for (var x = 0; x <= 24; x++) {
+        sheet.autoFitColumn(x);
+    }
         // // 改变Status描述
         // var endLine = rownum
         // for (var i = 0; i <= endLine; i++) {
@@ -101,6 +103,11 @@ function a() {
         //     } 
 
         // }
+        
+    //D列列宽
+        sheet.setColumnWidth(3, 150);
 
         spread.resumePaint();
     }
+    
+
