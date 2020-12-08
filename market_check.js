@@ -1,4 +1,4 @@
-function a(){
+function Beforeload(){
     spread.suspendPaint();
     var sheet =spread.getSheet(1);
     
@@ -14,9 +14,15 @@ function a(){
     // // // 设置区域公式
     // sheet.setArrayFormula(3, 13, rowCount-3, 1, 'IFERROR(IF('+strFormula+'=0,"",'+strFormula+'),"")');  
     // // sheet.setArrayFormula(1, 19, rowCount-1, 1, 'IFERROR(IF('+strFormula1+'=0,"",'+strFormula1+'),"")');
+    var sqlstr = 'select min_bud_category,sum(proj_cur_ver) total  from app1_apply_info_to_be  where bud_category="Store Deployment"  and min_bud_category !="Pooling-Store CapEx" group by min_bud_category';
+    var res = cfs.request.foundation.runComm(sqlstr).res
+    var l_keys = []
+    for (var i = 0, length = res.length; i < length; i++) {
+        l_keys.push(Object.values(res[i]))
+    }
     var startRow =4 ;
     endrow=17
-    for(i=0;i<=2;i++){
+    for(i=0;i<=29;i++){
     strFormula=''
     strFormula += 'L' + (startRow) + ':' + 'L' + endrow +'*'+'M'+startRow+':'+'M'+endrow;
     sheet.setArrayFormula(startRow-1, 13, 14, 1, 'IFERROR(IF('+strFormula+'=0,"",'+strFormula+'),"")');
@@ -39,16 +45,26 @@ function a(){
                 sheet.getCell(i+1, 11).locked(true);  //区域锁定
                 sheet.getCell(i+1, 12).locked(true);  //区域锁定
                 sheet.getCell(i+1, 13).locked(true);  //区域锁定}
+                for (var j = 0, length = l_keys.length; j < length; j++) {
+                        if (e[0] == l_keys[j][1]) {
+                            sheet.setValue(i + 1, 13, l_keys[j][0]);
+                            // if (local_sum > l_keys[j][0]) { flag = false }
+                            // sheet.getCell(i+1, 13).backColor("White"); //  区域底色变白
+                        }
+                    }
                 }
-                if (l2.includes(e[0])&&e[1]!='TotalChina'){
+                // if (l2.includes(e[0])&&e[1]!='TotalChina'){
+                    if (e[1]!='TotalChina'){
                     if (e[0]=='Office PC & Others')
                     {
                         console.log(e)
                         // cm.execute({cmd: "editCell", row:e.row, col:e.col+7, newValue: e[0], sheetName: sheet.name()});
                         cm.execute({cmd: "editCell", row:(i+1), col:13, newValue: arr1[i][0], sheetName: sheet.name()});
+                        sheet.getCell(i+1, 11).backColor("White"); //  区域底色变白
+                        sheet.getCell(i+1, 12).backColor("White"); //  区域底色变白
                         sheet.getCell(i+1, 13).backColor("White"); //  区域底色变白
-                        // sheet.getCell(i+1, 11).locked(true);  //区域锁定
-                        // sheet.getCell(i+1, 12).locked(true);  //区域锁定
+                        sheet.getCell(i+1, 11).locked(true);  //区域锁定
+                        sheet.getCell(i+1, 12).locked(true);  //区域锁定
                         sheet.getCell(i+1, 13).locked(true);  //区域锁定}
                         debugger;
 
@@ -62,18 +78,18 @@ function a(){
                 // sheet.setFormula(i-1,13,'IFERROR(IF('+strFormula2+'=0,"",'+strFormula2+'),"")')
                 }
             }
-                if (!l1.includes(e[0])&&e[1]!='TotalChina'){
-                    // strFormula2=''
-                    // strFormula2 += 'L' + i  +'*'+'M'+i;
-                    sheet.getCell(i+1, 11).backColor("White"); //  区域底色变白
-                    sheet.getCell(i+1, 12).backColor("White"); //  区域底色变白
-                    // sheet.getCell(i, 13).backColor("White"); //  区域底色变白
-                    sheet.getCell(i+1, 11).locked(true);  //区域锁定
-                    sheet.getCell(i+1, 12).locked(true);  //区域锁定
-                    // sheet.getCell(i, 13).locked(true);  //区域锁定}
-                    // sheet.setFormula(i,13,'IFERROR(IF('+strFormula2+'=0,"",'+strFormula2+'),"")')
+                // if (!l1.includes(e[0])&&e[1]!='TotalChina'){
+                //     // strFormula2=''
+                //     // strFormula2 += 'L' + i  +'*'+'M'+i;
+                //     sheet.getCell(i+1, 11).backColor("White"); //  区域底色变白
+                //     sheet.getCell(i+1, 12).backColor("White"); //  区域底色变白
+                //     // sheet.getCell(i, 13).backColor("White"); //  区域底色变白
+                //     sheet.getCell(i+1, 11).locked(true);  //区域锁定
+                //     sheet.getCell(i+1, 12).locked(true);  //区域锁定
+                //     // sheet.getCell(i, 13).locked(true);  //区域锁定}
+                //     // sheet.setFormula(i,13,'IFERROR(IF('+strFormula2+'=0,"",'+strFormula2+'),"")')
     
-                    }
+                //     }
 
 
             }  
@@ -143,3 +159,238 @@ function a(){
     
     spread.resumePaint();
 }
+function BeforeSave() {
+
+    spread.suspendPaint();
+    var sheet = spread.getSheet(1);
+
+    var rowCount = sheet.getRowCount();
+    var sqlstr = 'select min_bud_category,sum(proj_cur_ver) total  from app1_apply_info_to_be  where bud_category="Store Deployment"  and min_bud_category !="Pooling-Store CapEx" group by min_bud_category';
+    var res = cfs.request.foundation.runComm(sqlstr).res
+    var l_keys = []
+    for (var i = 0, length = res.length; i < length; i++) {
+        l_keys.push(Object.values(res[i]))
+    }
+    var arr = sheet.getArray(1, 0, rowCount - 1, 2);
+    var flag=true
+    arr.forEach((e, i) => {
+        if (e[0]) {
+            {
+                if (e[1] == 'TotalChina') {
+                    var arr_l = sheet.getArray(i - 14, 13, 14, 1)
+                    local_sum = 0
+                    for (var j = 0, length = arr_l.length; j < length; j++) {
+                        local_sum += arr_l[j][0]
+                    }
+                    debugger;
+                    for (var j = 0, length = l_keys.length; j < length; j++) {
+                        if (e[0] == l_keys[j][1]) {
+                            if (local_sum > l_keys[j][0]) { flag = false };
+                            debugger;
+                            // sheet.getCell(i+1, 13).backColor("White"); //  区域底色变白
+                        }
+                    }
+                }
+            }
+        }
+    }
+    )
+
+    if (!flag){
+        ForSwal("请重新确认上传的门店范围是否正确");
+        spread.resumePaint();
+        return false
+    }
+
+    spread.resumePaint();
+
+}
+
+var cfs = {//dashboard全局方法
+    request: {//请求后端数据
+        common: {//通用请求
+            sendRequest: function (url, type, paramObj, json = false, returnAll = false) {
+                let data = json ? JSON.stringify(paramObj) : paramObj;
+                let contentType =
+                    "application/" + (json ? "json" : "x-www-form-urlencoded");
+                var resObj = {};
+                var err = "";
+                $.ajax({
+                    url: url,
+                    type: type,
+                    contentType: contentType,
+                    async: false,
+                    data: data,
+                    success: function (res) {
+                        if (returnAll) {
+                            resObj.res = res;
+                        } else {
+                            if (res.resultCode === 0) {
+                                resObj.res = res.resultObj;
+                            }
+                        }
+                    },
+                    error: function (XMLHttpRequest) {
+                        resObj.err = {};
+                        resObj.err.Message = XMLHttpRequest.responseJSON.Message.substr(0, 200) || XMLHttpRequest.statusText.substr(0, 200);
+                    },
+                });
+                return resObj;
+            },
+        },
+        foundation: {
+            runComm: function (comm) {
+                let url = Api.seepln + "sqlparser/run/post";
+                paramObj = $.extend(
+                    {
+                        sql: comm
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, false, true);
+            },
+            selectDimensionMemberByNameFunction: function (exp, cols) {
+                let url = Api.seepln + 'dimension/selectDimensionMemberByNameFunction';
+                paramObj = $.extend(
+                    {
+                        dimensionMemberNames: exp,
+                        duplicate: '1',
+                        resultString: cols
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, false, true);
+            },
+            saveDimensionMember: function (dim, dim_list) {
+                let url = Api.seepln + 'dimensionSave/saveDimensionMember';
+                paramObj = $.extend(
+                    {
+                        name: dim,
+                        increment: 1,
+                        dimension_member_list: dim_list,
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, false, true);
+            },
+            queryCubeInfoAndDetail: function (cube_name) {
+                var url = Api.seepln + "cube/queryCubeInfoAndDetail";
+                paramObj = $.extend(
+                    {
+                        cube_name: cube_name,
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, false, true);
+            },
+            updateDimensionMemberAttribute: function (dimension, update_dimension) {
+                var url = Api.seepln + "dimensionImport/updateDimensionMemberAttribute";
+                paramObj = $.extend(
+                    {
+                        dimension: dimension,
+                        'update_dimension\[\]': update_dimension,
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, false, true);
+            },
+        },
+        cube: {
+            queryCubeData: function (cubeName, script) {
+                let url = Api.SeeplnCube + "cube/queryCubeData";
+                paramObj = $.extend(
+                    {
+                        cube_name: cubeName,
+                        script: script,
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, true);
+            },
+            save: function (sheetDatas) {
+                var url = Api.SeeplnCube + "spreadsheet/save";
+                paramObj = $.extend(
+                    {
+                        sheetDatas: sheetDatas,
+                        entryObject: 'SE7Q8GPLEG33'
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, true, true);
+            },
+        },
+        python: {
+            //同步调用python
+            web: function (pyName, params) {
+                var url = Api.python + "start/web";
+                paramObj = $.extend(
+                    {
+                        pyName: pyName,
+                        params: params,
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, true, true);
+            },
+            //异步调用python
+            job: function (pyName, params) {
+                var url = Api.python + "start/web/job";
+                paramObj = $.extend(
+                    {
+                        pyName: pyName,
+                        params: params,
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, true, true);
+            },
+            //同步调用python
+            pythonWeb: function (pythonName, parameter, runType = 1) {
+                var url = Api.pythonWeb + "doPythonWeb";
+                paramObj = $.extend(
+                    {
+                        pythonName: pythonName,
+                        parameter: JSON.stringify(parameter),
+                        runType: runType,//1-同步，2-异步
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, true, true);
+            },
+        },
+    },
+    common: {//通用方法
+        userParams: {
+            app: Userinfo.app,
+            app_id: Userinfo.app,
+            token: Userinfo.token,
+            user_id: Userinfo.user_id,
+            userId: Userinfo.user_id,
+            creater: Userinfo.user_id,
+            tenant_code: Userinfo.tenant_code,
+            tenantCode: Userinfo.tenant_code,
+            language: Userinfo.language,
+            description: Userinfo.language,
+        },
+        dialogBox: function (text, thenEvent) {
+            swal({
+                title: text,
+                text: '',
+                type: 'info',
+                showCancelButton: true,
+                confirmButtonText: getLanguage('sure'),
+                cancelButtonText: getLanguage('cancel'),
+            }).then(function (result) {
+                if (result.value) {
+                    thenEvent();
+                }
+            });
+        },
+        valueToDate: function (value) {
+            let n = Number(value.split('.')[0]);
+            var date = new Date("1900-1-1");
+            date.setDate(date.getDate() + n - 2);
+            return date.format();
+        }
+    }
+};
