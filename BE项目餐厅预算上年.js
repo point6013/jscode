@@ -15,7 +15,13 @@ function AfterLoad(){
     var eps_code = cfs.request.foundation.selectDimensionMemberByNameFunction('Category{'+ Category +'}', 'name,ud5').res.resultList[0].ud5;
     debugger;
     // var sqlstr = 'select status from app1_nit_i_prod_list where prod_code = "CTRE0701" and mkt = "'+ Market +'"';
-    var sqlstr = 'select '+ Market_des +' as result from app1_pr_info_maint where eps_category_number = '+'"'+ eps_code +'"';
+    if(Market_des=='BEIJING'){
+        var sqlstr = 'select '+ Market_des +'+shanxi as result from app1_pr_info_maint where eps_category_number = '+'"'+ eps_code +'"';
+    }
+    else{
+        var sqlstr = 'select '+ Market_des +' as result from app1_pr_info_maint where eps_category_number = '+'"'+ eps_code +'"';
+    }
+    // var sqlstr = 'select '+ Market_des +' as result from app1_pr_info_maint where eps_category_number = '+'"'+ eps_code +'"';
     var res1 = cfs.request.foundation.runComm(sqlstr).res
     debugger;
     // var res = cfs.request.cube.queryCubeData('mcdcapex_cube_fin','Year{'+Year+'}->Scenario{Plan}->Version{Working}->Status{FS09}->Period{YearSum}->Department{NoDept}->View{YTD}->Category{'+Category+'}->Entity{ET04}->Market{'+Market+'}->C3{C3OTH}->C4{'+C4+'}->Account{Inv06}');
@@ -25,8 +31,9 @@ function AfterLoad(){
         // 查syspaid
                 market_total = res1[0].result
                 // debugger;
-                // 获取市场对应的门店列表
-                var sqlstr = 'select us_code from pbcs_store_master where market_city_name_en = "'+ Market_des +'"';
+                // 获取市场对应的门店列表，  
+                //山西和北京合并市场，新的12个市场的字段为 market_desc 
+                var sqlstr = 'select us_code from pbcs_store_master where market_desc  = "'+ Market_des +'"';
                 var res = cfs.request.foundation.runComm(sqlstr).res
                 debugger;
                 if (res.length > 0){
