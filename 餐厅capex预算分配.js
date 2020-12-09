@@ -1,8 +1,6 @@
 var store_number_arr = []
 var market_total = 0;
 var flag
-var flag2 
-var flag3 =true
 function AfterLoad() {
     spread.suspendPaint();
     debugger
@@ -37,74 +35,7 @@ function AfterLoad() {
         }
     }
 
-    // mkc = res_mkc[0]['eps_code']
 
-    // paraobj = { 'Market': mkc, 'Year': Year }
-    // var ex1_res = cfs.request.python.web('intf_emsb_act', paraobj).res
-    // var sheet1 = spread.getSheet(1);
-    // var rownum = 0;
-    // debugger;
-    // function getNonEmptyRowIndex(sheet) {
-    //     var rowCount = sheet.getRowCount(), colCount = sheet.getColumnCount();
-    //     for (var i = rowCount - 1; i >= 0; i--) {
-    //         if (sheet.getValue(i, 0) !== null && sheet.getValue(i, 0) !== undefined && sheet.getValue(i, 0) !== '') {
-    //             return i;
-    //         }
-    //     }
-    //     return -1;
-    // }
-    // rownum = getNonEmptyRowIndex(sheet1);
-
-    // var rno = rownum + 1
-    // debugger;
-
-    // function in_array(search, array) {
-    //     for (var i in array) {
-    //         if (array[i] == search) {
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
-
-
-
-    // arr_check = sheet1.getArray(1, 0, sheet1.getRowCount(), 1)
-    // var l1 = [];
-    // arr_check.forEach((e, i) => {
-
-    //     if (e[0]) {
-    //         l1.push(e[0])
-    //     }
-
-    // }
-    // );
-    // debugger;
-
-
-    // arr_number = sheet1.getArray(1, 2, sheet1.getRowCount(), 1)
-    // console.log(ex1_res)
-    // var lb = new GC.Spread.Sheets.LineBorder('red', GC.Spread.Sheets.LineStyle.thin);
-    // debugger;
-    // start_row=1
-    // redata = JSON.parse(ex1_res.result)
-    // if (redata.length > 0) {
-    //     for (i = 0; i < redata.length; i++) {
-    //         debugger;
-    //         if (in_array(redata[i]['projectNumber'], l1)) {
-    //             var inx = l1.indexOf(redata[i]['projectNumber'])
-    //             console.log(rr_number[inx][0])
-    //             debugger;
-    //             if (arr_number[inx][0] < redata[i]['actualAmount'])
-    //                 debugger
-    //             {
-    //                 sheet1.getRange(inx, 2, 1, 1).setBorder(lb, { all: true });
-    //                 // sheet1.getRange(i+start_row-1,2,1,1).borderBottom(lb);
-    //                 flag2 = false
-    //             }
-    //         }
-    //     }
-    // }
     debugger;
     if (flag) {
         // 直接锁表
@@ -161,7 +92,7 @@ function BeforeSave() {
             return false
         }
         var Year = $('.dataSheetCon>div:eq(0)').find('select[aname=year]').next().find('.form-check.active').find('input').val()
-        var Market_des = $('.dataSheetCon>div:eq(0)').find('select[aname=Market]').next().find('button').attr('title')  
+        var Market_des = $('.dataSheetCon>div:eq(0)').find('select[aname=Market]').next().find('button').attr('title')
         var sqlstr_mk = 'select eps_code from app1_mcd_info_mapping_market where  store_master_code = "' + Market_des + '"';
         var res_mkc = cfs.request.foundation.runComm(sqlstr_mk).res
         mkc = res_mkc[0]['eps_code']
@@ -169,19 +100,6 @@ function BeforeSave() {
         paraobj = { 'Market': mkc, 'Year': Year }
         var ex1_res = cfs.request.python.web('intf_emsb_act', paraobj).res
         var sheet1 = spread.getSheet(1);
-
-        // debugger;
-
-        // function in_array(search, array) {
-        //     for (var i in array) {
-        //         if (array[i] == search) {
-        //             return true;
-        //         }
-        //     }
-        //     return false;
-        // }
-
-
 
         arr_check = sheet1.getArray(1, 0, sheet1.getRowCount(), 1)
         var l1 = [];
@@ -201,27 +119,28 @@ function BeforeSave() {
         var lineBorder1 = new GC.Spread.Sheets.LineBorder('red', GC.Spread.Sheets.LineStyle.thin);
         // debugger;
         start_row = 1
+        var flag2 = true
         redata = JSON.parse(ex1_res.result)
-        if (redata.length > 0 && arr_check.length>0) {
-            for (i=0;i<redata.length;i++){
-            for (j = 0; j < l1.length; j++) {
-                // debugger;
-                console.log(typeof redata[i])
-                if (l1[j] == redata[i]['projectNumber']) {
-                    if(arr_number[j][0]<redata[i]['actualAmount']){
-                        debugger;
-                        console.log('OK')
-                        console.log(i)
-                        sheet1.getRange(j+1, 2, 1, 1).borderBottom(lineBorder1);
-                        // sheet1.getRange(j+startRow, 3, 1, 1).setBorder(lineBorder1, { all: true });
-                        // sheet1.getcell(i+start_row-1,2,1,1).borderBottom(lb);
-                        flag2 = false
+        if (redata.length > 0 && arr_check.length > 0) {
+            for (i = 0; i < redata.length; i++) {
+                for (j = 0; j < l1.length; j++) {
+                    // debugger;
+                    console.log(typeof redata[i])
+                    if (l1[j] == redata[i]['projectNumber']) {
+                        if (arr_number[j][0] < redata[i]['actualAmount']) {
+                            debugger;
+                            console.log('OK')
+                            console.log(i)
+                            sheet1.getRange(j + 1, 2, 1, 1).borderBottom(lineBorder1);
+                            // sheet1.getRange(j+startRow, 3, 1, 1).setBorder(lineBorder1, { all: true });
+                            // sheet1.getcell(i+start_row-1,2,1,1).borderBottom(lb);
+                            flag2 = false
+                        }
                     }
                 }
             }
         }
-    }
-        
+
 
 
 
@@ -247,16 +166,16 @@ function BeforeSave() {
         }
         )
         sumall = sum + sum1
-        
         var arr2 = sheet1.getArray(1, 1, sheet1.getRowCount(), 1);
-        let newArr = arr2.reduce((pre,cur)=>{
-            return pre.concat(cur)},[])
-        
+        let newArr = arr2.reduce((pre, cur) => {
+            return pre.concat(cur)
+        }, [])
+
         var r = newArr.filter(function (s) {
             return s && s.trim(); // 注：IE9(不包含IE9)以下的版本没有trim()方法,去掉非空
         });
-        
-        function  statisticalFieldNumber(arr) {
+
+        function statisticalFieldNumber(arr) {
             return arr.reduce(function (prev, next) {
                 prev[next] = (prev[next] + 1) || 1;
                 return prev;
@@ -264,17 +183,19 @@ function BeforeSave() {
         }
         var new_count = statisticalFieldNumber(r)
         debugger;
-        if(r.length>0){
-        for ( let val of Object.values(new_count)){
-            if (val>=2)
-            flag3=false
-        }
+        var flag3 = true
+        if (r.length > 0) {
+            for (key in new_count) {
+                if (new_count[key] >= 2) {
+                    flag3 = false
+                }
+            }
         }
 
         debugger;
 
 
-        
+
 
 
 
@@ -283,7 +204,7 @@ function BeforeSave() {
             spread.resumePaint();
             return false
         }
-        
+
         if (!flag3) {
             ForSwal("请重新确认上传的项目名称是否重复");
             spread.resumePaint();
@@ -295,9 +216,9 @@ function BeforeSave() {
             return false
         }
 
-            }
+    }
 
-        
+
     spread.resumePaint();
 
 }
