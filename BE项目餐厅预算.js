@@ -16,11 +16,17 @@ function AfterLoad(){
     var res = cfs.request.cube.queryCubeData('mcdcapex_cube_fin','Year{'+Year+'}->Scenario{Plan}->Version{Working}->Status{FS09}->Period{YearSum}->Department{NoDept}->View{YTD}->Category{'+Category+'}->Entity{ET04}->Market{'+Market+'}->C3{C3OTH}->C4{'+C4+'}->Account{Inv06}');
     flag = true;
     if (res.res.data.length > 0 && res.res.data[0].data > 0){
-
-        market_total = res.res.data[0].data
-
-        // 获取市场对应的门店列表
-        var sqlstr = 'select us_code from pbcs_store_master where market_city_name_en = "'+ Market_des +'"';
+        if (Market_des == 'BEIJING') {
+            var res1 = cfs.request.cube.queryCubeData('mcdcapex_cube_fin', 'Year{' + Year + '}->Scenario{Plan}->Version{Working}->Status{FS09}->Period{YearSum}->Department{NoDept}->View{YTD}->Category{'+Category+'}->Entity{ET04}->Market{NBJ}->C3{C3OTH}->C4{'+C4+'}->Account{Inv06}');
+            market_shanxi = res1.res.data[0].data
+            market_total = res.res.data[0].data + market_shanxi
+        }
+        else
+        {market_total = res.res.data[0].data
+        }
+    
+        // 获取市场对应的门店列表， 重新山西和北京的market合并，新的字段为
+        var sqlstr = 'select us_code from pbcs_store_master where  market_desc = "'+ Market_des +'"';
         var res = cfs.request.foundation.runComm(sqlstr).res
 
         if (res.length > 0){
