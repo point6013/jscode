@@ -1,28 +1,53 @@
-/**spread2 = spread对象
-*/
-function IT_project(){
-    spread.suspendPaint();
-    var sheet =spread.getSheet(0);
-    var strFormula = '';
-    var strFormula1 = '';
-    var strFormula2 = '';
-    //G列列宽
-    sheet.setColumnWidth(6, 250);
-    //H列列宽
-    sheet.setColumnWidth(7, 200);
-    sheet.setColumnVisible(0,false);
-    // sheet.setColumnVisible(11,false);  //隐藏Budg Code
-    
-    // $('#excel_upload').hide()  // 隐藏上传按钮
-    
+var l_keys = []
 
-    
-        //将10进制转26进制
-      var Convert26=function(num){
-        var str="";
-        while (num > 0){
+
+function Beforeload() {
+    spread.suspendPaint();
+    var sheet = spread.getSheet(1);
+
+    var rowCount = sheet.getRowCount();
+    var arr_category = sheet.getArray(3, 0, rowCount, 1);
+    // 二维数组变成一维数组
+    let newArr = arr_category.reduce((pre, cur) => {
+        return pre.concat(cur)
+    }, [])
+
+    // 一维数组去重====> 获取category的个数
+    let newArr_len = newArr.reduce((pre, cur) => {
+        if (!pre.includes(cur)) {
+            return pre.concat(cur)
+        } else {
+            return pre
+        }
+    }, [])
+
+
+    // 从二维表中取出汇总的数据
+    var sqlstr = 'select min_bud_category,sum(proj_cur_ver) total  from app1_apply_info_to_be  where bud_category="Store Deployment"  and min_bud_category !="Pooling-Store CapEx" group by min_bud_category';
+    var res = cfs.request.foundation.runComm(sqlstr).res
+    // var l_keys = []
+    for (var i = 0, length = res.length; i < length; i++) {
+        l_keys.push(Object.values(res[i]))
+    }
+
+    // 生成循环公式，最后一列的公式生成
+    var startRow = 4;
+    endrow = 17
+
+    for (i = 0; i < newArr_len.length - 1; i++) {
+        strFormula = ''
+        strFormula += 'L' + (startRow) + ':' + 'L' + endrow + '*' + 'M' + startRow + ':' + 'M' + endrow;
+        sheet.setArrayFormula(startRow - 1, 13, 14, 1, 'IFERROR(IF(' + strFormula + '=0,"",' + strFormula + '),"")');
+        startRow += 15
+        endrow += 15
+    }
+
+    // 数字转字母
+    var Convert26 = function (num) {
+        var str = "";
+        while (num > 0) {
             var m = num % 26;
-            if (m == 0){
+            if (m == 0) {
                 m = 26;
             }
             str = String.fromCharCode(m + 64) + str;
@@ -30,6 +55,8 @@ function IT_project(){
         }
         return str;
     }
+    debugger;
+
     //将26进制转10进制
     var ConvertNum = function (str) {
         var n = 0;
@@ -44,489 +71,413 @@ function IT_project(){
         }
         return n;
     }
-    
-    //下拉值列表级联
-    var rowCount = sheet.getRowCount();
-    var startRow = 1;
-    var ColQ1 = 'N';
-    var col = ConvertNum(ColQ1)
-    strFormula += Convert26(col+2) + (startRow+1) + ':' + Convert26(col+2) + rowCount + '+'+ Convert26(col+3)+(startRow+1)+':'+Convert26(col+3)+rowCount;
-    strFormula1 += Convert26(col+4) + (startRow+1) + ':' + Convert26(col+4) + rowCount + '-'+ Convert26(col)+(startRow+1)+':'+Convert26(col)+rowCount;
-    strFormula2 += Convert26(col+4) + (startRow+1) + ':' + Convert26(col+4) + rowCount + '-'+ Convert26(col-2)+(startRow+1)+':'+Convert26(col-2)+rowCount;
-    // strFormula1 += 'P' + (startRow+1) + ':' + 'P' + rowCount + '-'+'Q'+(startRow+1)+':'+'Q'+rowCount;
-    // strFormula2 += 'S' + (startRow+1) + ':' + 'S' + rowCount + '-'+'N'+(startRow+1)+':'+'N'+rowCount;
-    debugger;
 
-    // 设置区域公式
-    // sheet.setArrayFormula(1, col+3, rowCount-1, 1, 'IFERROR(IF('+strFormula+'=0,"",'+strFormula+'),"")'); 
-    sheet.setArrayFormula(1, col+4, rowCount-1, 1, 'IFERROR(IF('+strFormula1+'=0,"",'+strFormula2+'),"")'); 
-    sheet.setArrayFormula(1, col+5, rowCount-1, 1, 'IFERROR(IF('+strFormula2+'=0,"",'+strFormula1+'),"")'); 
-    
-    
-    
-    sheet.bind(GC.Spread.Sheets.Events.ValueChanged,function(e,info){
-            // 如果是A列改变了值
-            if( info.col===1  ){
-                //则改变B列的对应行的值
-                setLValue(sheet,info.row);
+    var startRow1 = 4;
+    endrow1 = 17
+    var colI2 = 'B'
+    emplty_col = ['D','G','J','M']
+    // 每个totalChina的一行添加Total
+    for (i = 0; i < newArr_len.length; i++) {
+        for (var j = 1; j <= 11; j++) {
+            var strFormula = '';
+            var col = Convert26(ConvertNum(colI2) + j);
+            if (!emplty_col.includes(col)){
+            strFormula += 'SUM(' + col + startRow1 + ":" + col + endrow1 + ")"
+            sheet.setFormula(startRow1 + 13, ConvertNum(colI2) + j - 1, 'IFERROR(IF(' + strFormula + '=0,"",' + strFormula + '),"")');
+            // debugger;
             }
-		}
-	);
-    
-    // 遍历行数,初始化完sheet即加载规则
-    for( var i=1;i<rowCount;i++ ){
-        setLValue(sheet,i);
+        }
+        startRow1 += 15
+        endrow1 += 15
+        // debugger;
     }
-    
+
+    // var l1 = ['IoT', 'NP#', 'RAM'];
+    var cm = spread.commandManager();
+    // var l2 = ['IoT', 'NP#', 'RAM', 'Office PC & Others']
+    var arr = sheet.getArray(1, 0, rowCount - 1, 2);
+    var arr1 = sheet.getArray(1, 4, rowCount - 1, 2);
+    arr.forEach((e, i) => {
+        if (e[0]) {
+            {
+                if (e[1] == 'TotalChina') {
+                    sheet.getCell(i + 1, 11).backColor("White"); //  区域底色变白
+                    sheet.getCell(i + 1, 12).backColor("White"); //  区域底色变白
+                    sheet.getCell(i + 1, 13).backColor("White"); //  区域底色变白
+                    sheet.getCell(i + 1, 11).locked(true);  //区域锁定
+                    sheet.getCell(i + 1, 12).locked(true);  //区域锁定
+                    sheet.getCell(i + 1, 13).locked(true);  //区域锁定}
+                    for (var j = 0, length = l_keys.length; j < length; j++) {
+                        if (e[0] == l_keys[j][1]) {
+                            sheet.setValue(i + 1, 13, l_keys[j][0]);
+                            // if (local_sum > l_keys[j][0]) { flag = false }
+                            // sheet.getCell(i+1, 13).backColor("White"); //  区域底色变白
+                        }
+                    }
+                }
+                // if (l2.includes(e[0])&&e[1]!='TotalChina'){
+                if (e[1] != 'TotalChina') {
+                    if (e[0] == 'Office PC & Others') {
+                        console.log(e)
+                        // cm.execute({cmd: "editCell", row:e.row, col:e.col+7, newValue: e[0], sheetName: sheet.name()});
+
+                        // debugger;
+                        cm.execute({ cmd: "editCell", row: (i + 1), col: 13, newValue: arr1[i][0], sheetName: sheet.name() });
+                        sheet.getCell(i + 1, 11).backColor("White"); //  区域底色变白
+                        sheet.getCell(i + 1, 12).backColor("White"); //  区域底色变白
+                        sheet.getCell(i + 1, 13).backColor("White"); //  区域底色变白
+                        sheet.getCell(i + 1, 11).locked(true);  //区域锁定
+                        sheet.getCell(i + 1, 12).locked(true);  //区域锁定
+                        sheet.getCell(i + 1, 13).locked(true);  //区域锁定}
+
+                        // debugger;
+
+                    }
+                    else {
+                        // if(e[0]== 'Office PC & Others')
+                        // {
+                        // // var strFormula1=''
+                        // // strFormula1 +='=E'+i-10
+                        // // sheet.setFormula(i-1, 13, 'IFERROR(IF(' + strFormula1 + '=0,"",' + strFormula1 + '),"")');
+                        // sheet.setValue(i + 1, 13, 10000)
+
+                        // }
+
+                        // else{
+                        sheet.getCell(i + 1, 13).backColor("White"); //  区域底色变白
+                        // sheet.getCell(i+1, 11).locked(true);  //区域锁定
+                        // sheet.getCell(i+1, 12).locked(true);  //区域锁定
+                        sheet.getCell(i + 1, 13).locked(true);  //区域锁定}
+                    }
+                    // debugger;
+                    // sheet.setFormula(i-1,13,'IFERROR(IF('+strFormula2+'=0,"",'+strFormula2+'),"")')
+                }
+
+                else {
+                    if (e[0] == 'Office PC & Others') {
+                        var strFormula1=''
+                        strFormula1 +='E'+(i+2)
+                        debugger;
+                        sheet.setFormula(i+1, 13, 'IFERROR(IF(' + strFormula1 + '=0,"",' + strFormula1 + '),"")');
+                        debugger;
+
+                    }
+                }
+
+
+                // if (!l1.includes(e[0])&&e[1]!='TotalChina'){
+                //     // strFormula2=''
+                //     // strFormula2 += 'L' + i  +'*'+'M'+i;
+                //     sheet.getCell(i+1, 11).backColor("White"); //  区域底色变白
+                //     sheet.getCell(i+1, 12).backColor("White"); //  区域底色变白
+                //     // sheet.getCell(i, 13).backColor("White"); //  区域底色变白
+                //     sheet.getCell(i+1, 11).locked(true);  //区域锁定
+                //     sheet.getCell(i+1, 12).locked(true);  //区域锁定
+                //     // sheet.getCell(i, 13).locked(true);  //区域锁定}
+                //     // sheet.setFormula(i,13,'IFERROR(IF('+strFormula2+'=0,"",'+strFormula2+'),"")')
+
+                //     }
+
+
+            }
+        }
+    }
+    )
+
+
+    // var endLine = sheet.getRowCount();  // 结束行号
+    // var startLine = 3
+    // var endCol = sheet.getColumnCount()
+    // sheet.setArrayFormula(3, 8, endLine-3, 1, 'IFERROR(E4:E'+ endLine + '-H4:H' + endLine+',0)');  //i列=E列-H列
+    // sheet.setArrayFormula(3, 10, endLine-3, 1, 'IFERROR(IF((B4:B'+ endLine + ')="TotalChina",IF((J4:J'+ endLine + ')="","",J4:J'+ endLine + '-H4:H' + endLine+'),""),"")');  //K列=j列-h列
+    // var arr_market = sheet.getArray(3, 1, endLine-3, 1);
+    // var arr_ranges = [new GC.Spread.Sheets.Range(3, 10, endLine-3, 1)];
+    // arr_market.forEach((v,i)=>{
+    //     if(v[0] && v[0]=='TotalChina'){
+    //         arr_ranges.push(new GC.Spread.Sheets.Range(i+3, 8, 1, 1))
+    //     }
+    // })
+    // var iconSetRule = new GC.Spread.Sheets.ConditionalFormatting.IconSetRule();
+    // iconSetRule.ranges(arr_ranges);
+    // // iconSetRule.ranges([new GC.Spread.Sheets.Range(3, 10, endLine-3, 1)]);
+    // iconSetRule.iconSetType(GC.Spread.Sheets.ConditionalFormatting.IconSetType.threeTrafficLightsUnrimmed);
+    // var iconCriteria = iconSetRule.iconCriteria();
+    // iconCriteria[0] = new GC.Spread.Sheets.ConditionalFormatting.IconCriterion(true, GC.Spread.Sheets.ConditionalFormatting.IconValueType.number, 0);
+    // iconCriteria[1] = new GC.Spread.Sheets.ConditionalFormatting.IconCriterion(true, GC.Spread.Sheets.ConditionalFormatting.IconValueType.number, 0);
+    // iconSetRule.reverseIconOrder(false);
+    // iconSetRule.showIconOnly(false);
+    // sheet.conditionalFormats.clearRule();
+    // sheet.conditionalFormats.addRule(iconSetRule);
+    // for (var i = startLine; i <= endLine; i++) {
+    //     if (sheet.getValue(i, 1) === "TotalChina") {
+    //         sheet.getRange(i, 1, 1, endCol, GC.Spread.Sheets.SheetArea.viewport).font('bold normal 12px normal');
+    //     }
+    // }
+    // sheet.setValue(0,8,"Var");  //将I1文本替换为TA Type
+    // sheet.setValue(0,10,"Var");  //将K1文本替换为TA Type
+    // var endLine = sheet.getRowCount();
+    // // Office PC & Others起始结束行
+    // var OCOStartLine;
+    // var OCOEndLine;
+    // for (var i = 3; i <= endLine; i++) {
+    //     if(sheet.getValue(i, 0) == "Office PC & Others"){
+    //         if(!OCOStartLine){
+    //             OCOStartLine = i;
+    //         }else if(i == endLine || sheet.getValue(i+1, 0) != "Office PC & Others"){
+    //             OCOEndLine = i;
+    //         }
+    //     }else if(sheet.getValue(i, 1) == "TotalChina") {
+    //         sheet.setFormula(i,6,'IFERROR(IF(H'+(i+1)+'/F'+(i+1)+'=0,"",H'+(i+1)+'/F'+(i+1)+'),"")')
+    //     }else{   
+    //         sheet.setFormula(i,7,'IFERROR(IF(F'+(i+1)+'*G'+(i+1)+'=0,"",F'+(i+1)+'*G'+(i+1)+'),"")')
+    //     }
+    // }
+    // var Range = sheet.getRange(OCOStartLine, 5, OCOEndLine-OCOStartLine, 1, GC.Spread.Sheets.SheetArea.viewport);
+    // Range.backColor("White");  //区域填充色为白色
+    // Range.locked(true);  //区域锁定
+    // var Range = sheet.getRange(OCOStartLine, 7, OCOEndLine-OCOStartLine, 1, GC.Spread.Sheets.SheetArea.viewport);
+    // Range.backColor("rgb(255,243,201)");  
+    // Range.locked(false);  
+
+    //     //隐藏第i列至最后一列的所有无数据列
+    // for (var i = 9;i<endCol;i++){
+    //     HideNullCol(sheet,startLine,endLine,i);
+    // }
+
     spread.resumePaint();
 }
+function BeforeSave() {
 
-// function beforeSave(){
-//     debugger
-//     spread.suspendPaint();
-//     var sheet =spread.getSheet(0);
-//     // 非空行
-//     var rownum = getNonEmptyRowIndex(sheet);
-//     var arr = sheet.getArray(1, 9, rownum, 1);
-//     arr.forEach(row => {
-//         if (!row[0]) {
-//             $.jGrowl('', {
-//                 header: "请填写完整Business Impact",
-//                 theme: 'alert-styled-left bg-danger',
-//             })
-//             return false
-//         }
-//     }) 
-//     spread.resumePaint();
-// }
+    spread.suspendPaint();
+    var sheet = spread.getSheet(1);
 
-
-// function getNonEmptyRowIndex(sheet){
-//     let rowCount = sheet.getRowCount();
-//     let colCount = sheet.getColumnCount();
-
-//     for(var i = 1; i <= rowCount; i++){
-//         let arr = sheet.getArray(i, 0, 1, colCount);
-//         let flag = false;
-//         for (var j=0;j<arr.length;j++){
-//             if (arr[j][0]){
-//                 flag = true;
-//                 break
-//             }
-//         }
-//         if (!flag){
-//             return i-1
-//         }
-//     }
-//     return -1;
-// }
-// B列重置值方法
-function setLValue(sheet,rowNum){
-    // 获取A列对应行的值
-    var gValue =  sheet.getValue(rowNum,1)
-    var newArr =[]
-    console.log( gValue,'gValue' )
-     if( gValue=="BSC" ){
-        newArr = [{
-            subject_value:"Christina Zhang",
-            description:"Christina Zhang",
-        }]
-    } else if ( gValue=="BE" ){ 
-        newArr = [{
-            subject_value:"Edison Yan",
-            description:"Edison Yan",
-        },{
-            subject_value:"Emily Pang",
-            description:"Emily Pang",
-        },{
-            subject_value:"Larry Lee",
-            description:"Larry Lee",
-        },{
-            subject_value:"Qing Tian",
-            description:"Qing Tian",
-        },{
-            subject_value:"Tato Jiang",
-            description:"Tato Jiang",
-        },{
-            subject_value:"Xi Yang",
-            description:"Xi Yang",
-        }]
-    } else if ( gValue=="CA" ){ 
-        newArr = [{
-            subject_value:"Cherry Zhao",
-            description:"Cherry Zhao",
-        },{
-            subject_value:"Coco Li",
-            description:"Coco Li",
-        },{
-            subject_value:"Yunfei Xu",
-            description:"Yunfei Xu",
-        },{
-            subject_value:"Zy Zhang",
-            description:"Zy Zhang",
-        }]
-    } else if ( gValue=="CBI" ){ 
-        newArr = [{
-            subject_value:"Andy Chen",
-            description:"Andy Chen",
-        },{
-            subject_value:"Jay Yuan",
-            description:"Jay Yuan",
-        },{
-            subject_value:"Kevin Shao",
-            description:"Kevin Shao",
-        },{
-            subject_value:"Leann Shi",
-            description:"Leann Shi",
-        },{
-            subject_value:"Mina Yu",
-            description:"Mina Yu",
-        },{
-            subject_value:"Sean Xiao",
-            description:"Sean Xiao",
-        },{
-            subject_value:"Thomas Wu",
-            description:"Thomas Wu",
-        }]
-    } else if ( gValue=="CTC" ){ 
-        newArr = [{
-            subject_value:"Michael Liu",
-            description:"Michael Liu",
-        }]
-    } else if ( gValue=="Dev" ){ 
-        newArr = [{
-            subject_value:"Alexander Zhang",
-            description:"Alexander Zhang",
-        },{
-            subject_value:"Alice Li",
-            description:"Alice Li",
-        },{
-            subject_value:"Bob Li",
-            description:"Bob Li",
-        },{
-            subject_value:"Chen Li",
-            description:"Chen Li",
-        },{
-            subject_value:"Doni Ma",
-            description:"Doni Ma",
-        },{
-            subject_value:"Echo Liang",
-            description:"Echo Liang",
-        },{
-            subject_value:"Fei Wang",
-            description:"Fei Wang",
-        },{
-            subject_value:"Jacky Zha",
-            description:"Jacky Zha",
-        },{
-            subject_value:"Jae Chen",
-            description:"Jae Chen",
-        },{
-            subject_value:"Lei Yuan",
-            description:"Lei Yuan",
-        },{
-            subject_value:"Liu Ni",
-            description:"Liu Ni",
-        },{
-            subject_value:"Regan Li",
-            description:"Regan Li",
-        },{
-            subject_value:"Sabrina Huang",
-            description:"Sabrina Huang",
-        },{
-            subject_value:"Susan Hui",
-            description:"Susan Hui",
-        },{
-            subject_value:"Tapu Qiu",
-            description:"Tapu Qiu",
-        },{
-            subject_value:"Wei Huang",
-            description:"Wei Huang",
-        },{
-            subject_value:"Xiaofang Hu",
-            description:"Xiaofang Hu",
-        }]
-    } else if ( gValue=="Finance" ){ 
-        newArr = [{
-            subject_value:"Aaron Huang",
-            description:"Aaron Huang",
-        },{
-            subject_value:"Alan Wang",
-            description:"Alan Wang",
-        },{
-            subject_value:"Benny Wang",
-            description:"Benny Wang",
-        },{
-            subject_value:"Cindy Guo",
-            description:"Cindy Guo",
-        },{
-            subject_value:"Daniel Du",
-            description:"Daniel Du",
-        },{
-            subject_value:"David Chen",
-            description:"David Chen",
-        },{
-            subject_value:"Gustave Yang",
-            description:"Gustave Yang",
-        },{
-            subject_value:"Helen Tian",
-            description:"Helen Tian",
-        },{
-            subject_value:"Liping Mo",
-            description:"Liping Mo",
-        },{
-            subject_value:"Mary Xu",
-            description:"Mary Xu",
-        },{
-            subject_value:"Miao Xiao",
-            description:"Miao Xiao",
-        },{
-            subject_value:"Zhixuan Wu",
-            description:"Zhixuan Wu",
-        }]
-    } else if ( gValue=="Franchise" ){ 
-        newArr = [{
-            subject_value:"David Yip",
-            description:"David Yip",
-        },{
-            subject_value:"Elva Sun",
-            description:"Elva Sun",
-        },{
-            subject_value:"Hongb Xiao",
-            description:"Hongb Xiao",
-        },{
-            subject_value:"James Qu",
-            description:"James Qu",
-        },{
-            subject_value:"Lily Zhou",
-            description:"Lily Zhou",
-        },{
-            subject_value:"Peter Pan",
-            description:"Peter Pan",
-        },{
-            subject_value:"Raymond Ye",
-            description:"Raymond Ye",
-        }]
-    } else if ( gValue=="HR" ){ 
-        newArr = [{
-            subject_value:"August Xie",
-            description:"August Xie",
-        },{
-            subject_value:"Blank Wu",
-            description:"Blank Wu",
-        },{
-            subject_value:"Chris Xu",
-            description:"Chris Xu",
-        },{
-            subject_value:"Maggie Jiang",
-            description:"Maggie Jiang",
-        },{
-            subject_value:"Sally Chen",
-            description:"Sally Chen",
-        },{
-            subject_value:"Tammy Lin",
-            description:"Tammy Lin",
-        },{
-            subject_value:"Teresa Wang",
-            description:"Teresa Wang",
-        },{
-            subject_value:"Vincent Wei",
-            description:"Vincent Wei",
-        },{
-            subject_value:"Wendy Wang",
-            description:"Wendy Wang",
-        }]
-    } else if ( gValue=="HU" ){ 
-        newArr = [{
-            subject_value:"Amy Wang",
-            description:"Amy Wang",
-        },{
-            subject_value:"Byron Mei",
-            description:"Byron Mei",
-        },{
-            subject_value:"Denise Wang",
-            description:"Denise Wang",
-        },{
-            subject_value:"Lily Li",
-            description:"Lily Li",
-        }]
-    } else if ( gValue=="IT" ){ 
-        newArr = [{
-            subject_value:"Annie Ye",
-            description:"Annie Ye",
-        },{
-            subject_value:"Charles Cai",
-            description:"Charles Cai",
-        },{
-            subject_value:"Julia Ju",
-            description:"Julia Ju",
-        },{
-            subject_value:"Jun Ni",
-            description:"Jun Ni",
-        },{
-            subject_value:"Kevin Guo",
-            description:"Kevin Guo",
-        },{
-            subject_value:"Ning Sun",
-            description:"Ning Sun",
-        },{
-            subject_value:"Quentin Xu",
-            description:"Quentin Xu",
-        },{
-            subject_value:"Ray Zhao",
-            description:"Ray Zhao",
-        },{
-            subject_value:"Saipeng Ye",
-            description:"Saipeng Ye",
-        },{
-            subject_value:"Shihong Chen",
-            description:"Shihong Chen",
-        },{
-            subject_value:"Spark Wang",
-            description:"Spark Wang",
-        },{
-            subject_value:"Taylor Li",
-            description:"Taylor Li",
-        },{
-            subject_value:"Tony Tang",
-            description:"Tony Tang",
-        },{
-            subject_value:"Ying Mei",
-            description:"Ying Mei",
-        }]
-    } else if ( gValue=="Legal" ){ 
-        newArr = [{
-            subject_value:"Adela Yu",
-            description:"Adela Yu",
-        },{
-            subject_value:"Alex Gao",
-            description:"Alex Gao",
-        },{
-            subject_value:"Ally Peng",
-            description:"Ally Peng",
-        },{
-            subject_value:"Byrd Zou",
-            description:"Byrd Zou",
-        },{
-            subject_value:"Julia Xu",
-            description:"Julia Xu",
-        },{
-            subject_value:"Keju Zheng",
-            description:"Keju Zheng",
-        },{
-            subject_value:"Richard Wang",
-            description:"Richard Wang",
-        }]
-    } else if ( gValue=="Menu" ){ 
-        newArr = [{
-            subject_value:"Amy Yu",
-            description:"Amy Yu",
-        },{
-            subject_value:"Simon Yue",
-            description:"Simon Yue",
-        }]
-    } else if ( gValue=="MKT&Digital" ){ 
-        newArr = [{
-            subject_value:"Andy Xue",
-            description:"Andy Xue",
-        },{
-            subject_value:"Angela Ren",
-            description:"Angela Ren",
-        },{
-            subject_value:"Bingo Wang",
-            description:"Bingo Wang",
-        },{
-            subject_value:"Christine Xu",
-            description:"Christine Xu",
-        },{
-            subject_value:"Di Wen",
-            description:"Di Wen",
-        },{
-            subject_value:"Eliza Jiang",
-            description:"Eliza Jiang",
-        },{
-            subject_value:"Ian Li",
-            description:"Ian Li",
-        },{
-            subject_value:"Joanne Xie",
-            description:"Joanne Xie",
-        },{
-            subject_value:"Kaili Ma",
-            description:"Kaili Ma",
-        },{
-            subject_value:"Nile Wang",
-            description:"Nile Wang",
-        },{
-            subject_value:"Ruth Feng",
-            description:"Ruth Feng",
-        }]
-    } else if ( gValue=="Operation" ){ 
-        newArr = [{
-            subject_value:"Chen Ling",
-            description:"Chen Ling",
-        },{
-            subject_value:"Grace Zhou",
-            description:"Grace Zhou",
-        },{
-            subject_value:"Melody Ma",
-            description:"Melody Ma",
-        },{
-            subject_value:"Taikoong Chang",
-            description:"Taikoong Chang",
-        },{
-            subject_value:"Xun Song",
-            description:"Xun Song",
-        },{
-            subject_value:"Yan Li",
-            description:"Yan Li",
-        }]
-    } else if ( gValue=="PR" ){ 
-        newArr = [{
-            subject_value:"Ella Yu",
-            description:"Ella Yu",
-        },{
-            subject_value:"Jane Mai",
-            description:"Jane Mai",
-        },{
-            subject_value:"Regina Hui",
-            description:"Regina Hui",
-        },{
-            subject_value:"Ryan Jin",
-            description:"Ryan Jin",
-        }]
-    } else if ( gValue=="SupplyChain" ){ 
-        newArr = [{
-            subject_value:"Andy Li",
-            description:"Andy Li",
-        },{
-            subject_value:"Audrey Cheung",
-            description:"Audrey Cheung",
-        },{
-            subject_value:"Danny Zhang",
-            description:"Danny Zhang",
-        },{
-            subject_value:"Hua Wang",
-            description:"Hua Wang",
-        },{
-            subject_value:"Isabella Lin",
-            description:"Isabella Lin",
-        },{
-            subject_value:"Lily Quan",
-            description:"Lily Quan",
-        },{
-            subject_value:"Shelly Fu",
-            description:"Shelly Fu",
-        },{
-            subject_value:"Shen David",
-            description:"Shen David",
-        },{
-            subject_value:"William Shi",
-            description:"William Shi",
-        },{
-            subject_value:"Ying Mou",
-            description:"Ying Mou",
-        }]
+    var rowCount = sheet.getRowCount();
+    // var sqlstr = 'select min_bud_category,sum(proj_cur_ver) total  from app1_apply_info_to_be  where bud_category="Store Deployment"  and min_bud_category !="Pooling-Store CapEx" group by min_bud_category';
+    // var res = cfs.request.foundation.runComm(sqlstr).res
+    // var l_keys = []
+    // for (var i = 0, length = res.length; i < length; i++) {
+    //     l_keys.push(Object.values(res[i]))
+    // }
+    var arr = sheet.getArray(1, 0, rowCount - 1, 2);
+    var flag = true
+    arr.forEach((e, i) => {
+        if (e[0]) {
+            {
+                if (e[1] == 'TotalChina') {
+                    var arr_l = sheet.getArray(i - 13, 13, 14, 1)
+                    local_sum = 0
+                    for (var j = 0, length = arr_l.length; j < length; j++) {
+                        local_sum += arr_l[j][0]
+                    }
+                    debugger;
+                    for (var j = 0, length = l_keys.length; j < length; j++) {
+                        if (e[0] == l_keys[j][1]) {
+                            if (local_sum > l_keys[j][0]) { flag = false };
+                            debugger;
+                            // sheet.getCell(i+1, 13).backColor("White"); //  区域底色变白
+                        }
+                    }
+                }
+            }
+        }
     }
-    // 设置B列单元格的值
-    sheet.getCell(rowNum,2).cellType(new SmartListCellType(newArr));
+    )
+
+    if (!flag) {
+        ForSwal("请重新核对各市场金额");
+        spread.resumePaint();
+        return false
+    }
+
+    spread.resumePaint();
+
 }
+
+var cfs = {//dashboard全局方法
+    request: {//请求后端数据
+        common: {//通用请求
+            sendRequest: function (url, type, paramObj, json = false, returnAll = false) {
+                let data = json ? JSON.stringify(paramObj) : paramObj;
+                let contentType =
+                    "application/" + (json ? "json" : "x-www-form-urlencoded");
+                var resObj = {};
+                var err = "";
+                $.ajax({
+                    url: url,
+                    type: type,
+                    contentType: contentType,
+                    async: false,
+                    data: data,
+                    success: function (res) {
+                        if (returnAll) {
+                            resObj.res = res;
+                        } else {
+                            if (res.resultCode === 0) {
+                                resObj.res = res.resultObj;
+                            }
+                        }
+                    },
+                    error: function (XMLHttpRequest) {
+                        resObj.err = {};
+                        resObj.err.Message = XMLHttpRequest.responseJSON.Message.substr(0, 200) || XMLHttpRequest.statusText.substr(0, 200);
+                    },
+                });
+                return resObj;
+            },
+        },
+        foundation: {
+            runComm: function (comm) {
+                let url = Api.seepln + "sqlparser/run/post";
+                paramObj = $.extend(
+                    {
+                        sql: comm
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, false, true);
+            },
+            selectDimensionMemberByNameFunction: function (exp, cols) {
+                let url = Api.seepln + 'dimension/selectDimensionMemberByNameFunction';
+                paramObj = $.extend(
+                    {
+                        dimensionMemberNames: exp,
+                        duplicate: '1',
+                        resultString: cols
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, false, true);
+            },
+            saveDimensionMember: function (dim, dim_list) {
+                let url = Api.seepln + 'dimensionSave/saveDimensionMember';
+                paramObj = $.extend(
+                    {
+                        name: dim,
+                        increment: 1,
+                        dimension_member_list: dim_list,
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, false, true);
+            },
+            queryCubeInfoAndDetail: function (cube_name) {
+                var url = Api.seepln + "cube/queryCubeInfoAndDetail";
+                paramObj = $.extend(
+                    {
+                        cube_name: cube_name,
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, false, true);
+            },
+            updateDimensionMemberAttribute: function (dimension, update_dimension) {
+                var url = Api.seepln + "dimensionImport/updateDimensionMemberAttribute";
+                paramObj = $.extend(
+                    {
+                        dimension: dimension,
+                        'update_dimension\[\]': update_dimension,
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, false, true);
+            },
+        },
+        cube: {
+            queryCubeData: function (cubeName, script) {
+                let url = Api.SeeplnCube + "cube/queryCubeData";
+                paramObj = $.extend(
+                    {
+                        cube_name: cubeName,
+                        script: script,
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, true);
+            },
+            save: function (sheetDatas) {
+                var url = Api.SeeplnCube + "spreadsheet/save";
+                paramObj = $.extend(
+                    {
+                        sheetDatas: sheetDatas,
+                        entryObject: 'SE7Q8GPLEG33'
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, true, true);
+            },
+        },
+        python: {
+            //同步调用python
+            web: function (pyName, params) {
+                var url = Api.python + "start/web";
+                paramObj = $.extend(
+                    {
+                        pyName: pyName,
+                        params: params,
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, true, true);
+            },
+            //异步调用python
+            job: function (pyName, params) {
+                var url = Api.python + "start/web/job";
+                paramObj = $.extend(
+                    {
+                        pyName: pyName,
+                        params: params,
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, true, true);
+            },
+            //同步调用python
+            pythonWeb: function (pythonName, parameter, runType = 1) {
+                var url = Api.pythonWeb + "doPythonWeb";
+                paramObj = $.extend(
+                    {
+                        pythonName: pythonName,
+                        parameter: JSON.stringify(parameter),
+                        runType: runType,//1-同步，2-异步
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, true, true);
+            },
+        },
+    },
+    common: {//通用方法
+        userParams: {
+            app: Userinfo.app,
+            app_id: Userinfo.app,
+            token: Userinfo.token,
+            user_id: Userinfo.user_id,
+            userId: Userinfo.user_id,
+            creater: Userinfo.user_id,
+            tenant_code: Userinfo.tenant_code,
+            tenantCode: Userinfo.tenant_code,
+            language: Userinfo.language,
+            description: Userinfo.language,
+        },
+        dialogBox: function (text, thenEvent) {
+            swal({
+                title: text,
+                text: '',
+                type: 'info',
+                showCancelButton: true,
+                confirmButtonText: getLanguage('sure'),
+                cancelButtonText: getLanguage('cancel'),
+            }).then(function (result) {
+                if (result.value) {
+                    thenEvent();
+                }
+            });
+        },
+        valueToDate: function (value) {
+            let n = Number(value.split('.')[0]);
+            var date = new Date("1900-1-1");
+            date.setDate(date.getDate() + n - 2);
+            return date.format();
+        }
+    }
+};
