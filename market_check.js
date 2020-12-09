@@ -1,51 +1,110 @@
-function Beforeload(){
+function Beforeload() {
     spread.suspendPaint();
-    var sheet =spread.getSheet(1);
-    
+    var sheet = spread.getSheet(1);
+
     var rowCount = sheet.getRowCount();
-    // strFormula=''
-    // var startRow =3 ;
-    // // var ColQ1 = 'D';
+    var arr_category = sheet.getArray(3, 0, rowCount, 1);
+    // 二维数组变成一维数组
+    let newArr = arr_category.reduce((pre, cur) => {
+        return pre.concat(cur)
+    }, [])
 
-    // strFormula += 'L' + (startRow+1) + ':' + 'L' + rowCount +'*'+'M'+(startRow+1)+':'+'M'+rowCount;
+    // 一维数组去重====> 获取category的个数
+    let newArr_len = newArr.reduce((pre, cur) => {
+        if (!pre.includes(cur)) {
+            return pre.concat(cur)
+        } else {
+            return pre
+        }
+    }, [])
 
-    // debugger;
 
-    // // // 设置区域公式
-    // sheet.setArrayFormula(3, 13, rowCount-3, 1, 'IFERROR(IF('+strFormula+'=0,"",'+strFormula+'),"")');  
-    // // sheet.setArrayFormula(1, 19, rowCount-1, 1, 'IFERROR(IF('+strFormula1+'=0,"",'+strFormula1+'),"")');
+    // 从二维表中取出汇总的数据
     var sqlstr = 'select min_bud_category,sum(proj_cur_ver) total  from app1_apply_info_to_be  where bud_category="Store Deployment"  and min_bud_category !="Pooling-Store CapEx" group by min_bud_category';
     var res = cfs.request.foundation.runComm(sqlstr).res
     var l_keys = []
     for (var i = 0, length = res.length; i < length; i++) {
         l_keys.push(Object.values(res[i]))
     }
-    var startRow =4 ;
-    endrow=17
-    for(i=0;i<=29;i++){
-    strFormula=''
-    strFormula += 'L' + (startRow) + ':' + 'L' + endrow +'*'+'M'+startRow+':'+'M'+endrow;
-    sheet.setArrayFormula(startRow-1, 13, 14, 1, 'IFERROR(IF('+strFormula+'=0,"",'+strFormula+'),"")');
-    startRow+=15
-    endrow+=15
+
+    // 生成循环公式，最后一列的公式生成
+    var startRow = 4;
+    endrow = 17
+
+    for (i = 0; i < newArr_len.length - 1; i++) {
+        strFormula = ''
+        strFormula += 'L' + (startRow) + ':' + 'L' + endrow + '*' + 'M' + startRow + ':' + 'M' + endrow;
+        sheet.setArrayFormula(startRow - 1, 13, 14, 1, 'IFERROR(IF(' + strFormula + '=0,"",' + strFormula + '),"")');
+        startRow += 15
+        endrow += 15
     }
-    
-    var l1 = ['IoT','NP#','RAM'];
-    var cm = spread.commandManager(); 
-    var l2 = ['IoT','NP#','RAM','Office PC & Others']
-    var arr = sheet.getArray(1, 0, rowCount-1, 2);
-    var arr1 = sheet.getArray(1,4, rowCount-1, 2);
+
+    // 数字转字母
+    var Convert26 = function (num) {
+        var str = "";
+        while (num > 0) {
+            var m = num % 26;
+            if (m == 0) {
+                m = 26;
+            }
+            str = String.fromCharCode(m + 64) + str;
+            num = (num - m) / 26;
+        }
+        return str;
+    }
+    debugger;
+
+    //将26进制转10进制
+    var ConvertNum = function (str) {
+        var n = 0;
+        var s = str.match(/./g);//求出字符数组
+        var j = 0;
+        for (var i = str.length - 1, j = 1; i >= 0; i--, j *= 26) {
+            var c = s[i].toUpperCase();
+            if (c < 'A' || c > 'Z') {
+                return 0;
+            }
+            n += (c.charCodeAt(0) - 64) * j;
+        }
+        return n;
+    }
+
+    var startRow1 = 4;
+    endrow1 = 17
+    var colI2 = 'B'
+    emplty_col = ['D','G','J','M']
+    // 每个totalChina的一行添加Total
+    for (i = 0; i < newArr_len.length; i++) {
+        for (var j = 1; j <= 11; j++) {
+            var strFormula = '';
+            var col = Convert26(ConvertNum(colI2) + j);
+            if (!emplty_col.includes(col)){
+            strFormula += 'SUM(' + col + startRow1 + ":" + col + endrow1 + ")"
+            sheet.setFormula(startRow1 + 13, ConvertNum(colI2) + j - 1, 'IFERROR(IF(' + strFormula + '=0,"",' + strFormula + '),"")');
+            // debugger;
+            }
+        }
+        startRow1 += 15
+        endrow1 += 15
+        // debugger;
+    }
+
+    var l1 = ['IoT', 'NP#', 'RAM'];
+    var cm = spread.commandManager();
+    var l2 = ['IoT', 'NP#', 'RAM', 'Office PC & Others']
+    var arr = sheet.getArray(1, 0, rowCount - 1, 2);
+    var arr1 = sheet.getArray(1, 4, rowCount - 1, 2);
     arr.forEach((e, i) => {
         if (e[0]) {
             {
-                if (e[1]=='TotalChina'){
-                sheet.getCell(i+1, 11).backColor("White"); //  区域底色变白
-                sheet.getCell(i+1, 12).backColor("White"); //  区域底色变白
-                sheet.getCell(i+1, 13).backColor("White"); //  区域底色变白
-                sheet.getCell(i+1, 11).locked(true);  //区域锁定
-                sheet.getCell(i+1, 12).locked(true);  //区域锁定
-                sheet.getCell(i+1, 13).locked(true);  //区域锁定}
-                for (var j = 0, length = l_keys.length; j < length; j++) {
+                if (e[1] == 'TotalChina') {
+                    sheet.getCell(i + 1, 11).backColor("White"); //  区域底色变白
+                    sheet.getCell(i + 1, 12).backColor("White"); //  区域底色变白
+                    sheet.getCell(i + 1, 13).backColor("White"); //  区域底色变白
+                    sheet.getCell(i + 1, 11).locked(true);  //区域锁定
+                    sheet.getCell(i + 1, 12).locked(true);  //区域锁定
+                    sheet.getCell(i + 1, 13).locked(true);  //区域锁定}
+                    for (var j = 0, length = l_keys.length; j < length; j++) {
                         if (e[0] == l_keys[j][1]) {
                             sheet.setValue(i + 1, 13, l_keys[j][0]);
                             // if (local_sum > l_keys[j][0]) { flag = false }
@@ -54,30 +113,55 @@ function Beforeload(){
                     }
                 }
                 // if (l2.includes(e[0])&&e[1]!='TotalChina'){
-                    if (e[1]!='TotalChina'){
-                    if (e[0]=='Office PC & Others')
-                    {
+                if (e[1] != 'TotalChina') {
+                    if (e[0] == 'Office PC & Others') {
                         console.log(e)
                         // cm.execute({cmd: "editCell", row:e.row, col:e.col+7, newValue: e[0], sheetName: sheet.name()});
-                        cm.execute({cmd: "editCell", row:(i+1), col:13, newValue: arr1[i][0], sheetName: sheet.name()});
-                        sheet.getCell(i+1, 11).backColor("White"); //  区域底色变白
-                        sheet.getCell(i+1, 12).backColor("White"); //  区域底色变白
-                        sheet.getCell(i+1, 13).backColor("White"); //  区域底色变白
-                        sheet.getCell(i+1, 11).locked(true);  //区域锁定
-                        sheet.getCell(i+1, 12).locked(true);  //区域锁定
-                        sheet.getCell(i+1, 13).locked(true);  //区域锁定}
+
+                        // debugger;
+                        cm.execute({ cmd: "editCell", row: (i + 1), col: 13, newValue: arr1[i][0], sheetName: sheet.name() });
+                        sheet.getCell(i + 1, 11).backColor("White"); //  区域底色变白
+                        sheet.getCell(i + 1, 12).backColor("White"); //  区域底色变白
+                        sheet.getCell(i + 1, 13).backColor("White"); //  区域底色变白
+                        sheet.getCell(i + 1, 11).locked(true);  //区域锁定
+                        sheet.getCell(i + 1, 12).locked(true);  //区域锁定
+                        sheet.getCell(i + 1, 13).locked(true);  //区域锁定}
+
+                        // debugger;
+
+                    }
+                    else {
+                        // if(e[0]== 'Office PC & Others')
+                        // {
+                        // // var strFormula1=''
+                        // // strFormula1 +='=E'+i-10
+                        // // sheet.setFormula(i-1, 13, 'IFERROR(IF(' + strFormula1 + '=0,"",' + strFormula1 + '),"")');
+                        // sheet.setValue(i + 1, 13, 10000)
+
+                        // }
+
+                        // else{
+                        sheet.getCell(i + 1, 13).backColor("White"); //  区域底色变白
+                        // sheet.getCell(i+1, 11).locked(true);  //区域锁定
+                        // sheet.getCell(i+1, 12).locked(true);  //区域锁定
+                        sheet.getCell(i + 1, 13).locked(true);  //区域锁定}
+                    }
+                    // debugger;
+                    // sheet.setFormula(i-1,13,'IFERROR(IF('+strFormula2+'=0,"",'+strFormula2+'),"")')
+                }
+
+                else {
+                    if (e[0] == 'Office PC & Others') {
+                        var strFormula1=''
+                        strFormula1 +='E'+(i+2)
+                        debugger;
+                        sheet.setFormula(i+1, 13, 'IFERROR(IF(' + strFormula1 + '=0,"",' + strFormula1 + '),"")');
                         debugger;
 
                     }
-                     else{   
-                sheet.getCell(i+1, 13).backColor("White"); //  区域底色变白
-                // sheet.getCell(i+1, 11).locked(true);  //区域锁定
-                // sheet.getCell(i+1, 12).locked(true);  //区域锁定
-                sheet.getCell(i+1, 13).locked(true);  //区域锁定}
-
-                // sheet.setFormula(i-1,13,'IFERROR(IF('+strFormula2+'=0,"",'+strFormula2+'),"")')
                 }
-            }
+
+
                 // if (!l1.includes(e[0])&&e[1]!='TotalChina'){
                 //     // strFormula2=''
                 //     // strFormula2 += 'L' + i  +'*'+'M'+i;
@@ -88,16 +172,16 @@ function Beforeload(){
                 //     sheet.getCell(i+1, 12).locked(true);  //区域锁定
                 //     // sheet.getCell(i, 13).locked(true);  //区域锁定}
                 //     // sheet.setFormula(i,13,'IFERROR(IF('+strFormula2+'=0,"",'+strFormula2+'),"")')
-    
+
                 //     }
 
 
-            }  
+            }
         }
     }
     )
-    
-    
+
+
     // var endLine = sheet.getRowCount();  // 结束行号
     // var startLine = 3
     // var endCol = sheet.getColumnCount()
@@ -151,12 +235,12 @@ function Beforeload(){
     // var Range = sheet.getRange(OCOStartLine, 7, OCOEndLine-OCOStartLine, 1, GC.Spread.Sheets.SheetArea.viewport);
     // Range.backColor("rgb(255,243,201)");  
     // Range.locked(false);  
-    
+
     //     //隐藏第i列至最后一列的所有无数据列
     // for (var i = 9;i<endCol;i++){
     //     HideNullCol(sheet,startLine,endLine,i);
     // }
-    
+
     spread.resumePaint();
 }
 function BeforeSave() {
@@ -172,7 +256,7 @@ function BeforeSave() {
         l_keys.push(Object.values(res[i]))
     }
     var arr = sheet.getArray(1, 0, rowCount - 1, 2);
-    var flag=true
+    var flag = true
     arr.forEach((e, i) => {
         if (e[0]) {
             {
@@ -196,8 +280,8 @@ function BeforeSave() {
     }
     )
 
-    if (!flag){
-        ForSwal("请重新确认上传的门店范围是否正确");
+    if (!flag) {
+        ForSwal("请重新核对各市场金额");
         spread.resumePaint();
         return false
     }
