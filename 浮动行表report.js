@@ -85,26 +85,7 @@ function a() {
     for (var x = 0; x <= 24; x++) {
         sheet.autoFitColumn(x);
     }
-        // // 改变Status描述
-        // var endLine = rownum
-        // for (var i = 0; i <= endLine; i++) {
-        //     if (sheet.getValue(i, 0) === "1") {
-        //         sheet.setValue(i, 0,"To be Submitted");
-        //     } else if (sheet.getValue(i, 0) === "2"){
-        //         sheet.setValue(i, 0,"Submitted");
-        //     } else if (sheet.getValue(i, 0) === "3"){
-        //         sheet.setValue(i, 0,"Controller Pass");
-        //     } else if (sheet.getValue(i, 0) === "4"){
-        //         sheet.setValue(i, 0,"Controller Head Pass");
-        //     } else if (sheet.getValue(i, 0) === "5"){
-        //         sheet.setValue(i, 0,"IT Fin BP Pass");
-        //     } else if (sheet.getValue(i, 0) === "6"){
-        //         sheet.setValue(i, 0,"CapEx Fin Pass");
-        //     } 
 
-        // }
-        
-    //D列列宽
         sheet.setColumnWidth(3, 150);
 
         spread.resumePaint();
