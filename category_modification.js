@@ -61,6 +61,8 @@ arr1.forEach((e, i) => {
         sheet.getCell(i + 1, ConvertNum('N') - 1).backColor("White"); //  区域底色变白
         sheet.getCell(i + 1, ConvertNum('M') - 1).locked(true);  //区域锁定
         sheet.getCell(i + 1, ConvertNum('N') - 1).locked(true);  //区域锁定
+        sheet.getCell(i + 1, ConvertNum('D') - 1).backColor("White"); //  区域底色变白
+        sheet.getCell(i + 1, ConvertNum('D') - 1).locked(true);  //区域锁定
     }
 }
 )
