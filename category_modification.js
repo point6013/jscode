@@ -24,6 +24,46 @@ function e(){
     }
     rownum = getNonEmptyRowIndex(sheet);
     
+var Convert26 = function (num) {
+    var str = "";
+    while (num > 0) {
+        var m = num % 26;
+        if (m == 0) {
+            m = 26;
+        }
+        str = String.fromCharCode(m + 64) + str;
+        num = (num - m) / 26;
+    }
+    return str;
+}
+debugger;
+
+//将26进制转10进制
+var ConvertNum = function (str) {
+    var n = 0;
+    var s = str.match(/./g);//求出字符数组
+    var j = 0;
+    for (var i = str.length - 1, j = 1; i >= 0; i--, j *= 26) {
+        var c = s[i].toUpperCase();
+        if (c < 'A' || c > 'Z') {
+            return 0;
+        }
+        n += (c.charCodeAt(0) - 64) * j;
+    }
+    return n;
+}
+
+var arr1 = sheet.getArray(1, ConvertNum('M') - 1, rowCount, 4);
+arr1.forEach((e, i) => {
+    if(e[3][0]==undefined ||e[3][0]==NULL) {
+        debugger;
+        sheet.getCell(i + 1, ConvertNum('M') - 1).backColor("White"); //  区域底色变白
+        sheet.getCell(i + 1, ConvertNum('N') - 1).backColor("White"); //  区域底色变白
+        sheet.getCell(i + 1, ConvertNum('M') - 1).locked(true);  //区域锁定
+        sheet.getCell(i + 1, ConvertNum('N') - 1).locked(true);  //区域锁定
+    }
+}
+)
     // 改变Status
     var endLine = rownum
     for (var i = 1; i <= endLine; i++) {
@@ -50,7 +90,7 @@ function e(){
             if( info.col==3  ){
                 //则改变O列的对应行的值
                 setLValue(firstSheet,info.row)
-               // 如果是O列改变了
+               // 如果是M列改变了
             }else if( info.col==12 ){
                 setMValue(firstSheet,info.row)
             }
@@ -68,7 +108,7 @@ function e(){
 
 // O列重置值方法
 function setLValue(sheet,rowNum){
-    // 获取E列对应行的值
+    // 获取D列对应行的值
     var gValue =  sheet.getValue(rowNum,3)
     var newArr =[]
     console.log( gValue,'gValue' )
@@ -105,9 +145,9 @@ function setLValue(sheet,rowNum){
     setMValue( sheet,rowNum )
 }
 
-// P列重置值方法
+// N列重置值方法
 function setMValue( sheet,rowNum ){
-    // 获取O列对应行的值
+    // 获取M列对应行的值
     debugger
     var lValue =  sheet.getValue(rowNum,12)
     // 获取E列对应行的值
@@ -115,13 +155,13 @@ function setMValue( sheet,rowNum ){
     var newArr =[]
     if( lValue=="Store Deployment" && gValue=="CapEx"  ){
         // 获取Product Name列的值
-        var cValue = sheet.getValue(rowNum,2)
-        sheet.setValue(rowNum,15,cValue)
+        var cValue = sheet.getValue(rowNum23)
+        sheet.setValue(rowNum,13,cValue)
         newArr = [ {
             subject_value:cValue,
             description:cValue,
         }]
-        // 设置P列对应单元格下拉值
+        // 设置N列对应单元格下拉值
         sheet.getCell(rowNum,13).cellType(new SmartListCellType(newArr))
     }else if( lValue=="Office CapEx" && gValue=="CapEx" ){
         newArr = [ {
@@ -146,7 +186,7 @@ function setMValue( sheet,rowNum ){
             subject_value:"R&D",
             description:"R&D",
         }]
-        // 设置P列对应单元格下拉值
+        // 设置N列对应单元格下拉值
         sheet.getCell(rowNum,13).cellType(new SmartListCellType(newArr))
     } else if( lValue=="Office G&A" && gValue=="OpEx" ){
         newArr = [ {
@@ -159,7 +199,7 @@ function setMValue( sheet,rowNum ){
             subject_value:"Telephone & Telegraf",
             description:"Telephone & Telegraf",
         } ]
-        // 设置P列对应单元格下拉值
+        // 设置N列对应单元格下拉值
         sheet.getCell(rowNum,13).cellType(new SmartListCellType(newArr))
     } else if( lValue=="Store M&R" && gValue=="OpEx" ){
         newArr = [ {
