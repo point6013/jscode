@@ -11,7 +11,9 @@ function AfterLoad() {
     // 先查状态对不对
     // var sqlstr = 'select status from app1_nit_i_prod_list where prod_code = "CTRE0701" and mkt = "'+ Market +'"';
     // var sqlstr_mk = 'select eps_code from app1_mcd_info_mapping_market where  store_master_code = "' + Market_des + '"';
-    var res = cfs.request.cube.queryCubeData('mcdcapex_cube_fin', 'Year{' + Year + '}->Scenario{' + Scenario + '}->Version{Working}->Status{FS09}->Period{YearSum}->Department{NoDept}->View{YTD}->Category{CTRE0701}->Entity{ET05}->Market{' + Market + '}->C3{C3OTH}->C4{Owner09}->Account{Inv06}');
+
+    // 查询市场金额，变更，将C30TH替换为 C30
+    var res = cfs.request.cube.queryCubeData('mcdcapex_cube_fin', 'Year{' + Year + '}->Scenario{' + Scenario + '}->Version{Working}->Status{FS09}->Period{YearSum}->Department{NoDept}->View{YTD}->Category{CTRE0701}->Entity{ET05}->Market{' + Market + '}->C3{C3O}->C4{Owner09}->Account{Inv06}');
 
 
     // var res = cfs.request.foundation.runComm(sqlstr).res
@@ -19,11 +21,18 @@ function AfterLoad() {
     // console.log(res_mkc)
     flag = true;
     if (res.res.data.length > 0 && res.res.data[0].data > 0) {
-
-        market_total = res.res.data[0].data
+        // if (Market_des == 'BEIJING') {
+        //     var res1 = cfs.request.cube.queryCubeData('mcdcapex_cube_fin', 'Year{' + Year + '}->Scenario{' + Scenario + '}->Version{Working}->Status{FS09}->Period{YearSum}->Department{NoDept}->View{YTD}->Category{CTRE0701}->Entity{ET05}->Market{NBJ}->C3{C3O}->C4{Owner09}->Account{Inv06}');
+        //     market_shanxi = res1.res.data[0].data
+        //     market_total = res.res.data[0].data + market_shanxi
+        // }
+        // else {
+            market_total = res.res.data[0].data
+        // }
         debugger
         // 获取市场对应的门店列表
-        var sqlstr = 'select us_code from pbcs_store_master where market_city_name_en = "' + Market_des + '"';
+        // 替换12个市场字段，原字段为market_city_name_en，12.0修改
+        var sqlstr = 'select us_code from pbcs_store_master where market_desc = "' + Market_des + '"';
         var res = cfs.request.foundation.runComm(sqlstr).res
 
         if (res.length > 0) {
@@ -80,9 +89,9 @@ function BeforeSave() {
         var flag1 = true;
         arr1.forEach((e, i) => {
             if (e[0] && !store_number_arr.includes(String(e[0]))) {
-                sheet.get(i + startRow, 0, 1, 1).setBorder(lineBorder1, { all: true });
+                sheet.getRange(i + startRow, 0, 1, 1).setBorder(lineBorder1, { all: true });
                 // sheet.getRange(i+startRow, statusCol-1, 1, 1).borderRight(lineBorder1);
-                sheet.getRange(i + startRow - 1, 2, 1, 1).borderBottom(lineBorder1);
+                sheet.getRange(i + startRow - 1, 0, 1, 1).borderBottom(lineBorder1);
                 flag1 = false;
             }
         })

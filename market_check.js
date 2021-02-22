@@ -72,16 +72,16 @@ function Beforeload() {
     var startRow1 = 4;
     endrow1 = 17
     var colI2 = 'B'
-    emplty_col = ['D','G','J','M']
+    emplty_col = ['D', 'G', 'J', 'M']
     // 每个totalChina的一行添加Total
     for (i = 0; i < newArr_len.length; i++) {
         for (var j = 1; j <= 11; j++) {
             var strFormula = '';
             var col = Convert26(ConvertNum(colI2) + j);
-            if (!emplty_col.includes(col)){
-            strFormula += 'SUM(' + col + startRow1 + ":" + col + endrow1 + ")"
-            sheet.setFormula(startRow1 + 13, ConvertNum(colI2) + j - 1, 'IFERROR(IF(' + strFormula + '=0,"",' + strFormula + '),"")');
-            // debugger;
+            if (!emplty_col.includes(col)) {
+                strFormula += 'SUM(' + col + startRow1 + ":" + col + endrow1 + ")"
+                sheet.setFormula(startRow1 + 13, ConvertNum(colI2) + j - 1, 'IFERROR(IF(' + strFormula + '=0,"",' + strFormula + '),"")');
+                // debugger;
             }
         }
         startRow1 += 15
@@ -152,10 +152,10 @@ function Beforeload() {
 
                 else {
                     if (e[0] == 'Office PC & Others') {
-                        var strFormula1=''
-                        strFormula1 +='E'+(i+2)
+                        var strFormula1 = ''
+                        strFormula1 += 'E' + (i + 2)
                         debugger;
-                        sheet.setFormula(i+1, 13, 'IFERROR(IF(' + strFormula1 + '=0,"",' + strFormula1 + '),"")');
+                        sheet.setFormula(i + 1, 13, 'IFERROR(IF(' + strFormula1 + '=0,"",' + strFormula1 + '),"")');
                         debugger;
 
                     }
@@ -269,7 +269,7 @@ function BeforeSave() {
                     debugger;
                     for (var j = 0, length = l_keys.length; j < length; j++) {
                         if (e[0] == l_keys[j][1]) {
-                            if (local_sum > l_keys[j][0]) { flag = false };
+                            if (local_sum != l_keys[j][0]) { flag = false };
                             debugger;
                             // sheet.getCell(i+1, 13).backColor("White"); //  区域底色变白
                         }

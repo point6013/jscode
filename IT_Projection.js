@@ -7,11 +7,11 @@ function IT_project(){
     var strFormula1 = '';
     var strFormula2 = '';
     //G列列宽
-    // 修改为7，8 
-    sheet.setColumnWidth(6, 250);
+    // 修改为5，6 
+    sheet.setColumnWidth(5, 250);
     //H列列宽
-    sheet.setColumnWidth(7, 200);
-    sheet.setColumnVisible(0,false);
+    sheet.setColumnWidth(6, 200);
+    sheet.setColumnVisible(25,false);
     // sheet.setColumnVisible(11,false);  //隐藏Budg Code
     
     $('#excel_upload').hide()  // 隐藏上传按钮
@@ -67,7 +67,8 @@ function IT_project(){
     //下拉值列表级联
     var rowCount = sheet.getRowCount();
     var startRow = 1;
-    var ColQ1 = 'O';
+    var ColQ1 = 'N';
+    // 修改公式的的初始列
     var col = ConvertNum(ColQ1)
     strFormula += Convert26(col+2) + (startRow+1) + ':' + Convert26(col+2) + rowCount + '+'+ Convert26(col+3)+(startRow+1)+':'+Convert26(col+3)+rowCount;
     strFormula1 += Convert26(col+4) + (startRow+1) + ':' + Convert26(col+4) + rno + '-'+ Convert26(col)+(startRow+1)+':'+Convert26(col)+rno;
@@ -83,11 +84,11 @@ function IT_project(){
     
     
 
-    
+    // 
     var colI2 ='A'
-    sheet.setValue(rno, 1, "Total")
-    sheet.getCell(rno, 1).font('bold normal 13px normal')
-    for (var i = ConvertNum("M"); i <= ConvertNum("U"); i++) {
+    sheet.setValue(rno, 0, "Total")
+    sheet.getCell(rno, 0).font('bold normal 13px normal')
+    for (var i = ConvertNum("L"); i <= ConvertNum("T"); i++) {
         var strFormula ='';
         var col =Convert26(i);
         strFormula+='SUM('+col +2+":"+col+rno+")"
@@ -105,7 +106,7 @@ function IT_project(){
     
     sheet.bind(GC.Spread.Sheets.Events.ValueChanged,function(e,info){
             // 如果是A列改变了值
-            if( info.col===1  ){
+            if( info.col===0  ){
                 //则改变B列的对应行的值
                 setLValue(sheet,info.row);
             }
@@ -171,7 +172,7 @@ function IT_project(){
 // B列重置值方法
 function setLValue(sheet,rowNum){
     // 获取A列对应行的值
-    var gValue =  sheet.getValue(rowNum,1)
+    var gValue =  sheet.getValue(rowNum,0)
     var newArr =[]
     console.log( gValue,'gValue' )
      if( gValue=="BSC" ){
