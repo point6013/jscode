@@ -25,6 +25,11 @@ function e(){
     rownum = getNonEmptyRowIndex(sheet);
     
 var Convert26 = function (num) {
+    /**
+     * @description: 
+     * @param {任意数字}
+     * @return {对应26进制的字母}
+     */    
     var str = "";
     while (num > 0) {
         var m = num % 26;

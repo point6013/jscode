@@ -1,0 +1,2376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>>
+    <script src="http://main.seepln.com/js/custom/cpm/0616/echarts.min.js"></script>>
+    <script src="lib/html2canvas.js"></script>
+  <script src="lib/jsPdf.debug.js"></script>
+  <!-- <script src="lib/echarts-4.0.4.min.js"></script> -->
+    <!-- 引入样式 -->
+    <!-- http://main.seepln.com/js/custom/cpm/0616/element-ui@2.15.2.index.css -->
+    <link rel="stylesheet" href="http://main.seepln.com/js/custom/cpm/0616/element-ui@2.15.2.index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="http://main.seepln.com/js/custom/cpm/0616/element-ui@2.15.2.index.js"></script>
+    <title>Document</title>
+</head>
+<body>  
+    <div id="app">
+      <!----------------------------------------------     1.China CapEx Spending Summary   --------------------------------------------------------------->
+      <el-button type="primary" size="mini" icon="el-icon-download" id="renderPdf">下载PDf文件</el-button>
+      <!-- <el-button @click="getPdf">导出PDF文件</el-button> -->
+      <el-row id='container'>
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <!-- card1 -->
+          <el-card class="box-card">
+            <div slot="header" class="clearfix">
+              <span style="font-weight: bold;"><em>1.China CapEx Spending Summary</em></span>
+            </div>
+            <el-row :gutter="24">
+              <el-col :span="2"></el-col>
+              <el-col :span="24">
+                <span style="font-weight: bold;">Store CapEx</span></br></br>
+                <div class="borders">
+                  <!-- Store Capex表格 -->
+                  <el-table id='table1' :data="storeCapex" :show-header="false">
+                    <el-table-column prop="c1" style="font-weight: bold;text-align:center;">
+                    </el-table-column>
+                    <el-table-column prop="c2" :formatter="stateFormat" style="font-weight: bold;text-align:center;">
+                    </el-table-column>
+                    <el-table-column prop="c3">
+                    </el-table-column>
+                    <el-table-column prop="c4" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="c5" >
+                    </el-table-column>
+                    <el-table-column prop="c6" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="c7">
+                    </el-table-column>
+                    <el-table-column prop="c8" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="c9">
+                    </el-table-column>
+                    <el-table-column prop="c10" :formatter="stateFormat">
+                    </el-table-column>
+                  </el-table>
+                </div>
+              </el-col>
+              <el-col :span="2"></el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="2"></el-col>
+              <el-col :span="24">
+                <span style="font-weight: bold;">Office IT CapEx</span></br></br>
+                <div class="borders">
+                  <!-- Office IT Capex表格 -->
+                  <el-table id='table2' :data="officeITCapex" :show-header="false">
+                    <el-table-column prop="c1" width="160">
+                    </el-table-column>
+                    <el-table-column prop="c2" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="c3">
+                    </el-table-column>
+                    <el-table-column prop="c4" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="c5">
+                    </el-table-column>
+                    <el-table-column prop="c6" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="c7">
+                    </el-table-column>
+                    <el-table-column prop="c8" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="c9">
+                    </el-table-column>
+                    <el-table-column prop="c10">
+                    </el-table-column>
+                  </el-table>
+                </div>
+              </el-col>
+              <el-col :span="2">
+              </el-col>
+            </el-row>
+          </el-card>
+          <!-- / card1 -->
+        </el-col>
+      </el-row>
+      <!----------------------------------------------     2.Dev CapEx Spending Tracking   --------------------------------------------------------------->
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <!-- card2 -->
+          <el-card class="box-card">
+            <div slot="header" class="clearfix">
+              <span style="font-weight: bold;"><em>2.Dev CapEx Spending Tracking</em></span>
+            </div>
+            <el-row>
+              <el-col :span="10">
+                <div id="DevChart" style="height: 325px;width: 100%;"></div>
+              </el-col>
+              <el-col :span="14">
+                <template>
+                  <el-table id='DevTable' :data="DevTable"
+                    :header-cell-style="{background:'#ffc000', color:'black', 'text-align':'center'}"
+                    :cell-style="DevCellStyle" :row-class-name="DevRowStyle" class="table" style="font-size: 8px">
+                    <el-table-column prop="Project" label="Project" width="180">
+                    </el-table-column>
+                    <el-table-column prop="Plan" label="Plan" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="Proj" label="Proj." :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="Var_pct" label="Var %" :formatter="statePercent">
+                    </el-table-column>
+                    <el-table-column prop="已完成" label="已完成" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="在途" label="在途" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="已报价" label="已报价" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="已完成_pct" label="已完成%" :formatter="statePercent">
+                    </el-table-column>
+                  </el-table>
+                </template>
+              </el-col>
+            </el-row>
+          </el-card>
+          <!-- /card2 -->
+        </el-col>
+      </el-row>
+      <!----------------------------------------    3. Ops CapEx Spending Tracking    --------------------------------------------->
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <!-- card3 -->
+          <el-card class="box-card">
+            <div slot="header" class="clearfix">
+              <span style="font-weight: bold;"><em>3. Ops CapEx Spending Tracking</em></span>
+            </div>
+            <el-row>
+              <el-col :span="10">
+                <!-- echarts-->
+                <div id="OpsChart" style="height: 325px;width: 100%;"></div>
+                <!-- /echarts -->
+              </el-col>
+              <el-col :span="14">
+                <template>
+                  <!-- table -->
+                  <el-table id='OpsTable' :data="OpsTable"
+                    :header-cell-style="{background:'#ffc000', color:'black', 'text-align':'center'}"
+                    :cell-style="OpsCellStyle" :row-class-name="OpsRowStyle" class="table" max-height="550" style="font-size: 8px">
+                    <el-table-column prop="Project" label="Project" width="180">
+                    </el-table-column>
+                    <el-table-column prop="Plan" label="Plan" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="Proj" label="Proj." :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="Var_pct" label="Var %" :formatter="statePercent">
+                    </el-table-column>
+                    <el-table-column prop="已完成" label="已完成" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="在途" label="在途" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="已报价" label="已报价" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="已完成_pct" label="已完成%" :formatter="statePercent">
+                    </el-table-column>
+                  </el-table>
+                  <!-- /table -->
+                </template>
+              </el-col>
+            </el-row>
+          </el-card>
+          <!-- /card3 -->
+        </el-col>
+      </el-row>
+      <!----------------------------------------    4. BE CapEx Spending Tracking    --------------------------------------------->
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <!-- card4 -->
+          <el-card class="box-card">
+            <div slot="header" class="clearfix">
+              <span style="font-weight: bold;"><em>4. BE CapEx Spending Tracking</em></span>
+            </div>
+            <el-row>
+              <el-col :span="10">
+                <div id="BEChart" style="height: 500px;width: 100%;"></div>
+              </el-col>
+              <el-col :span="14">
+                <!-- BE CapEx Spending Tracking -->
+                <template>
+                  <el-table id='BETable' :data="BETable"
+                    :header-cell-style="{background:'#ffc000', color:'black', 'text-align':'center'}"
+                    :cell-style="BECellStyle" :row-class-name="BERowStyle" class="table" max-height="500" style="font-size: 8px">
+                    <el-table-column prop="Project" label="Project" width="180">
+                    </el-table-column>
+                    <el-table-column prop="Plan" label="Plan" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="Proj" label="Proj." :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="Var_pct" label="Var %" :formatter="statePercent">
+                    </el-table-column>
+                    <el-table-column prop="已完成" label="已完成" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="在途" label="在途" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="已报价" label="已报价" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="已完成_pct" label="已完成%" :formatter="statePercent">
+                    </el-table-column>
+                  </el-table>
+                </template>
+              </el-col>
+            </el-row>
+          </el-card>
+          <!-- /card3 -->
+        </el-col>
+      </el-row>
+      <!----------------------------------------      5. CapEx M&R Spending Tracking    --------------------------------------------->
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <!-- card4 -->
+          <el-card class="box-card">
+            <div slot="header" class="clearfix">
+              <span style="font-weight: bold;"><em>5. CapEx M&R Spending Tracking</em></span>
+            </div>
+            <el-row>
+              <el-col :span="10">
+                <div id="MRChart" style="height: 500px;width: 100%;"></div>
+              </el-col>
+              <el-col :span="14">
+                <template>
+                  <el-table id='MRTable' :data="MRTable"
+                    :header-cell-style="{background:'#ffc000', color:'black', 'text-align':'center'}"
+                    :cell-style="MRCellStyle" :row-class-name="MRRowStyle" class="table" max-height="500" style="font-size: 8px">
+                    <el-table-column prop="Market" label="Market" width="180">
+                    </el-table-column>
+                    <el-table-column prop="Plan" label="Plan" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="Proj" label="Proj." :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="Var_pct" label="Var %" :formatter="statePercent">
+                    </el-table-column>
+                    <el-table-column prop="已完成" label="已完成" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="在途" label="在途" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="已报价" label="已报价" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="已完成_pct" label="已完成%" :formatter="statePercent">
+                    </el-table-column>
+                  </el-table>
+                </template>
+              </el-col>
+            </el-row>
+          </el-card>
+        </el-col>
+      </el-row>
+      <!----------------------------------------      6.Store IT Capex Spending Tracking    --------------------------------------------->
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <!-- card4 -->
+          <el-card class="box-card">
+            <div slot="header" class="clearfix">
+              <span style="font-weight: bold;"><em>6.Store IT Capex Spending Tracking</em></span>
+            </div>
+            <el-row>
+              <el-col :span="10">
+                <div id="StoreITChart" style="height: 500px;width: 100%;"></div>
+              </el-col>
+              <el-col :span="14">
+                <template>
+                  <el-table id='StoreITTable' :data="StoreITTable"
+                    :header-cell-style="{background:'#ffc000', color:'black', 'text-align':'center'}"
+                    :cell-style="StoreITCellStyle" :row-class-name="StoreITRowStyle" class="table" max-height="500" style="font-size: 8px">
+                    <el-table-column prop="Project" label="Project" width="180">
+                    </el-table-column>
+                    <el-table-column prop="Plan" label="Plan" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="Proj" label="Proj." :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="Var_pct" label="Var %" :formatter="statePercent">
+                    </el-table-column>
+                    <el-table-column prop="已完成" label="已完成" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="在途" label="在途" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="已报价" label="已报价" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="已完成_pct" label="已完成%" :formatter="statePercent">
+                    </el-table-column>
+                  </el-table>
+                </template>
+              </el-col>
+            </el-row>
+          </el-card>
+        </el-col>
+      </el-row>
+      <!----------------------------------------      7. Office IT Capex Spending Tracking    --------------------------------------------->
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <!-- card4 -->
+          <el-card class="box-card">
+            <div slot="header" class="clearfix">
+              <span style="font-weight: bold;"><em>7. Office IT Capex Spending Tracking</em></span>
+            </div>
+            <el-row>
+              <el-col :span="10">
+                <div id="OfficeITChart" style="height: 500px;width: 50%;"></div>
+              </el-col>
+              <el-col :span="14">
+                <template>
+                  <el-table id='OfficeITTable' :data="OfficeITTable"
+                    :header-cell-style="{background:'#ffc000', color:'black', 'text-align':'center'}"
+                    :cell-style="OfficeITCellStyle" :row-class-name="OfficeITRowStyle" class="table" max-height="500" style="font-size: 8px">
+                    <el-table-column prop="Project" label="Project" width="160">
+                    </el-table-column>
+                    <el-table-column prop="Plan" label="Plan" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="Proj" label="Proj." :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="Var_pct" label="Var %" :formatter="statePercent">
+                    </el-table-column>
+                    <el-table-column prop="Actual" label="Actual Payment" :formatter="stateFormat" width="120">
+                    </el-table-column>
+                    <el-table-column prop="PD Not Paid" label="PD Not Paid" :formatter="stateFormat">
+                    </el-table-column>
+                    <el-table-column prop="Paid_pct" label="Paid%" :formatter="statePercent">
+                    </el-table-column>
+                  </el-table>
+                </template>
+              </el-col>
+            </el-row>
+          </el-card>
+          <!-- /card3 -->
+        </el-col>
+      </el-row>
+      </el-row>
+    </container>
+      </div>
+    <script>
+      // 导出pdf功能
+
+
+
+
+
+
+        const app = new Vue({
+        el: '#app',
+        data: {
+          //Store Capex
+          storeCapex: [
+            { c1: '已完成', c2: 0, c3: '在途', c4: 0, c5: '已报价', c6: 0, c7: '未使用', c8: 0, c9: 'Total', c10: 0 },
+            { c2: '10%', c4: '35%', c6: '55%'}
+          ],
+          //Office IT Capex
+          officeITCapex: [
+            { c1: 'Actual Payment', c2: 13591, c3: 'PD Not Paid', c4: 49680, c5: 'Purchase Plan', c6: 77781, c7: 'Total', c8: 141052 },
+            { c2: '10%', c4: '35%', c6: '55%' }
+          ],
+          //dev CapEx Spending Tracking
+          Dev: undefined,
+          DevTable: [],
+          DevChart:
+          {
+            title: {
+              text: 'Budget Spending%',
+              x:'center',
+              y:'5'
+            },
+            tooltip: {
+              trigger: 'axis',
+              axisPointer: {
+                type: 'shadow'
+              }
+            },
+            legend: {
+              x: '40%',
+              y: 'bottom',
+            },
+            grid: {
+              left: '10%',
+              right: '10%',
+              bottom: '10%',
+              top: '15%',
+              containLabel: true
+            },
+            xAxis: {
+              name: '%',
+              type: 'value',
+              max:100,
+              axisLine: {
+                symbol: ['none', 'arrow'], //两端都显示箭头
+                symbolOffset: [0, 5] //箭头距离两端的距离,可为负数
+              }
+            },
+            yAxis: {
+              name: "",
+              type: 'category',
+              data: ['三线城市-铂涛客户组合', '三线城市-GDL客户组合', '二线城市-卢浮亚洲客户组合', '二线城市-维也纳客户组合', '二线城市-铂涛客户组合', '二线城市-GDL客户组合', '一线城市-卢浮亚洲客户组合', '一线城市-维也纳客户组合', '一线城市-铂涛客户组合', '一线城市-GDL客户组合'],
+              // axisLine: {
+              //     symbol: ['none', 'none'], //两端都显示箭头
+              //     symbolOffset: [0, 30] //箭头距离两端的距离,可为负数
+              // }
+            },
+            series: [
+              {
+                stack: "0",
+                name: '已完成',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#3161b6'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+              {
+                stack: "0",
+                name: '在途',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#e88b00'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+              {
+                stack: "0",
+                name: '已报价',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#bdbdbd'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+            ]
+          },
+          //Ops CapEx Spending Tracking
+          Ops: undefined,
+          OpsTable: [],
+          OpsChart:
+          {
+            title: {
+              text: 'Budget Spending%',
+              x:'center',
+              y:'5'
+            },
+            tooltip: {
+              trigger: 'axis',
+              axisPointer: {
+                type: 'shadow'
+              }
+            },
+            legend: {
+              x: '40%',
+              y: 'bottom',
+            },
+            grid: {
+              left: '10%',
+              right: '10%',
+              bottom: '10%',
+              top: '10%',
+              containLabel: true
+            },
+            xAxis: {
+              name: '%',
+              type: 'value',
+              max:100,
+              axisLine: {
+                symbol: ['none', 'arrow'], //两端都显示箭头
+                symbolOffset: [0, 5] //箭头距离两端的距离,可为负数
+              }
+            },
+            yAxis: {
+              name: "",
+              type: 'category',
+              data: ['三线城市-铂涛客户组合', '三线城市-GDL客户组合', '二线城市-卢浮亚洲客户组合', '二线城市-维也纳客户组合', '二线城市-铂涛客户组合', '二线城市-GDL客户组合', '一线城市-卢浮亚洲客户组合', '一线城市-维也纳客户组合', '一线城市-铂涛客户组合', '一线城市-GDL客户组合'],
+              // axisLine: {
+              //     symbol: ['none', 'none'], //两端都显示箭头
+              //     symbolOffset: [0, 30] //箭头距离两端的距离,可为负数
+              // }
+            },
+            series: [
+              {
+                stack: "0",
+                name: '已完成',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#3161b6'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+              {
+                stack: "0",
+                name: '在途',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#e88b00'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+              {
+                stack: "0",
+                name: '已报价',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#bdbdbd'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+            ]
+          },
+          //BE CapEx Spending Tracking
+          BETable: [],
+          BEChart:
+          {
+            title: {
+              text: 'Budget Spending%',
+              x:'center',
+              y:'5'
+            },
+            tooltip: {
+              trigger: 'axis',
+              axisPointer: {
+                type: 'shadow'
+              }
+            },
+            legend: {
+              x: '40%',
+              y: 'bottom',
+            },
+            grid: {
+              left: '10%',
+              right: '10%',
+              bottom: '10%',
+              top: '15%',
+              containLabel: true
+            },
+            xAxis: {
+              name: '%',
+              type: 'value',
+              max:100,
+              axisLine: {
+                symbol: ['none', 'arrow'], //两端都显示箭头
+                symbolOffset: [0, 5] //箭头距离两端的距离,可为负数
+              }
+            },
+            yAxis: {
+              name: "",
+              type: 'category',
+              data: ['三线城市-铂涛客户组合', '三线城市-GDL客户组合', '二线城市-卢浮亚洲客户组合', '二线城市-维也纳客户组合', '二线城市-铂涛客户组合', '二线城市-GDL客户组合', '一线城市-卢浮亚洲客户组合', '一线城市-维也纳客户组合', '一线城市-铂涛客户组合', '一线城市-GDL客户组合'],
+              // axisLine: {
+              //     symbol: ['none', 'none'], //两端都显示箭头
+              //     symbolOffset: [0, 30] //箭头距离两端的距离,可为负数
+              // }
+            },
+            series: [
+              {
+                stack: "0",
+                name: '已完成',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#3161b6'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+              {
+                stack: "0",
+                name: '在途',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#e88b00'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+              {
+                stack: "0",
+                name: '已报价',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#bdbdbd'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+            ]
+          },
+          //CapEx M&R Spending Tracking
+          MRTable: [],
+          MRChart:
+          {
+            title: {
+              text: 'Budget Spending%',
+              x:'center',
+              y:'5'
+            },
+            tooltip: {
+              trigger: 'axis',
+              axisPointer: {
+                type: 'shadow'
+              }
+            },
+            legend: {
+              x: '40%',
+              y: 'bottom',
+            },
+            grid: {
+              left: '10%',
+              right: '10%',
+              bottom: '10%',
+              top: '15%',
+              containLabel: true
+            },
+            xAxis: {
+              name: '%',
+              type: 'value',
+              max:100,
+              axisLine: {
+                symbol: ['none', 'arrow'], //两端都显示箭头
+                symbolOffset: [0, 5] //箭头距离两端的距离,可为负数
+              }
+            },
+            yAxis: {
+              name: "",
+              type: 'category',
+              data: ['三线城市-铂涛客户组合', '三线城市-GDL客户组合', '二线城市-卢浮亚洲客户组合', '二线城市-维也纳客户组合', '二线城市-铂涛客户组合', '二线城市-GDL客户组合', '一线城市-卢浮亚洲客户组合', '一线城市-维也纳客户组合', '一线城市-铂涛客户组合', '一线城市-GDL客户组合'],
+            },
+            series: [
+              {
+                stack: "0",
+                name: '已完成',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#3161b6'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+              {
+                stack: "0",
+                name: '在途',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#e88b00'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+              {
+                stack: "0",
+                name: '已报价',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#bdbdbd'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+            ]
+          },
+          //Store IT Capex Spending Tracking
+          store_it_capex: undefined,
+          StoreITTable: [],
+          StoreITChart:
+          {
+            title: {
+              text: 'Budget Spending%',
+              x:'center',
+              y:'3'
+            },
+            tooltip: {
+              trigger: 'axis',
+              axisPointer: {
+                type: 'shadow'
+              }
+            },
+            legend: {
+              x: '40%',
+              y: 'bottom',
+            },
+            grid: {
+              left: '10%',
+              right: '10%',
+              bottom: '10%',
+              top: '20%',
+              containLabel: true
+            },
+            xAxis: {
+              name: '%',
+              type: 'value',
+              max:100,
+              axisLine: {
+                symbol: ['none', 'arrow'], //两端都显示箭头
+                symbolOffset: [0, 5] //箭头距离两端的距离,可为负数
+              }
+            },
+            yAxis: {
+              name: "",
+              type: 'category',
+              data: ['三线城市-铂涛客户组合', '三线城市-GDL客户组合', '二线城市-卢浮亚洲客户组合', '二线城市-维也纳客户组合', '二线城市-铂涛客户组合', '二线城市-GDL客户组合', '一线城市-卢浮亚洲客户组合', '一线城市-维也纳客户组合', '一线城市-铂涛客户组合', '一线城市-GDL客户组合'],
+              // axisLine: {
+              //     symbol: ['none', 'none'], //两端都显示箭头
+              //     symbolOffset: [0, 30] //箭头距离两端的距离,可为负数
+              // }
+  
+            },
+            series: [
+              {
+                stack: "0",
+                name: '已完成',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#3161b6'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+              {
+                stack: "0",
+                name: '在途',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#e88b00'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+              {
+                stack: "0",
+                name: '已报价',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#bdbdbd'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+            ]
+          },
+          //Office IT Capex Spending Tracking
+          office_it_capex: undefined,
+          OfficeITTable: [],
+          OfficeITChart:
+          {
+            title: {
+              text: 'Budget Spending%',
+              x:'center',
+              y:'5'
+            },
+            tooltip: {
+              trigger: 'axis',
+              axisPointer: {
+                type: 'shadow'
+              }
+            },
+            legend: {
+              x: '40%',
+              y: 'bottom',
+            },
+            grid: {
+              left: '10%',
+              right: '10%',
+              bottom: '10%',
+              top: '15%',
+              containLabel: true
+            },
+            xAxis: {
+              name: '%',
+              type: 'value',
+              max:100,
+              axisLine: {
+                symbol: ['none', 'arrow'], //两端都显示箭头
+                symbolOffset: [0, 5] //箭头距离两端的距离,可为负数
+              }
+            },
+            yAxis: {
+              name: "",
+              type: 'category',
+              data: ['三线城市-铂涛客户组合', '三线城市-GDL客户组合', '二线城市-卢浮亚洲客户组合', '二线城市-维也纳客户组合', '二线城市-铂涛客户组合', '二线城市-GDL客户组合', '一线城市-卢浮亚洲客户组合', '一线城市-维也纳客户组合', '一线城市-铂涛客户组合', '一线城市-GDL客户组合'],
+              // axisLine: {
+              //     symbol: ['none', 'none'], //两端都显示箭头
+              //     symbolOffset: [0, 30] //箭头距离两端的距离,可为负数
+              // }
+            },
+            series: [
+              {
+                stack: "0",
+                name: 'Actual Payment',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#3161b6'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+              {
+                stack: "0",
+                name: 'PD Not Paid',
+                type: 'bar',
+                data: [9000, 10000, 10500, 11000, 12000, 14500, 15000, 16000, 17500, 21000],
+                itemStyle: {
+                  //通常情况下：
+                  normal: {
+                    //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    color: '#e88b00'
+                  }
+                },
+                //鼠标悬停时：
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              },
+            ]
+          },
+        },
+        components: {},
+        watch: {},
+        mounted() {
+          let pyName = 'China_CapEx_Dashboard';
+        //   let getSearchParam = showDashBoard.globalCurrentPovObj['Year'];
+        //   let res = JSON.parse(cfs.request.python.pythonWeb(pyName, {'Year':getSearchParam}).res);
+          let resObj = {
+"store_it_capex":{
+"Plan":2229684.0,
+"Proj":2307796.0,
+"已完成":483238.0,
+"在途":102514.0,
+"已报价":16932.0,
+"Market":"Total",
+"Var_pct":3.5,
+"已完成_pct":20.9,
+"在途_pct":4.4,
+"已报价_pct":0.7,
+"未使用":1705112.0,
+"未使用_pct":-2511.5
+},
+"office_it_capex":[
+{
+"Project":"Total",
+"Plan":133052.0,
+"Proj":139194.0,
+"Var_pct":4.6,
+"Actual":15681.0,
+"PD Not Paid":42189.0,
+"Purchase Plan":81325.0,
+"Paid_pct":11.3,
+"PD Not Paid_pct":30.3,
+"Purchase Plan_pct":58.4
+}
+],
+"Dev":[
+{
+"Project":"New Store",
+"Plan":1500400.0,
+"Proj":1535380.0,
+"Var_pct":2.3,
+"已完成":372757.0,
+"在途":79436.0,
+"已报价":5666.0,
+"已完成_pct":24.8,
+"在途_pct":5.3,
+"已报价_pct":0.4,
+"is_bold":1.0
+},
+{
+"Project":"New Store",
+"Plan":1500400.0,
+"Proj":1535380.0,
+"Var_pct":2.3,
+"已完成":372757.0,
+"在途":79436.0,
+"已报价":5666.0,
+"已完成_pct":24.8,
+"在途_pct":5.3,
+"已报价_pct":0.4,
+"is_bold":0.0
+},
+{
+"Project":"Reimage&Rebuild",
+"Plan":112787.0,
+"Proj":113687.0,
+"Var_pct":0.8,
+"已完成":3075.0,
+"在途":11167.0,
+"已报价":1893.0,
+"已完成_pct":2.7,
+"在途_pct":9.9,
+"已报价_pct":1.7,
+"is_bold":1.0
+},
+{
+"Project":"Reimage",
+"Plan":86887.0,
+"Proj":86787.0,
+"Var_pct":-0.0011509241345337706,
+"已完成":2462.0,
+"在途":8159.0,
+"已报价":1822.0,
+"已完成_pct":2.8,
+"在途_pct":9.4,
+"已报价_pct":2.1,
+"is_bold":0.0
+},
+{
+"Project":"Rebuild",
+"Plan":25900.0,
+"Proj":26900.0,
+"Var_pct":0.03861003861003853,
+"已完成":613.0,
+"在途":3008.0,
+"已报价":71.0,
+"已完成_pct":2.4,
+"在途_pct":11.6,
+"已报价_pct":0.3,
+"is_bold":0.0
+},
+{
+"Project":"Construction",
+"Plan":33390.0,
+"Proj":36240.0,
+"Var_pct":8.5,
+"已完成":4268.0,
+"在途":830.0,
+"已报价":1376.0,
+"已完成_pct":12.8,
+"在途_pct":2.5,
+"已报价_pct":4.1,
+"is_bold":1.0
+},
+{
+"Project":"EMS upgrade",
+"Plan":16000.0,
+"Proj":18750.0,
+"Var_pct":0.171875,
+"已完成":643.0,
+"在途":0.0,
+"已报价":9.0,
+"已完成_pct":4.0,
+"在途_pct":0.0,
+"已报价_pct":0.1,
+"is_bold":0.0
+},
+{
+"Project":"HVAC Replacements",
+"Plan":12390.0,
+"Proj":12490.0,
+"Var_pct":0.008071025020177647,
+"已完成":2619.0,
+"在途":636.0,
+"已报价":1367.0,
+"已完成_pct":21.1,
+"在途_pct":5.1,
+"已报价_pct":11.0,
+"is_bold":0.0
+},
+{
+"Project":"配电柜安全改造",
+"Plan":5000.0,
+"Proj":5000.0,
+"Var_pct":0.0,
+"已完成":1006.0,
+"在途":194.0,
+"已报价":0.0,
+"已完成_pct":20.1,
+"在途_pct":3.9,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Project":"Total",
+"Plan":1646577.0,
+"Proj":1685307.0,
+"Var_pct":2.4,
+"已完成":380100.0,
+"在途":91433.0,
+"已报价":8935.0,
+"已完成_pct":23.1,
+"在途_pct":5.6,
+"已报价_pct":0.5,
+"is_bold":1.0
+}
+],
+"Ops":[
+{
+"Project":"DK",
+"Plan":71430.0,
+"Proj":69760.0,
+"Var_pct":-2.3,
+"已完成":793.0,
+"在途":21.0,
+"已报价":217.0,
+"已完成_pct":1.1,
+"在途_pct":0.0,
+"已报价_pct":0.3,
+"is_bold":1.0
+},
+{
+"Project":"Remote Kiosks",
+"Plan":13330.0,
+"Proj":13330.0,
+"Var_pct":0.0,
+"已完成":40.0,
+"在途":6.0,
+"已报价":197.0,
+"已完成_pct":0.3,
+"在途_pct":0.0,
+"已报价_pct":1.5,
+"is_bold":0.0
+},
+{
+"Project":"Attached Kiosks",
+"Plan":18200.0,
+"Proj":16540.0,
+"Var_pct":-0.09120879120879122,
+"已完成":117.0,
+"在途":1.0,
+"已报价":0.0,
+"已完成_pct":0.6,
+"在途_pct":0.0,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Project":"Hot Kiosk",
+"Plan":33000.0,
+"Proj":32990.0,
+"Var_pct":-0.00030303030303024947,
+"已完成":478.0,
+"在途":14.0,
+"已报价":20.0,
+"已完成_pct":1.4,
+"在途_pct":0.0,
+"已报价_pct":0.1,
+"is_bold":0.0
+},
+{
+"Project":"Kiosk Re-image",
+"Plan":6900.0,
+"Proj":6900.0,
+"Var_pct":0.0,
+"已完成":158.0,
+"在途":0.0,
+"已报价":0.0,
+"已完成_pct":2.3,
+"在途_pct":0.0,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Project":"EOTF",
+"Plan":1999.0,
+"Proj":1999.0,
+"Var_pct":0.0,
+"已完成":0.0,
+"在途":0.0,
+"已报价":0.0,
+"已完成_pct":0.0,
+"在途_pct":0.0,
+"已报价_pct":0.0,
+"is_bold":1.0
+},
+{
+"Project":"Dual Point Service",
+"Plan":880.0,
+"Proj":880.0,
+"Var_pct":0.0,
+"已完成":0.0,
+"在途":0.0,
+"已报价":0.0,
+"已完成_pct":0.0,
+"在途_pct":0.0,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Project":"SOK",
+"Plan":1105.0,
+"Proj":1105.0,
+"Var_pct":0.0,
+"已完成":0.0,
+"在途":0.0,
+"已报价":0.0,
+"已完成_pct":0.0,
+"在途_pct":0.0,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Project":"Table Service",
+"Plan":14.0,
+"Proj":14.0,
+"Var_pct":0.0,
+"已完成":0.0,
+"在途":0.0,
+"已报价":0.0,
+"已完成_pct":0.0,
+"在途_pct":0.0,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Project":"Ops",
+"Plan":110878.0,
+"Proj":127078.0,
+"Var_pct":14.6,
+"已完成":57481.0,
+"在途":4006.0,
+"已报价":3982.0,
+"已完成_pct":51.8,
+"在途_pct":3.6,
+"已报价_pct":3.6,
+"is_bold":1.0
+},
+{
+"Project":"Zero/GTM Upgrade",
+"Plan":6696.0,
+"Proj":6696.0,
+"Var_pct":0.0,
+"已完成":1050.0,
+"在途":53.0,
+"已报价":15.0,
+"已完成_pct":15.7,
+"在途_pct":0.8,
+"已报价_pct":0.2,
+"is_bold":0.0
+},
+{
+"Project":"V250 Batch Bun Toaster",
+"Plan":9938.0,
+"Proj":11138.0,
+"Var_pct":0.12074256678573225,
+"已完成":71.0,
+"在途":342.0,
+"已报价":278.0,
+"已完成_pct":0.7,
+"在途_pct":3.4,
+"已报价_pct":2.8,
+"is_bold":0.0
+},
+{
+"Project":"OAT 优化",
+"Plan":5848.0,
+"Proj":5848.0,
+"Var_pct":0.0,
+"已完成":685.0,
+"在途":753.0,
+"已报价":52.0,
+"已完成_pct":11.7,
+"在途_pct":12.9,
+"已报价_pct":0.9,
+"is_bold":0.0
+},
+{
+"Project":"Trash Can",
+"Plan":3744.0,
+"Proj":3744.0,
+"Var_pct":0.0,
+"已完成":374.0,
+"在途":6.0,
+"已报价":0.0,
+"已完成_pct":10.0,
+"在途_pct":0.2,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Project":"测温器改造(DFS)",
+"Plan":10204.0,
+"Proj":10204.0,
+"Var_pct":0.0,
+"已完成":9735.0,
+"在途":22.0,
+"已报价":6.0,
+"已完成_pct":95.4,
+"在途_pct":0.2,
+"已报价_pct":0.1,
+"is_bold":0.0
+},
+{
+"Project":"清洗机",
+"Plan":74448.0,
+"Proj":89448.0,
+"Var_pct":0.20148520470424525,
+"已完成":45566.0,
+"在途":2830.0,
+"已报价":3631.0,
+"已完成_pct":61.2,
+"在途_pct":3.8,
+"已报价_pct":4.9,
+"is_bold":0.0
+},
+{
+"Project":"Total",
+"Plan":184307.0,
+"Proj":198837.0,
+"Var_pct":7.9,
+"已完成":58274.0,
+"在途":4027.0,
+"已报价":4199.0,
+"已完成_pct":31.6,
+"在途_pct":2.2,
+"已报价_pct":2.3,
+"is_bold":1.0
+}
+],
+"BE":[
+{
+"Project":"McCafe",
+"Plan":92545.0,
+"Proj":106545.0,
+"Var_pct":15.1,
+"已完成":3526.0,
+"在途":2311.0,
+"已报价":1323.0,
+"已完成_pct":3.8,
+"在途_pct":2.5,
+"已报价_pct":1.4,
+"is_bold":1.0
+},
+{
+"Project":"McCafe",
+"Plan":80920.0,
+"Proj":81920.0,
+"Var_pct":0.012357884330202573,
+"已完成":1267.0,
+"在途":1913.0,
+"已报价":841.0,
+"已完成_pct":1.6,
+"在途_pct":2.4,
+"已报价_pct":1.0,
+"is_bold":0.0
+},
+{
+"Project":"McCafe-Coffee machine replacement",
+"Plan":11625.0,
+"Proj":24625.0,
+"Var_pct":1.118279569892473,
+"已完成":2259.0,
+"在途":398.0,
+"已报价":482.0,
+"已完成_pct":19.4,
+"在途_pct":3.4,
+"已报价_pct":4.1,
+"is_bold":0.0
+},
+{
+"Project":"MDS",
+"Plan":34370.0,
+"Proj":34824.0,
+"Var_pct":1.3,
+"已完成":138.0,
+"在途":39.0,
+"已报价":119.0,
+"已完成_pct":0.4,
+"在途_pct":0.1,
+"已报价_pct":0.3,
+"is_bold":1.0
+},
+{
+"Project":"Expand High Volumn MDS Hub Capacity ",
+"Plan":19250.0,
+"Proj":18850.0,
+"Var_pct":-0.020779220779220786,
+"已完成":38.0,
+"在途":29.0,
+"已报价":47.0,
+"已完成_pct":0.2,
+"在途_pct":0.2,
+"已报价_pct":0.2,
+"is_bold":0.0
+},
+{
+"Project":"MDS",
+"Plan":7120.0,
+"Proj":7074.0,
+"Var_pct":-0.006460674157303337,
+"已完成":100.0,
+"在途":10.0,
+"已报价":72.0,
+"已完成_pct":1.4,
+"在途_pct":0.1,
+"已报价_pct":1.0,
+"is_bold":0.0
+},
+{
+"Project":"取餐柜",
+"Plan":8000.0,
+"Proj":8900.0,
+"Var_pct":0.11250000000000004,
+"已完成":0.0,
+"在途":0.0,
+"已报价":0.0,
+"已完成_pct":0.0,
+"在途_pct":0.0,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Project":"Total",
+"Plan":126915.0,
+"Proj":141369.0,
+"Var_pct":11.4,
+"已完成":3664.0,
+"在途":2350.0,
+"已报价":1442.0,
+"已完成_pct":2.9,
+"在途_pct":1.9,
+"已报价_pct":1.1,
+"is_bold":1.0
+}
+],
+"M&R":[
+{
+"Market":"BEIJING",
+"Plan":40460.0,
+"Proj":40460.0,
+"Var_pct":0.0,
+"已完成":9921.0,
+"在途":463.0,
+"已报价":189.0,
+"已完成_pct":24.5,
+"在途_pct":1.1,
+"已报价_pct":0.5,
+"is_bold":0.0
+},
+{
+"Market":"FUJIAN",
+"Plan":14104.0,
+"Proj":24104.0,
+"Var_pct":0.7090187180941576,
+"已完成":1167.0,
+"在途":149.0,
+"已报价":54.0,
+"已完成_pct":8.3,
+"在途_pct":1.1,
+"已报价_pct":0.4,
+"is_bold":0.0
+},
+{
+"Market":"GUANGZHOU",
+"Plan":46818.0,
+"Proj":36818.0,
+"Var_pct":-0.21359306249733012,
+"已完成":6725.0,
+"在途":124.0,
+"已报价":529.0,
+"已完成_pct":14.4,
+"在途_pct":0.3,
+"已报价_pct":1.1,
+"is_bold":0.0
+},
+{
+"Market":"HUNAN",
+"Plan":7470.0,
+"Proj":7470.0,
+"Var_pct":0.0,
+"已完成":448.0,
+"在途":81.0,
+"已报价":9.0,
+"已完成_pct":6.0,
+"在途_pct":1.1,
+"已报价_pct":0.1,
+"is_bold":0.0
+},
+{
+"Market":"JIANGSU",
+"Plan":14842.0,
+"Proj":14842.0,
+"Var_pct":0.0,
+"已完成":514.0,
+"在途":0.0,
+"已报价":0.0,
+"已完成_pct":3.5,
+"在途_pct":0.0,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Market":"LIAONING",
+"Plan":11250.0,
+"Proj":11250.0,
+"Var_pct":0.0,
+"已完成":2958.0,
+"在途":27.0,
+"已报价":0.0,
+"已完成_pct":26.3,
+"在途_pct":0.2,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Market":"HUBEI",
+"Plan":16038.0,
+"Proj":16038.0,
+"Var_pct":0.0,
+"已完成":2378.0,
+"在途":97.0,
+"已报价":108.0,
+"已完成_pct":14.8,
+"在途_pct":0.6,
+"已报价_pct":0.7,
+"is_bold":0.0
+},
+{
+"Market":"SICHUAN",
+"Plan":8346.0,
+"Proj":28346.0,
+"Var_pct":2.3963575365444525,
+"已完成":352.0,
+"在途":14.0,
+"已报价":0.0,
+"已完成_pct":4.2,
+"在途_pct":0.2,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Market":"SHANGHAI",
+"Plan":20240.0,
+"Proj":10240.0,
+"Var_pct":-0.4940711462450593,
+"已完成":3654.0,
+"在途":182.0,
+"已报价":50.0,
+"已完成_pct":18.1,
+"在途_pct":0.9,
+"已报价_pct":0.2,
+"is_bold":0.0
+},
+{
+"Market":"SHENZHEN",
+"Plan":31590.0,
+"Proj":31580.0,
+"Var_pct":-0.00031655587211143477,
+"已完成":5474.0,
+"在途":548.0,
+"已报价":394.0,
+"已完成_pct":17.3,
+"在途_pct":1.7,
+"已报价_pct":1.2,
+"is_bold":0.0
+},
+{
+"Market":"TIANJIN",
+"Plan":19754.0,
+"Proj":19754.0,
+"Var_pct":0.0,
+"已完成":5229.0,
+"在途":224.0,
+"已报价":1023.0,
+"已完成_pct":26.5,
+"在途_pct":1.1,
+"已报价_pct":5.2,
+"is_bold":0.0
+},
+{
+"Market":"ZHEJIANG",
+"Plan":17925.0,
+"Proj":17925.0,
+"Var_pct":0.0,
+"已完成":2379.0,
+"在途":60.0,
+"已报价":0.0,
+"已完成_pct":13.3,
+"在途_pct":0.3,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Market":"Total",
+"Plan":248837.0,
+"Proj":258827.0,
+"Var_pct":4.0,
+"已完成":41199.0,
+"在途":1969.0,
+"已报价":2356.0,
+"已完成_pct":16.6,
+"在途_pct":0.8,
+"已报价_pct":0.9,
+"is_bold":1.0
+}
+],
+"store_it":[
+{
+"Project":"Best Burger RTM",
+"Plan":1076.0,
+"Proj":1076.0,
+"Var_pct":0.0,
+"已完成":0.0,
+"在途":0.0,
+"已报价":0.0,
+"已完成_pct":0.0,
+"在途_pct":0.0,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Project":"BIC",
+"Plan":0.0,
+"Proj":120.0,
+"Var_pct":1.0,
+"已完成":0.0,
+"在途":0.0,
+"已报价":0.0,
+"已完成_pct":0.0,
+"在途_pct":0.0,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Project":"IoT",
+"Plan":3649.0,
+"Proj":3867.0,
+"Var_pct":0.05974239517676083,
+"已完成":0.0,
+"在途":2735.0,
+"已报价":0.0,
+"已完成_pct":0.0,
+"在途_pct":75.0,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Project":"RAM",
+"Plan":1341.0,
+"Proj":1341.0,
+"Var_pct":-2.220446049250313e-16,
+"已完成":0.0,
+"在途":0.0,
+"已报价":0.0,
+"已完成_pct":0.0,
+"在途_pct":0.0,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Project":"Store Network",
+"Plan":16982.0,
+"Proj":17052.0,
+"Var_pct":0.004122011541632276,
+"已完成":0.0,
+"在途":0.0,
+"已报价":0.0,
+"已完成_pct":0.0,
+"在途_pct":0.0,
+"已报价_pct":0.0,
+"is_bold":0.0
+},
+{
+"Project":"Total",
+"Plan":23048.0,
+"Proj":23456.0,
+"Var_pct":1.8,
+"已完成":0.0,
+"在途":2735.0,
+"已报价":0.0,
+"已完成_pct":0.0,
+"在途_pct":11.9,
+"已报价_pct":0.0,
+"is_bold":1.0
+}
+],
+"office_it":[
+{
+"Project":"Office PC & Others",
+"Plan":4001.0,
+"Proj":4401.0,
+"Var_pct":0.09997500624843791,
+"Actual":1183.0,
+"PD Not Paid":2797.0,
+"Purchase Plan":421.0,
+"Paid_pct":29.6,
+"PD Not Paid_pct":69.9,
+"Purchase Plan_pct":10.5
+},
+{
+"Project":"Hogan Data Center",
+"Plan":3492.0,
+"Proj":5140.0,
+"Var_pct":0.4717926689576175,
+"Actual":252.0,
+"PD Not Paid":327.0,
+"Purchase Plan":4561.0,
+"Paid_pct":7.2,
+"PD Not Paid_pct":9.4,
+"Purchase Plan_pct":130.6
+},
+{
+"Project":"Enterprise Application",
+"Plan":34513.0,
+"Proj":37624.0,
+"Var_pct":0.09014097109091268,
+"Actual":520.0,
+"PD Not Paid":5122.0,
+"Purchase Plan":31983.0,
+"Paid_pct":1.5,
+"PD Not Paid_pct":14.8,
+"Purchase Plan_pct":92.7
+},
+{
+"Project":"Restaurant related",
+"Plan":4467.0,
+"Proj":4579.0,
+"Var_pct":0.02507275576449519,
+"Actual":27.0,
+"PD Not Paid":1391.0,
+"Purchase Plan":3160.0,
+"Paid_pct":0.6,
+"PD Not Paid_pct":31.1,
+"Purchase Plan_pct":70.7
+},
+{
+"Project":"Data COE",
+"Plan":10856.0,
+"Proj":10936.0,
+"Var_pct":0.00736919675755332,
+"Actual":0.0,
+"PD Not Paid":0.0,
+"Purchase Plan":10936.0,
+"Paid_pct":0.0,
+"PD Not Paid_pct":0.0,
+"Purchase Plan_pct":100.7
+},
+{
+"Project":"Digitalization",
+"Plan":43258.0,
+"Proj":44096.0,
+"Var_pct":0.019372139257478382,
+"Actual":7729.0,
+"PD Not Paid":7830.0,
+"Purchase Plan":28538.0,
+"Paid_pct":17.9,
+"PD Not Paid_pct":18.1,
+"Purchase Plan_pct":66.0
+},
+{
+"Project":"R&D",
+"Plan":32465.0,
+"Proj":32418.0,
+"Var_pct":-0.0014600338826428194,
+"Actual":5970.0,
+"PD Not Paid":24722.0,
+"Purchase Plan":1726.0,
+"Paid_pct":18.4,
+"PD Not Paid_pct":76.1,
+"Purchase Plan_pct":5.3
+},
+{
+"Project":"Total",
+"Plan":133052.0,
+"Proj":139194.0,
+"Var_pct":4.6,
+"Actual":15681.0,
+"PD Not Paid":42189.0,
+"Purchase Plan":81325.0,
+"Paid_pct":11.8,
+"PD Not Paid_pct":31.7,
+"Purchase Plan_pct":61.1
+}
+]
+};
+  
+          // resObj = eval("("+vueData+")");
+        debugger;
+          //这里填入table的数值
+          this.DevTable = resObj['Dev'];
+          //这里改echarts的option
+          let Label = [];
+          let Finished = [];
+          let InTransit = [];
+          let Quoted = [];
+          for(let item of this.DevTable){
+              if( item.is_bold === 1 && item['Project'] !== 'Total'){
+                  continue;
+              }
+            Label.push(item['Project'].substring(0,19).padStart(20,' '));
+            Finished.push(item['已完成_pct']);
+            InTransit.push(item['在途_pct']);
+            Quoted.push(item['已报价_pct']);
+          }
+          this.DevChart.yAxis.data = Label.reverse();
+          this.DevChart.series[0].data = Finished.reverse();
+          this.DevChart.series[1].data = InTransit.reverse();
+          this.DevChart.series[2].data = Quoted.reverse();
+  
+  
+          this.OpsTable = resObj['Ops'];
+          Label = [];
+          Finished = [];
+          InTransit = [];
+          Quoted = [];
+          for(let item of this.OpsTable){
+              if( item.is_bold === 1 && item['Project'] !== 'Total'){
+                  continue;
+              }
+            Label.push(item['Project'].substring(0,19).padStart(20,' '));
+            Finished.push(item['已完成_pct']);
+            InTransit.push(item['在途_pct']);
+            Quoted.push(item['已报价_pct']);
+          }
+          this.OpsChart.yAxis.data = Label.reverse();
+          this.OpsChart.series[0].data = Finished.reverse();
+          this.OpsChart.series[1].data = InTransit.reverse();
+          this.OpsChart.series[2].data = Quoted.reverse();
+  
+          this.BETable = resObj['BE'];
+          Label = [];
+          Finished = [];
+          InTransit = [];
+          Quoted = [];
+          for(let item of this.BETable){
+              if( item.is_bold === 1 && item['Project'] !== 'Total'){
+                  continue;
+              }
+            Label.push(item['Project'].substring(0,19).padStart(20,' '));
+            Finished.push(item['已完成_pct']);
+            InTransit.push(item['在途_pct']);
+            Quoted.push(item['已报价_pct']);
+          }
+          this.BEChart.yAxis.data = Label.reverse();
+          this.BEChart.series[0].data = Finished.reverse();
+          this.BEChart.series[1].data = InTransit.reverse();
+          this.BEChart.series[2].data = Quoted.reverse();
+  
+          this.MRTable = resObj['M&R'];
+          Label = [];
+          Finished = [];
+          InTransit = [];
+          Quoted = [];
+          for(let item of this.MRTable){
+              if( item.is_bold === 1 && item['Market'] !== 'Total'){
+                  continue;
+              }
+            Label.push(item['Market'].substring(0,19).padStart(20,' '));
+            Finished.push(item['已完成_pct']);
+            InTransit.push(item['在途_pct']);
+            Quoted.push(item['已报价_pct']);
+          }
+          this.MRChart.yAxis.data = Label.reverse();
+          this.MRChart.series[0].data = Finished.reverse();
+          this.MRChart.series[1].data = InTransit.reverse();
+          this.MRChart.series[2].data = Quoted.reverse();
+  
+  
+          this.StoreITTable = resObj['store_it'];
+          Label = [];
+          Finished = [];
+          InTransit = [];
+          Quoted = [];
+          for(let item of this.StoreITTable){
+              if( item.is_bold === 1 && item['Project'] !== 'Total'){
+                  continue;
+              }
+            Label.push(item['Project'].substring(0,19).padStart(20,' '));
+            Finished.push(item['已完成_pct']);
+            InTransit.push(item['在途_pct']);
+            Quoted.push(item['已报价_pct']);
+          }
+          this.StoreITChart.yAxis.data = Label.reverse();
+          this.StoreITChart.series[0].data = Finished.reverse();
+          this.StoreITChart.series[1].data = InTransit.reverse();
+          this.StoreITChart.series[2].data = Quoted.reverse()
+  
+  
+          this.OfficeITTable = resObj['office_it'];
+          Label = [];
+          Finished = [];
+          InTransit = [];
+          Quoted = [];
+          for(let item of this.OfficeITTable){
+              if( item.is_bold === 1 && item['Project'] !== 'Total'){
+                  continue;
+              }
+            Label.push(item['Project'].substring(0,19).padStart(20,' '));
+            Finished.push(item['Paid_pct']);
+            InTransit.push(item['PD Not Paid_pct']);
+  
+          }
+          this.OfficeITChart.yAxis.data = Label.reverse();
+          this.OfficeITChart.series[0].data = Finished.reverse();
+          this.OfficeITChart.series[1].data = InTransit.reverse();
+  
+  
+  
+          //Store Capex
+          this.storeCapex[0]['c2'] = resObj['store_it_capex']['已完成'];
+          this.storeCapex[1]['c2'] = resObj['store_it_capex']['已完成_pct'] + '%';
+          this.storeCapex[0]['c4'] = resObj['store_it_capex']['在途'];
+          this.storeCapex[1]['c4'] = resObj['store_it_capex']['在途_pct'] + '%';
+          this.storeCapex[0]['c6'] = resObj['store_it_capex']['已报价'];
+          this.storeCapex[1]['c6'] = resObj['store_it_capex']['已报价_pct'] + '%';
+          this.storeCapex[0]['c8'] = resObj['store_it_capex']['未使用'];
+          this.storeCapex[1]['c8'] = resObj['store_it_capex']['未使用_pct'] + '%';
+          this.storeCapex[0]['c10'] = resObj['store_it_capex']['Proj'];
+  
+          ////Office IT Capex
+          this.officeITCapex[0]['c2'] = resObj['office_it_capex'][0]['Actual'];
+          this.officeITCapex[1]['c2'] = resObj['office_it_capex'][0]['Paid_pct'] + '%';
+          this.officeITCapex[0]['c4'] = resObj['office_it_capex'][0]['PD Not Paid'];
+          this.officeITCapex[1]['c4'] = resObj['office_it_capex'][0]['PD Not Paid_pct'] + '%';
+          this.officeITCapex[0]['c6'] = resObj['office_it_capex'][0]['Purchase Plan'];
+          this.officeITCapex[1]['c6'] = resObj['office_it_capex'][0]['Purchase Plan_pct'] + '%';
+          this.officeITCapex[0]['c8'] = resObj['office_it_capex'][0]['Proj'];
+  
+          console.log(resObj);
+  
+          
+          this.$nextTick(function () {
+            debugger;
+            // 仅在渲染整个视图之后运行的代码
+            document.getElementById('DevChart').setAttribute('style', 'height: ' + document.getElementById('DevTable').offsetHeight + 'px !important');
+            document.getElementById('OpsChart').setAttribute('style', 'height: ' + document.getElementById('OpsTable').offsetHeight + 'px !important');
+            document.getElementById('BEChart').setAttribute('style', 'height: ' + document.getElementById('BETable').offsetHeight + 'px !important');
+            document.getElementById('MRChart').setAttribute('style', 'height: ' + document.getElementById('MRTable').offsetHeight + 'px !important');
+            document.getElementById('StoreITChart').setAttribute('style', 'height: ' + document.getElementById('StoreITTable').offsetHeight + 'px !important');
+            document.getElementById('OfficeITChart').setAttribute('style', 'height: ' + document.getElementById('OfficeITTable').offsetHeight + 'px !important');
+            //绘制Echarts
+            //dev CapEx Spending Tracking
+            this.drawBarChart('DevChart', this.DevChart);
+            //Ops CapEx Spending Tracking
+            this.drawBarChart('OpsChart', this.OpsChart);
+            //BE CapEx Spending Tracking
+            this.drawBarChart('BEChart', this.BEChart);
+            //CapEx M&R Spending Tracking
+            this.drawBarChart('MRChart', this.MRChart);
+            //Store IT Capex Spending Tracking
+            this.drawBarChart('StoreITChart', this.StoreITChart);
+            //Office IT Capex Spending Tracking
+            this.drawBarChart('OfficeITChart', this.OfficeITChart);
+          })
+        },
+        methods: {
+          drawBarChart(id, option) {
+            // let that = this;
+            // 1. 基于准备好的dom，初始化echarts实例
+            let myChart = echarts.init(document.getElementById(id));
+            myChart.innerHTML = "";
+            // 3. 使用刚指定的配置项和数据显示图表
+            myChart.setOption(option);
+          },
+          //dev CapEx Spending Tracking
+          DevRowStyle(row) {
+            if (this.DevTable[row.rowIndex]['Project'] === 'Total') {
+              return 'last-row'
+            }
+            else if (this.DevTable[row.rowIndex]['is_bold'] === 1) {
+              return 'header-row'
+            }
+            else{
+              return 'normal-row'
+            }
+          },
+          DevCellStyle(index) {
+            //console.log(index)
+            if (this.DevTable[index.rowIndex]['Project'] === 'Total') {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; background:"#dce4f4" '
+              }
+              else{
+                return 'text-align: right; background:"#dce4f4" '
+              }
+            }
+            else if (this.DevTable[index.rowIndex]['is_bold'] === 1) {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; '
+              }
+              else{
+                return 'text-align: right; '
+              }
+            }
+            else if (this.DevTable[index.rowIndex]['is_bold'] === 0) {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; padding-left:15px;'
+              }
+              else{
+                return 'text-align: right; '
+              }
+            }
+          },
+          //Ops CapEx Spending Tracking
+          OpsRowStyle(row) {
+            if (this.OpsTable[row.rowIndex]['Project'] === 'Total') {
+              return 'last-row'
+            }
+            else if (this.OpsTable[row.rowIndex]['is_bold'] === 1) {
+              return 'header-row'
+            }
+            else{
+              return 'normal-row'
+            }
+          },
+          OpsCellStyle(index) {
+            //console.log(index)
+            if (this.OpsTable[index.rowIndex]['Project'] === 'Total') {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; background:"#dce4f4" '
+              }
+              else{
+                return 'text-align: right; background:"#dce4f4" '
+              }
+            }
+            else if (this.OpsTable[index.rowIndex]['is_bold'] === 1) {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; '
+              }
+              else{
+                return 'text-align: right; '
+              }
+            }
+            else if (this.OpsTable[index.rowIndex]['is_bold'] === 0) {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; padding-left:15px;'
+              }
+              else{
+                return 'text-align: right; '
+              }
+            }
+          },
+          //BE CapEx Spending Tracking
+          BERowStyle(row) {
+            if (this.BETable[row.rowIndex]['Project'] === 'Total') {
+              return 'last-row'
+            }
+            else if (this.BETable[row.rowIndex]['is_bold'] === 1) {
+              return 'header-row'
+            }
+            else{
+              return 'normal-row'
+            }
+          },
+          BECellStyle(index) {
+            //console.log(index)
+            if (this.BETable[index.rowIndex]['Project'] === 'Total') {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; background:"#dce4f4" '
+              }
+              else{
+                return 'text-align: right; background:"#dce4f4" '
+              }
+            }
+            else if (this.BETable[index.rowIndex]['is_bold'] === 1) {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; '
+              }
+              else{
+                return 'text-align: right; '
+              }
+            }
+            else if (this.BETable[index.rowIndex]['is_bold'] === 0) {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; padding-left:15px;'
+              }
+              else{
+                return 'text-align: right; '
+              }
+            }
+          },
+          //CapEx M&R Spending Tracking
+          MRRowStyle(row) {
+            if (this.MRTable[row.rowIndex]['Market'] === 'Total') {
+              return 'last-row2'
+            }
+            else if (this.MRTable[row.rowIndex]['is_bold'] === 1) {
+              return 'header-row'
+            }
+            else{
+              return 'normal-row'
+            }
+          },
+          MRCellStyle(index) {
+            //console.log(index)
+            if (this.MRTable[index.rowIndex]['Project'] === 'Total') {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; background:"#dce4f4" '
+              }
+              else{
+                return 'text-align: right; background:"#dce4f4" '
+              }
+            }
+            else if (this.MRTable[index.rowIndex]['is_bold'] === 1) {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; '
+              }
+              else{
+                return 'text-align: right; '
+              }
+            }
+            else if (this.MRTable[index.rowIndex]['is_bold'] === 0) {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; padding-left:15px;'
+              }
+              else{
+                return 'text-align: right; '
+              }
+            }
+          },
+          //Store IT Capex Spending Tracking
+          StoreITRowStyle(row) {
+            if (this.StoreITTable[row.rowIndex]['Project'] === 'Total') {
+              return 'last-row2'
+            }
+            else if (this.StoreITTable[row.rowIndex]['is_bold'] === 1) {
+              return 'header-row'
+            }
+            else{
+              return 'normal-row'
+            }
+          },
+          StoreITCellStyle(index) {
+            //console.log(index)
+            if (this.StoreITTable[index.rowIndex]['Project'] === 'Total') {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; background:"#dce4f4" '
+              }
+              else{
+                return 'text-align: right; background:"#dce4f4" '
+              }
+            }
+            else if (this.StoreITTable[index.rowIndex]['is_bold'] === 1) {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; '
+              }
+              else{
+                return 'text-align: right; '
+              }
+            }
+            else if (this.StoreITTable[index.rowIndex]['is_bold'] === 0) {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; padding-left:15px;'
+              }
+              else{
+                return 'text-align: right; '
+              }
+            }
+          },
+          //Office IT Capex Spending Tracking
+          OfficeITRowStyle(row) {
+            if (this.OfficeITTable[row.rowIndex]['Project'] === 'Total') {
+              return 'last-row'
+            }
+            else if (this.OfficeITTable[row.rowIndex]['is_bold'] === 1) {
+              return 'header-row'
+            }
+            else{
+              return 'normal-row'
+            }
+          },
+          OfficeITCellStyle(index) {
+            //console.log(index)
+            if (this.OfficeITTable[index.rowIndex]['Project'] === 'Total') {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; background:"#dce4f4" '
+              }
+              else{
+                return 'text-align: right; background:"#dce4f4" '
+              }
+            }
+            else if (this.OfficeITTable[index.rowIndex]['is_bold'] === 1) {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; '
+              }
+              else{
+                return 'text-align: right; '
+              }
+            }
+            else if (this.OfficeITTable[index.rowIndex]['is_bold'] === 0) {
+              if (index.columnIndex === 0) {
+              return 'text-align: left; padding-left:15px;'
+              }
+              else{
+                return 'text-align: right; '
+              }
+            }
+          },
+          stateFormat(row, column, cellValue) {
+              if( cellValue === "" || cellValue === null || cellValue === undefined ){
+                  return "";
+              }
+              else{
+                  return (cellValue).toLocaleString();//新增千分位符
+              }
+          },
+          statePercent(row, column, cellValue){
+            return cellValue+'%';
+          },
+        },
+      })
+      console.log(app);
+
+/**
+ * 导出Pdf文件js
+ * 
+ */
+ var downPdf = document.getElementById("renderPdf");
+    downPdf.onclick = function() {
+      html2canvas(document.getElementById('app'), {
+        dpi:18000,
+            // canvas: canvas,
+            useCORS: true,// 【重要】开启跨域配置
+        onrendered: function(canvas) {
+
+          console.log(canvas)
+        var context = canvas.getContext("2d");
+        // context.font=`Roboto,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"`;
+        // // 关闭抗锯齿
+        // context.mozImageSmoothingEnabled = false;
+        // context.webkitImageSmoothingEnabled = false;
+        // context.msImageSmoothingEnabled = false;
+        // context.imageSmoothingEnabled = false;
+        context.scale(2, 2);
+          var contentWidth = canvas.height;
+          debugger
+          var contentHeight = canvas.height;
+
+          var pageHeight = contentWidth / 592.28 * 841.89;
+          var leftHeight = contentHeight;
+
+          var position = 0;
+          var imgWidth = 595.28;
+          var imgHeight = imgWidth / contentWidth * contentHeight;
+
+
+          //返回图片URL，参数：图片格式和清晰度(0-1)
+          var pageData = canvas.toDataURL('image/jpeg', 1.0);
+
+          //方向默认竖直，尺寸ponits，格式a4【595.28,841.89]
+          var pdf = new jsPDF('', 'pt', [595.28,1800]);
+          pdf.addImage(pageData, 'JPEG', 0, 0, imgWidth, imgHeight);
+        //   if (leftHeight < pageHeight) {
+        //     //需要dataUrl格式
+        //     pdf.addImage(pageData, 'JPEG', 0, 0, imgWidth, imgHeight);
+        //   } else {
+        //     while (leftHeight > 0) {
+        //       pdf.addImage(pageData, 'JPEG', 0, position, imgWidth, imgHeight);
+        //       leftHeight -= pageHeight;
+        //       position -= 841.89
+
+        //       if (leftHeight > 0) {
+        //         pdf.addPage()
+        //       }
+        //     }
+        //   }
+          pdf.save('content.pdf');
+        }
+      })
+    }
+  </script>
+
+    <style>
+      .el-row {
+        margin-bottom: 20px;
+      }
+  
+      .el-col {
+        border-radius: 4px;
+      }
+  
+      div.borders {
+        border-style: solid;
+        border-color: black;
+      }
+  
+      .el-table__body {
+        border-collapse: collapse;
+  
+      }
+  
+      .table .header-row {
+        font-weight: bold;
+        font-size: larger;
+        border-bottom: 2px solid black;
+        vertical-align: middle;
+        text-align: center;
+      }
+      
+      .el-table td {
+        padding: 2px 0;
+      }
+      
+      #table1 td
+      { 
+          font-weight:bold;
+          
+      }
+      
+      #table2 td
+      { 
+          font-weight:bold;
+      }
+      
+      .last-row {
+        background-color: #dce4f4 !important;
+        font-weight: bold;
+        font-size: larger;
+        border-bottom: 2px solid black;
+      }
+      
+      .last-row2 {
+        background-color: #dce4f4 !important;
+        font-weight: bold;
+        font-size: larger;
+        border-bottom: 2px solid black;
+      }
+  
+      /* .table .normal-row {
+        background: white;
+      } */
+    </style>
+    
+    
+</body>
+</html>

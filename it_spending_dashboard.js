@@ -12,67 +12,112 @@ var result ;
 var new_list_data = [];
 var pdfListData = [];
 var list_data;
+var echartstab1;
+var echartstab2; 
+var echartstab3;
+var echartstab4;
+var echartstab5;
+var echartstab6;
+var echartstab7;
+var echartstab8;
+var echartstab11;
+var echartstab22; 
+var echartstab33;
+var echartstab44; 
+var echartstab55;
+var echartstab66;
+var oneEchart3;
+var one2Echart3;
+function detectZoom (){ 
+  var ratio = 0,
+    screen = window.screen,
+    ua = navigator.userAgent.toLowerCase();
+
+   if (window.devicePixelRatio !== undefined) {
+      ratio = window.devicePixelRatio;
+  }
+  else if (~ua.indexOf('msie')) {  
+    if (screen.deviceXDPI && screen.logicalXDPI) {
+      ratio = screen.deviceXDPI / screen.logicalXDPI;
+    }
+  }
+  else if (window.outerWidth !== undefined && window.innerWidth !== undefined) {
+    ratio = window.outerWidth / window.innerWidth;
+  }
+  
+   if (ratio){
+    ratio = Math.round(ratio * 100);
+  }
+  
+   return ratio;
+};
 function r1(data, params) {
-     var html = `<i class="icon-drawer-in mr-2" style="margin-bottom: 6px;cursor: pointer;" onclick="showPdfModal();"></i>`;
+    $(".dashBoardContent .dataSheet .card-header .card-title").css({
+        "font-size":"18px",
+        "font-weight": "bold"
+    })
+     var html = `<i class="icon-drawer-in mr-2" style="margin-bottom: 6px;cursor: pointer;font-size:26px;" onclick="showPdfModal();"></i>`;
       $(".icon-drawer-in").remove();
     $($(".dashBoardContent .dataSheet:nth-child(1) .header-elements .dataSheetCon").children()[1]).before(html);
     var componentId = $(".dashBoardContent .dataSheet:nth-child(1) div .card .echart").attr("id");
+    let h1 = "";
+    let h2 = "";
     var html = `
         <div class="row">
             <div class="col-lg-3">
-                <label class="col-form-label col-lg-5" style="font-weight: bold;">Total Projection</label>
-                <div class="col-lg-6" style="display:inline-block;">
-                   <p class="input1" style="width: 10rem; height: 28px;padding: 3px 0 0 0.5rem; border: 1px solid #ddd;margin: 0;text-align: center;font-weight: bold">
+                <label class="col-form-label col-lg-6" style="font-weight: bold;">Total Projection</label>
+                <div class="col-lg-5" style="display:inline-block;">
+                   <p class="input1" style="width: 8rem; height: 28px; padding-left:30px; padding: 3px 0 0 0.5rem; border: 1px solid #ddd;margin: 0;text-align: center;font-weight: bold">
                 </div>
             </div>
             <div class="col-lg-3">
-                <label class="col-form-label col-lg-5" style="font-weight: bold;">Purchase Plan</label>
-                <div class="col-lg-6" style="display:inline-block;">
-                    <p class="input2" style="width: 10rem; height: 28px;padding: 3px 0 0 0.5rem; border: 1px solid #ddd;margin: 0;text-align: center;font-weight: bold">
+                <label class="col-form-label col-lg-6" style="font-weight: bold;">Purchase Plan</label>
+                <div class="col-lg-5" style="display:inline-block;">
+                    <p class="input2" style="width: 8rem; height: 28px;padding: 3px 0 0 0.5rem; border: 1px solid #ddd;margin: 0;text-align: center;font-weight: bold">
                 </div>
             </div>
             <div class="col-lg-3">
                 <label class="col-form-label col-lg-5" style="font-weight: bold;">PD Not Paid</label>
-                <div class="col-lg-6" style="display:inline-block;">
-                     <p class="input3" style="width: 10rem; height: 28px;padding: 3px 0 0 0.5rem; border: 1px solid #ddd;margin: 0;text-align: center;font-weight: bold">
+                <div class="col-lg-5" style="display:inline-block;">
+                     <p class="input3" style="width: 8rem; height: 28px;padding: 3px 0 0 0.5rem; border: 1px solid #ddd;margin: 0;text-align: center;font-weight: bold">
                 </div>
             </div>
             <div class="col-lg-3">
-                <label class="col-form-label col-lg-5" style="font-weight: bold;">Payment</label>
-                <div class="col-lg-6" style="display:inline-block;">
-                     <p class="input4" style="width: 10rem; height: 28px;padding: 3px 0 0 0.5rem; border: 1px solid #ddd;margin: 0;text-align: center;font-weight: bold">
+                <label class="col-form-label col-lg-4" style="font-weight: bold;">Payment</label>
+                <div class="col-lg-5" style="display:inline-block;">
+                     <p class="input4" style="width: 8rem; height: 28px;padding: 3px 0 0 0.5rem; border: 1px solid #ddd;margin: 0;text-align: center;font-weight: bold">
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-3">
-                <label class="col-form-label col-lg-5"></label>
-                <div class="col-lg-6" style="display:inline-block;">
-                    <p class="b1" style="width: 10rem;text-align: center;font-weight: bold"></p>
+                <label class="col-form-label col-lg-6"></label>
+                <div class="col-lg-5" style="display:inline-block;">
+                    <p class="b1" style="width: 8.5rem;text-align: center;font-weight: bold"></p>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <label class="col-form-label col-lg-6"></label>
+                <div class="col-lg-5" style="display:inline-block;">
+                    <p class="b2" style="width: 8.5rem;text-align: center;font-weight: bold"></p>
                 </div>
             </div>
             <div class="col-lg-3">
                 <label class="col-form-label col-lg-5"></label>
-                <div class="col-lg-6" style="display:inline-block;">
-                    <p class="b2" style="width: 10rem;text-align: center;font-weight: bold"></p>
+                <div class="col-lg-5" style="display:inline-block;">
+                    <p class="b3" style="width: 8.5rem;text-align: center;font-weight: bold"></p>
                 </div>
             </div>
             <div class="col-lg-3">
-                <label class="col-form-label col-lg-5"></label>
-                <div class="col-lg-6" style="display:inline-block;">
-                    <p class="b3" style="width: 10rem;text-align: center;font-weight: bold"></p>
-                </div>
-            </div>
-            <div class="col-lg-3">
-                <label class="col-form-label col-lg-5"></label>
-                <div class="col-lg-6" style="display:inline-block;">
-                    <p class="b4" style="width: 10rem;text-align: center;font-weight: bold"></p>
+                <label class="col-form-label col-lg-4"></label>
+                <div class="col-lg-5" style="display:inline-block;">
+                    <p class="b4" style="width: 8.5rem;text-align: center;font-weight: bold"></p>
                 </div>
             </div>
         </div>
         <ul class="nav nav-tabs nav-tabs-solid nav-justified tabulDom bg-teal-400 border-x-0 border-bottom-0 mt-4 mb-0" style="background: none;border: none;box-shadow: none;">
             <li class="nav-item" style="margin-right:10px;">
-                <a href="#tab1" class="nav-link font-size-sm " style="background-color: #FF9800;font-weight: bold;font-size:16px;" data-toggle="tab">Spending by IT Account</a>
+                <a href="#tab1" class="nav-link font-size-sm active" style="background-color: #FF9800;font-weight: bold;font-size:16px;" data-toggle="tab">Spending by IT Account</a>
             </li>
 
             <li class="nav-item" style="margin-right:10px;">
@@ -106,7 +151,7 @@ function r1(data, params) {
         </div>
         
         <!-- pdf显示弹框 -->
-        <div id="pdf-modal" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div id="pdf-modal" class="modal fade" tabindex="-1" aria-hidden="true" style="z-index: 9999;">
             <div class="modal-dialog modal-full">
                 <div class="modal-content">
                     <div class="modal-header bg-teal-400">
@@ -119,26 +164,20 @@ function r1(data, params) {
                             <div class="tab-content mt-4">
                                 <div class="">
                                     <ul class="nav nav-tabs nav-tabs-solid nav-justified bg-teal-400 border-x-0 border-bottom-0 mt-2 mb-2" style="background: none;border: none;box-shadow: none;">
-                                         <li class="nav-item" style="margin-right:10px;">
-                                            <a href="#tab1" class="nav-link font-size-sm " style="background-color: #FF9800;font-weight: bold;font-size:16px;" data-toggle="tab">Spending by IT Account</a>
-                                        </li>
-                            
-                                        <li class="nav-item" style="margin-right:10px;">
-                                            <a href="#tab2" class="nav-link font-size-sm " style="background-color: #999;font-weight: bold;font-size:16px;" data-toggle="tab">Spending by IT BP</a>
-                                        </li>
-                                        <li class="nav-item" style="margin-right:10px;font-size:bold">
-                                            <a href="#tab3" class="nav-link font-size-sm " style="background-color: #999;font-weight: bold;font-size:16px;" data-toggle="tab">Spending by Biz Owner</a>
+                                         <li class="nav-item">
+                                            <a href="#tab1" class="nav-link font-size-sm " style="background-color: #FF9800;font-weight: bold;font-size:16px;" data-toggle="tab">Spending&nbsp;by&nbsp;IT&nbsp;Account</a>
                                         </li>
                                     </ul>
                                     <div class="row">
-                                        <div class="col-lg-4" style="margin-top: 30px;">
-                                            <table class="table table-hover datatable-highlight dataTable no-footer table-striped table-xs ml-4" style="font-size:12px;" id="table1">
+                                        <div class="col-lg-5" style="margin-top: 29px;">
+                                            <table class="table table-hover datatable-highlight dataTable no-footer table-striped table-xs" style="font-size:12px;table-layout: fixed;" id="table1">
                                                 <thead>
                                                     <tr>
-                                                        <th></th>
-                                                        <th>Purchase Plan</th>
-                                                        <th>PD Not Paid</th>
-                                                        <th>Payment</th>
+                                                        <th style="width: 5.1rem;"></th>
+                                                        <th style="width:5.7rem;text-align: right;">Purchase Plan</th>
+                                                        <th style="width:4.9rem;text-align: right;">PD Not Paid</th>
+                                                        <th style="width:3.5rem;text-align: right;">Payment</th>
+                                                        <th style="width:3.6rem;text-align: right;">Projection</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tableTbody1">
@@ -146,34 +185,28 @@ function r1(data, params) {
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="col-lg-8">
-                                            <div class="col-lg-6" style="width: 50%; height: 480px;display: inline-block;" id="tab1chart11"></div>
-                                            <div class="col-lg-6" style="width: 49%; height: 480px;display: inline-block;" id="tab1chart22"></div>
+                                        <div class="col-lg-7 row">
+                                            <div class="col-lg-6" style="width: 50%; height: 470px;display: inline-block;" id="tab1chart11"></div>
+                                            <div class="col-lg-6" style="width: 49%; height: 470px;display: inline-block;" id="tab1chart22"></div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="">
                                     <ul class="nav nav-tabs nav-tabs-solid nav-justified bg-teal-400 border-x-0 border-bottom-0 mt-2 mb-2" style="background: none;border: none;box-shadow: none;">
-                                        <li class="nav-item" style="margin-right:10px;">
-                                            <a href="#tab1" class="nav-link font-size-sm " style="background-color: #999;font-weight: bold;font-size:16px;" data-toggle="tab">Spending by IT Account</a>
-                                        </li>
-                            
-                                        <li class="nav-item" style="margin-right:10px;">
-                                            <a href="#tab2" class="nav-link font-size-sm " style="background-color: #FF9800;font-weight: bold;font-size:16px;" data-toggle="tab">Spending by IT BP</a>
-                                        </li>
-                                        <li class="nav-item" style="margin-right:10px;font-size:bold">
-                                            <a href="#tab3" class="nav-link font-size-sm " style="background-color: #999;font-weight: bold;font-size:16px;" data-toggle="tab">Spending by Biz Owner</a>
+                                        <li class="nav-item">
+                                            <a href="#tab1" class="nav-link font-size-sm " style="background-color: #FF9800;font-weight: bold;font-size:16px;" data-toggle="tab">Spending&nbsp;by&nbsp;IT&nbsp;BP</a>
                                         </li>
                                     </ul>
                                     <div class="row">
-                                        <div class="col-lg-4" style="margin-top: 27px;">
-                                            <table class="table table-hover datatable-highlight dataTable no-footer table-striped table-xs ml-4" style="font-size:12px;" id="table2">
+                                        <div class="col-lg-5" style="margin-top: 29px;">
+                                            <table class="table table-hover datatable-highlight dataTable no-footer table-striped table-xs" style="font-size:12px;table-layout: fixed;" id="table2">
                                                 <thead>
                                                     <tr>
-                                                        <th></th>
-                                                        <th>Purchase Plan</th>
-                                                        <th>PD Not Paid</th>
-                                                        <th>Payment</th>
+                                                        <th style="width: 5.1rem;"></th>
+                                                        <th style="width:5.7rem;text-align: right;">Purchase Plan</th>
+                                                        <th style="width:4.9rem;text-align: right;">PD Not Paid</th>
+                                                        <th style="width:3.5rem;text-align: right;">Payment</th>
+                                                        <th style="width:3.6rem;text-align: right;">Projection</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tableTbody2">
@@ -181,34 +214,28 @@ function r1(data, params) {
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="col-lg-8">
-                                            <div class="col-lg-6" style="width: 50%; height: 510px;display: inline-block;" id="tab2chart11"></div>
-                                            <div class="col-lg-6" style="width: 49%; height: 510px;display: inline-block;" id="tab2chart22"></div>
+                                        <div class="col-lg-7 row">
+                                            <div class="col-lg-6" style="width: 50%; height: ${h1};display: inline-block;" id="tab2chart11"></div>
+                                            <div class="col-lg-6" style="width: 49%; height: ${h1};display: inline-block;" id="tab2chart22"></div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="">
                                     <ul class="nav nav-tabs nav-tabs-solid nav-justified bg-teal-400 border-x-0 border-bottom-0 mt-2 mb-2" style="background: none;border: none;box-shadow: none;">
-                                        <li class="nav-item" style="margin-right:10px;">
-                                            <a href="#tab1" class="nav-link font-size-sm " style="background-color: #999;font-weight: bold;font-size:16px;" data-toggle="tab">Spending by IT Account</a>
-                                        </li>
-                            
-                                        <li class="nav-item" style="margin-right:10px;">
-                                            <a href="#tab2" class="nav-link font-size-sm " style="background-color: #999;font-weight: bold;font-size:16px;" data-toggle="tab">Spending by IT BP</a>
-                                        </li>
-                                        <li class="nav-item" style="margin-right:10px;font-size:bold">
-                                            <a href="#tab3" class="nav-link font-size-sm " style="background-color: #FF9800;font-weight: bold;font-size:16px;" data-toggle="tab">Spending by Biz Owner</a>
+                                        <li class="nav-item">
+                                            <a href="#tab1" class="nav-link font-size-sm " style="background-color: #FF9800;font-weight: bold;font-size:16px;" data-toggle="tab">Spending&nbsp;by&nbsp;Biz&nbsp;Owner</a>
                                         </li>
                                     </ul>
                                     <div class="row">
-                                        <div class="col-lg-4" style="margin-top: 29px;">
-                                            <table class="table table-hover datatable-highlight dataTable no-footer table-striped table-xs ml-4" style="font-size:12px;" id="table3">
+                                        <div class="col-lg-5" style="margin-top: 29px;">
+                                            <table class="table table-hover datatable-highlight dataTable no-footer table-striped table-xs" style="font-size:12px;table-layout: fixed;" id="table3">
                                                 <thead>
                                                     <tr>
-                                                        <th></th>
-                                                        <th>Purchase Plan</th>
-                                                        <th>PD Not Paid</th>
-                                                        <th>Payment</th>
+                                                        <th style="width: 5.1rem;"></th>
+                                                        <th style="width:5.7rem;text-align: right;">Purchase Plan</th>
+                                                        <th style="width:4.9rem;text-align: right;">PD Not Paid</th>
+                                                        <th style="width:3.5rem;text-align: right;">Payment</th>
+                                                        <th style="width:3.6rem;text-align: right;">Projection</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tableTbody3">
@@ -216,20 +243,21 @@ function r1(data, params) {
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="col-lg-8">
-                                            <div class="col-lg-6" style="width: 49%; height: 797px;display: inline-block;" id="tab3chart11"></div>
-                                            <div class="col-lg-6" style="width: 49%; height: 797px;display: inline-block;" id="tab3chart22"></div>
+                                        <div class="col-lg-7 row">
+                                            <div class="col-lg-6" style="width: 49%; height: ${h2};display: inline-block;" id="tab3chart11"></div>
+                                            <div class="col-lg-6" style="width: 49%; height: ${h2};display: inline-block;" id="tab3chart22"></div>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-lg-4" style="margin-top: 16px;">
-                                            <table class="table table-hover datatable-highlight dataTable no-footer table-striped table-xs ml-4" style="font-size:12px;" id="table3">
+                                        <div class="col-lg-5" style="margin-top: 16px;">
+                                            <table class="table table-hover datatable-highlight dataTable no-footer table-striped table-xs" style="font-size:12px;table-layout: fixed;" id="table3">
                                                 <thead>
                                                     <tr>
-                                                        <th></th>
-                                                        <th>Purchase Plan</th>
-                                                        <th>PD Not Paid</th>
-                                                        <th>Payment</th>
+                                                        <th style="width: 5.1rem;"></th>
+                                                        <th style="width:5.7rem;text-align: right;">Purchase Plan</th>
+                                                        <th style="width:4.9rem;text-align: right;">PD Not Paid</th>
+                                                        <th style="width:3.5rem;text-align: right;">Payment</th>
+                                                        <th style="width:3.6rem;text-align: right;">Projection</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tableTbody3One">
@@ -237,9 +265,9 @@ function r1(data, params) {
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="col-lg-8">
-                                            <div class="col-lg-6" style="width: 49%;height: 110px;display: inline-block;" id="oneEchart3"></div>
-                                            <div class="col-lg-6" style="width: 49%;height: 110px;display: inline-block;" id="one2Echart3"></div>
+                                        <div class="col-lg-7 row">
+                                            <div class="col-lg-6" style="height: 110px;display: inline-block;" id="oneEchart3"></div>
+                                            <div class="col-lg-6" style="height: 110px;display: inline-block;" id="one2Echart3"></div>
                                             
                                         </div>
                                     </div>
@@ -273,7 +301,6 @@ function r1(data, params) {
     // "100.0%", "Purchase_Plan": "48.8%", "PD_Not_Paid": "51.1%", "Payment": 
     // "0.0%"}]}
     console.log(result)
-
     $(".input1").text(format(result.res2[0]['Total Projection'])); 
     $(".input2").text(format(result.res2[0]['Purchase Plan']));
     $(".input3").text(format(result.res2[0]['PD Not Paid']));
@@ -339,26 +366,30 @@ function tableExportFunction(){
     // var category = $("select[id=projectSelectId]").val()
     $(".loadingicon").show();
     var downloadSQL = `
-    SELECT d.description_1 as product,
-    b.description_1 as it_bp  ,
-    e.description_1 as bus_dep ,
-    c.description_1 as bus_owner ,
-    estimated_inv, 
-    act_payment , 
-    pd_total ,
-    purchase_total ,
-    proj_cur_ver 
-     from mcdcapex.app1_mcd_info_product_list  a left join mcdcapex.app1_di_it_bp_table_dimension   b  on a.it_bp = b.name 
-    left join mcdcapex.app1_smartlist   c
-    on a.bus_owner = c.subject_value
-    left join mcdcapex.app1_di_product_table_dimension  d
-    on a.product_code = d.name
-    left join mcdcapex.app1_di_department_table_dimension e 
-    on a.bus_dep = e.name 
-     WHERE estimated_inv is not NULL and proj_cur_ver is not NULL`+sql_1+ sql2_1;
+     SELECT d.description_1 AS ProductName,
+    b.description_1 AS ITBP,
+    e.description_1 AS BizDept ,
+    c.description_1 AS BizOwner,
+    estimated_inv AS Plan, 
+    act_payment AS ActualPayment , 
+    pd_total PDAmount ,
+    t_detail.proj_last_ver - ifnull(pd_total,0) AS  PurchasePlan ,
+    t_detail.proj_last_ver AS ApprovedProjection 
+     FROM mcdcapex.app1_mcd_info_product_list  a 
+     LEFT JOIN mcdcapex.app1_di_it_bp_table_dimension   b  ON a.it_bp = b.name 
+    LEFT JOIN mcdcapex.app1_smartlist   c
+    ON a.bus_owner = c.subject_value
+    LEFT JOIN mcdcapex.app1_di_product_table_dimension  d
+    ON a.product_code = d.name
+    LEFT JOIN mcdcapex.app1_di_department_table_dimension e 
+    ON a.bus_dep = e.name 
+    LEFT JOIN 
+    (SELECT YEAR,prod_code,it_bp,SUM(proj_last_ver) AS proj_last_ver FROM app1_apply_info_to_be
+    WHERE YEAR='2021' GROUP BY YEAR,prod_code,it_bp)t_detail ON a.year = t_detail.year AND a.product_code=t_detail.prod_code AND a.it_bp=t_detail.it_bp
+     WHERE estimated_inv IS NOT NULL AND proj_cur_ver IS NOT NULL`+sql_1+ sql2_1;
      console.log(downloadSQL)
     var resDownload = cfs.request.foundation.runComm(downloadSQL);
-    var theadData = ['product','it_bp','bus_dep','bus_owner','estimated_inv','act_payment','pd_total','purchase_total','proj_cur_ver'];
+    var theadData = ['ProductName','ITBP','BizDept','BizOwner','Plan','ActualPayment','PDAmount','PurchasePlan','ApprovedProjection'];
     if (resDownload.res.length !== 0) {
         cfs.export.toCsv("IT_Spending_Detail_Download",resDownload.res,theadData);
         // cfs.export.toXlsx("EPS_Actual_Data_Download", resDownload.res, null, function (spread) {
@@ -380,23 +411,25 @@ function tableExportFunction(){
 // 订单明细报告渲染成功后的回调
 function electronicFormFn() {
     $(".elementIframe").contents().find("#contractList_table_wrapper .dataTables_scroll .dataTables_scrollHead .table thead tr th:first-child").css("display", "none");
-    //    $(".elementIframe").contents().find("#contractList_table_wrapper .DTFC_LeftWrapper").css("display","none");
+    $(".elementIframe").contents().find("#contractList_table_wrapper .dataTables_scroll .dataTables_scrollBody .table thead tr th:first-child").css("display", "none");
     $(".elementIframe").contents().find("#contractList_table_wrapper .dataTables_scroll .dataTables_scrollBody .table tbody tr td:first-child").css("display", "none");
+    
     $(".elementIframe").contents().find("#contractList_table_wrapper .dataTables_scroll .dataTables_scrollBody").css("max-height", "320px");
     $(".multiselect-container").css("min-width", "10rem");
+    $(".elementIframe").contents().find(".card-title").css({
+        "font-size":"18px",
+        "font-weight": "bold"
+    })
 }
-
-
 
 function renderEcharts(id,type) {
     var option = {
-            title: {
-        text: 'Spending by Amount',
-        left: 'center',
-        align: 'right',
-        textStyle:{'fontsize':12,fontWeight:'bold'}
-        
-    },
+        title: {
+            text: 'Spending by Amount',
+            left: '200',
+            textStyle:{'fontsize':12,fontWeight:'bold'}
+            
+        },
         tooltip: {
             trigger: 'axis',
             axisPointer: {            // Use axis to trigger tooltip
@@ -409,12 +442,13 @@ function renderEcharts(id,type) {
             bottom: '8%',
             containLabel: true
         },
-        color:['#bfbfbf','#fcce10','green'],
+        color:['darkgray','#fcce10','blue'],
         xAxis: {
             type: 'value',
             splitNumber:4,
+            // name:'K',
             axisLabel:{
-            formatter: '{value}k'
+            formatter: '{value}'
             }
         },
         yAxis: {
@@ -422,13 +456,12 @@ function renderEcharts(id,type) {
         },
     };
     var option1 ={
-            title: {
-        text: 'Spending by Percent',
-        left: 'center',
-        align: 'right',
-        textStyle:{'fontsize':12,fontWeight:'bold'}
-    
-    },
+        title: {
+            text: 'Spending by Percent',
+            left: '200',
+            textStyle:{'fontsize':12,fontWeight:'bold'}
+        
+        },
         tooltip: {
             trigger: 'axis',
             axisPointer: {            // Use axis to trigger tooltip
@@ -449,34 +482,52 @@ function renderEcharts(id,type) {
             bottom: '8%',
             containLabel: true
         },
-        color:['#bfbfbf','#fcce10','green'],
+        color:['darkgray','#fcce10','blue'],
         xAxis: {
             type: 'value',
-            
+            splitNumber:5,
             axisLabel: {  
                 show: true,   
                 formatter: '{value} %'  
             }, 
         },
 
-        yAxis: {
-            type: 'category',
-        },
+        yAxis: []
     };
 
     list_data = result.res;
     for(i=0;i<list_data.length;i++){
+        if(i == 0){
+            list_data[i].legend["left"] = 160;
+        }else if(i == 1){
+             list_data[i].legend["left"] = 160;
+        }else if(i == 2){
+            list_data[i].legend["left"] = 150;
+        }else if(i == 3){
+            list_data[i].legend["left"] = 150;
+        }else if(i == 4){
+            list_data[i].legend["left"] = 160;
+        }else if(i == 5){
+            list_data[i].legend["left"] = 160;
+        }
         if([0,2,4].includes(i)){
         let optionB = JSON.parse( JSON.stringify( option ) );
         optionB.legend = list_data[i].legend
+        // list_data[i].yAxis[1].name='K'
         optionB.yAxis = list_data[i].yAxis
+        optionB.yAxis[1].name='K'
         optionB.series = list_data[i].series
         new_list_data.push(optionB)
         }
         else if([1,3,5].includes(i)){
             let optionA = _.cloneDeep(option1);
             optionA.legend = list_data[i].legend
+            // list_data[i].yAxis[0].name='K'
+            // list_data[i].yAxis[1].name='K'
             optionA.yAxis = list_data[i].yAxis
+            optionA.yAxis[1].name='K'
+            console.log(optionA.yAxis)
+            // optionA.yAisx[1].name='K';
             optionA.series = list_data[i].series
             new_list_data.push(optionA) 
         }else if(i==6){
@@ -484,7 +535,11 @@ function renderEcharts(id,type) {
             // optionC.legend = list_data[i].legend
             optionC.title={}
             optionC.grid.height=50
+            // optionC.grid.width=530
+            optionC.grid.left = "5%";
+            // list_data[i].yAxis[1].name='K'
             optionC.yAxis = list_data[i].yAxis
+            optionC.yAxis[1].name='K'
             optionC.series = list_data[i].series
             new_list_data.push(optionC) 
         }else if(i==7){
@@ -492,39 +547,46 @@ function renderEcharts(id,type) {
             // optionC.legend = list_data[i].legend
             optionD.title={}
             optionD.grid.height=50
+            // optionD.grid.width=540
+            optionD.grid.left = "5%";
+            // list_data[i].yAxis[0].name='K'
+            // list_data[i].yAxis[1].name='K'
             optionD.yAxis = list_data[i].yAxis
+            optionD.yAxis[1].name='K'
             optionD.series = list_data[i].series
             new_list_data.push(optionD) 
         }
     };
     if(id == "#tab1"){
-        var echartstab1 = echarts.init(document.getElementById("tab1chart1"));
-        var echartstab2 = echarts.init(document.getElementById("tab1chart2"));
+        echartstab1 = echarts.init(document.getElementById("tab1chart1"));
+        echartstab2 = echarts.init(document.getElementById("tab1chart2"));
         echartstab1.setOption(new_list_data[0]);
         echartstab2.setOption(new_list_data[1]);
     }else if(id == "#tab2"){
         setTimeout(function(){
-            var echartstab3 = echarts.init(document.getElementById("tab2chart1"));
-            var echartstab4 = echarts.init(document.getElementById("tab2chart2"));
+            echartstab3 = echarts.init(document.getElementById("tab2chart1"));
+            echartstab4 = echarts.init(document.getElementById("tab2chart2"));
             echartstab3.setOption(new_list_data[2]);
             echartstab4.setOption(new_list_data[3]);
         },300)
     }else{
         setTimeout(function(){
-            var echartstab5 = echarts.init(document.getElementById("tab3chart1"));
-            var echartstab6 = echarts.init(document.getElementById("tab3chart2"));
+            echartstab5 = echarts.init(document.getElementById("tab3chart1"));
+            echartstab6 = echarts.init(document.getElementById("tab3chart2"));
             echartstab5.setOption(new_list_data[4]);
             echartstab6.setOption(new_list_data[5]);
-            var echartstab7 = echarts.init(document.getElementById("tab3chart1One"));
-            var echartstab8 = echarts.init(document.getElementById("tab3chart2One"));
+            echartstab7 = echarts.init(document.getElementById("tab3chart1One"));
+            echartstab8 = echarts.init(document.getElementById("tab3chart2One"));
             echartstab7.setOption(new_list_data[6]);
             echartstab8.setOption(new_list_data[7]);
         },300)
     }
     
 }
+
 var tableArray = [];
 var seriesData = [];
+
 function showPdfModal(){
     $("#pdf-modal").modal("show");
     setTimeout(function(){
@@ -534,6 +596,7 @@ function showPdfModal(){
             var obj = {};
             if([0,2,4,6].includes(k)){
                 let newData = v.yAxis[0].data.reverse();//倒序
+                console.log("newData",newData)
                 $.each(newData,function(k1,v1){
                     obj[k1] = [];
                     obj[k1].push(v1);
@@ -544,6 +607,17 @@ function showPdfModal(){
                         obj[k2].push(v2);
                     });
                 });
+                
+                let newData1 = v.yAxis[1].data.reverse();
+                $.each(newData1,function(k3,v3){
+                    // obj[k3]=[];
+                    obj[k3].push(v3)
+                });
+                
+                
+                
+                
+                
                 tableArray.push(obj);
             }
         });
@@ -556,36 +630,60 @@ function showPdfModal(){
         $.each(tableArray[0],function(k,v){
             tableTbodyHtml1 += `<tr>`;
             $.each(v,function(k1,v1){
-                tableTbodyHtml1 += `
-                    <td>${v1}</td>
+                if(k1 == 0){
+                    tableTbodyHtml1 += `
+                    <td>${v1.replace(/\s/g,'&nbsp;')}</td>
                 `;
+                }else {
+                    tableTbodyHtml1 += `
+                    <td style='text-align: right;'>${format(v1)}</td>
+                `;
+                }
             })
             tableTbodyHtml1 += `</tr>`;
         })
         $.each(tableArray[1],function(k,v){
             tableTbodyHtml2 += `<tr>`;
             $.each(v,function(k1,v1){
-                tableTbodyHtml2 += `
-                    <td>${v1}</td>
+                if(k1 == 0){
+                    tableTbodyHtml2 += `
+                    <td>${v1.replace(/\s/g,'&nbsp;')}</td>
                 `;
+                }else {
+                    tableTbodyHtml2 += `
+                      <td style='text-align: right;'>${format(v1)}</td>
+                `;
+                }
             })
             tableTbodyHtml2 += `</tr>`;
         })
         $.each(tableArray[2],function(k,v){
             tableTbodyHtml3 += `<tr>`;
             $.each(v,function(k1,v1){
-                tableTbodyHtml3 += `
-                    <td>${v1}</td>
+                 if(k1 == 0){
+                    tableTbodyHtml3 += `
+                    <td>${v1.replace(/\s/g,'&nbsp;')}</td>
                 `;
+                }else {
+                    tableTbodyHtml3 += `
+                      <td style='text-align: right;'>${format(v1)}</td>
+                `;
+                }
             })
             tableTbodyHtml3 += `</tr>`;
         })
         $.each(tableArray[3],function(k,v){
             tableTbodyHtml4 += `<tr>`;
             $.each(v,function(k1,v1){
-                tableTbodyHtml4 += `
-                    <td>${v1}</td>
+                if(k1 == 0){
+                    tableTbodyHtml4 += `
+                    <td>${v1.replace(/\s/g,'&nbsp;')}</td>
                 `;
+                }else {
+                    tableTbodyHtml4 += `
+                          <td style='text-align: right;'>${format(v1)}</td>
+                    `;
+                }
             })
             tableTbodyHtml4 += `</tr>`;
         })
@@ -593,16 +691,48 @@ function showPdfModal(){
         $("#tableTbody2").html(tableTbodyHtml2);
         $("#tableTbody3").html(tableTbodyHtml3);
         $("#tableTbody3One").html(tableTbodyHtml4);
+        $("#table1 thead tr th").css({
+            "border-bottom":"none"
+        })
+        $("#table2 thead tr th").css({
+            "border-bottom":"none"
+        })
+        $("#table3 thead tr th").css({
+            "border-bottom":"none"
+        })
+        $("#tableTbody1 tr td").css({
+            "border-top":"none"
+        })
+        $("#tableTbody2 tr td").css({
+            "border-top":"none"
+        })
+        $("#tableTbody3 tr td").css({
+            "border-top":"none"
+        })
+        $("#tableTbody3One tr td").css({
+            "border-top":"none"
+        })
         $("#tableTbody1 tr").css("height","50px");
         $("#tableTbody2 tr").css("height","38px");
         $("#tableTbody2 td").css("padding","0 1.25rem");
         $("#tableTbody3 tr").css("height","30px");
         $("#tableTbody3 tr td:nth-child(1)").css("width","8rem");
+        var h1 = $("#tableTbody2 tr").length *  50  + 20;//420px
+        var h2 = "";
+        if(detectZoom() == 135){//150分辨率 90%缩放
+            h2 = $("#tableTbody3 tr").length *  39  + 20;
+        }else {
+            h2 = $("#tableTbody3 tr").length *  40.5  + 20;
+        }
+        $("#tab2chart11").css("height",h1);
+        $("#tab2chart22").css("height",h1);
+        $("#tab3chart11").css("height",h2);
+        $("#tab3chart22").css("height",h2);
         var optionM1 = {
             title: {
                 text: 'Spending by Amount',
-                left: 'center',
-                align: 'right',
+                // left: 'center',
+                // align: 'right',
                 textStyle:{'fontsize':12,fontWeight:'bold'}
                 
             },
@@ -614,16 +744,17 @@ function showPdfModal(){
                 },
                 grid: {
                     left: '3%',
-                    right: '6%',
+                    right: '7%',
                     bottom: '8%',
                     containLabel: true
                 },
-                color:['#bfbfbf','#fcce10','green'],
+                color:['darkgray','#fcce10','blue'],
                 xAxis: {
                     type: 'value',
-                    splitNumber:4,
+                    splitNumber:3,
+                    name:'K',
                     axisLabel:{
-                    formatter: '{value}k'
+                    formatter: '{value}'
                     }
                 },
                 yAxis: {
@@ -633,8 +764,8 @@ function showPdfModal(){
         var optionM2 ={
             title: {
                 text: 'Spending by Percent',
-                left: 'center',
-                align: 'right',
+                // left: 'center',
+                // align: 'right',
                 textStyle:{'fontsize':12,fontWeight:'bold'}
             
             },
@@ -653,15 +784,15 @@ function showPdfModal(){
                     }
                 },
                 grid: {
-                    left: '3%',
-                    right: '4%',
+                    left: '4%',
+                    right: '5%',
                     bottom: '8%',
                     containLabel: true
                 },
-                color:['#bfbfbf','#fcce10','green'],
+                color:['darkgray','#fcce10','blue'],
                 xAxis: {
                     type: 'value',
-                    
+                    splitNumber:5,
                     axisLabel: {  
                         show: true,   
                         formatter: '{value} %'  
@@ -672,57 +803,83 @@ function showPdfModal(){
                     type: 'category',
                 },
             };
-        for(i=0;i<list_data.length;i++){
+        let new_ListData = _.cloneDeep(list_data);    
+        for(i=0;i<new_ListData.length;i++){
             if([0,2,4].includes(i)){
                 let optionB = JSON.parse( JSON.stringify( optionM1 ) );
-                optionB.legend = list_data[i].legend;
-                optionB.yAxis = list_data[i].yAxis[0];
-                optionB.series = list_data[i].series;
+                optionB.title['left']=90;
+                new_ListData[i].legend["left"] = 10;
+                optionB.legend = new_ListData[i].legend;
+                optionB.yAxis = {type: 'category',};
+                optionB.series = new_ListData[i].series;
                 pdfListData.push(optionB)
             }else if([1,3,5].includes(i)){
                 let optionA = _.cloneDeep(optionM2);
-                optionA.legend = list_data[i].legend;
-                list_data[i].yAxis[1]["position"] = "right";
-                optionA.yAxis = list_data[i].yAxis[1];
-                optionA.series = list_data[i].series
+                optionA.title['left']=75;
+                new_ListData[i].legend["left"] = 10;
+                optionA.legend = new_ListData[i].legend;
+                new_ListData[i].yAxis[1]["name"]='';
+                new_ListData[i].yAxis[1]["position"] = "right";
+                // optionA.yAxis = [{}];
+                optionA.yAxis= {type: 'category',};
+                // console.log(list_data[i].yAxis)
+                // console.log(optionA.yAxis)
+                optionA.series = new_ListData[i].series
                 pdfListData.push(optionA) 
             }else if(i==6){
                 let optionC = _.cloneDeep(optionM1);
                 // optionC.legend = list_data[i].legend
                 optionC.title={}
                 optionC.grid.height=50
-                optionC.yAxis = list_data[i].yAxis[0];
-                optionC.series = list_data[i].series
+                // optionC.grid.width=345
+                optionC.yAxis = {type: 'category',};
+                optionC.series = new_ListData[i].series
                 pdfListData.push(optionC) 
             }else if(i==7){
                 let optionD = _.cloneDeep(optionM2);
                 // optionC.legend = list_data[i].legend
                 optionD.title={}
                 optionD.grid.height=50
-                list_data[i].yAxis[1]["position"] = "right";
-                optionD.yAxis = list_data[i].yAxis[1];
-                optionD.series = list_data[i].series
+                // optionD.grid.width=350
+                new_ListData[i].yAxis[1]["name"]='';
+                // list_data[i].yAxis[1]["position"] = "right";
+                // list_data[i].yAxis[1]["data"] = [];
+                // optionD.yAxis=[{}]
+                optionD.yAxis= {
+                    type: 'category',
+                    data: ['',]
+                };
+                // optionD.yAxis=[list_data[i].yAxis[0]];
+                optionD.series = new_ListData[i].series
                 pdfListData.push(optionD) 
             }
         };
-       var echartstab11 = echarts.init(document.getElementById("tab1chart11"));
-        var echartstab22 = echarts.init(document.getElementById("tab1chart22"));
+        if(detectZoom() == 120){
+            $("#tab2chart11").css("height","510px");
+            $("#tab2chart22").css("height","510px");
+            $("#tab3chart11").css("height","760px");
+            $("#tab3chart22").css("height","760px");
+        }
+        echartstab11 = echarts.init(document.getElementById("tab1chart11"));
+        echartstab22 = echarts.init(document.getElementById("tab1chart22"));
         echartstab11.setOption(pdfListData[0]);
         echartstab22.setOption(pdfListData[1]);
-        var echartstab33 = echarts.init(document.getElementById("tab2chart11"));
-        var echartstab44 = echarts.init(document.getElementById("tab2chart22"));
+        echartstab33 = echarts.init(document.getElementById("tab2chart11"));
+        echartstab44 = echarts.init(document.getElementById("tab2chart22"));
         echartstab33.setOption(pdfListData[2]);
         echartstab44.setOption(pdfListData[3]);
-        var echartstab55 = echarts.init(document.getElementById("tab3chart11"));
-        var echartstab66 = echarts.init(document.getElementById("tab3chart22"));
-        var oneEchart3 = echarts.init(document.getElementById("oneEchart3"));
-        var one2Echart3 = echarts.init(document.getElementById("one2Echart3"));
+        echartstab55 = echarts.init(document.getElementById("tab3chart11"));
+        echartstab66 = echarts.init(document.getElementById("tab3chart22"));
+        oneEchart3 = echarts.init(document.getElementById("oneEchart3"));
+        one2Echart3 = echarts.init(document.getElementById("one2Echart3"));
         echartstab55.setOption(pdfListData[4]);
         echartstab66.setOption(pdfListData[5]); 
         oneEchart3.setOption(pdfListData[6]);
         one2Echart3.setOption(pdfListData[7]);
+        $("#pdfDom22 .table-xs td,#pdfDom22 .table-xs th").css("padding","0.5rem 0.5rem");
     },500)
 }
+
 //下载
 function downloadFile(fileName, content) {
     let aLink = document.createElement('a');
@@ -733,6 +890,7 @@ function downloadFile(fileName, content) {
     aLink.href = URL.createObjectURL(blob);
     aLink.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));//兼容火狐
 }
+
 //base64转blob
 function base64ToBlob(code) {
     let parts = code.split(';base64,');
@@ -747,6 +905,7 @@ function base64ToBlob(code) {
     }
     return new Blob([uInt8Array], { type: contentType });
 }
+
 function downloadPdf(){
     document.getElementById("table3").scrollTop = 0;
     var element = $('#pdfDom22'); // global variable
@@ -761,8 +920,8 @@ function downloadPdf(){
     if(win_o>win_i){
         abs = (win_o - win_i)/2;    // 获得滚动条长度的一半
     }
-    canvas.width = w*2;    // 将画布宽&&高放大两倍
-    canvas.height = h*6;
+    canvas.width = w*4;    // 将画布宽&&高放大两倍
+    canvas.height = h*8;
     var context = canvas.getContext("2d");
     // context.font=`Roboto,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"`;
     // // 关闭抗锯齿
@@ -770,18 +929,29 @@ function downloadPdf(){
     // context.webkitImageSmoothingEnabled = false;
     // context.msImageSmoothingEnabled = false;
     // context.imageSmoothingEnabled = false;
-    context.scale(1, 1);
+    context.scale(2, 2);
     context.translate(-offsetLeft-abs,-offsetTop);
+    debugger
+    var wh;
+    if(detectZoom() == 120){//150分辨率 80%缩放
+        wh = [800, 1100];
+    }else if(detectZoom() == 113){//125分辨率，90%缩放
+        wh = [900, 1100];
+    }else if(detectZoom() == 100){
+        wh = [1100, 1100];
+    }else {
+        wh = [750, 1100];
+    }
     setTimeout(function(){
         html2canvas(element, {
-            scale:window.devicePixelRatio*2,
-            dpi:300,
+            scale:detectZoom()*2,
+            dpi:600,
             canvas: canvas,
             useCORS: true,// 【重要】开启跨域配置
             onrendered: function (canvas) {
                 getCanvas = canvas.toDataURL();
                 // downloadFile('测试.png', getCanvas);
-                var pdf = new jsPDF('p', 'mm', [580, 660]);
+                var pdf = new jsPDF('p', 'mm', wh);
                 pdf.addImage(getCanvas, 'JPEG', 5,0,'','','','FAST')
                 pdf.save('myTest.pdf');
             },
@@ -800,6 +970,7 @@ function format(num) {
         });
     });
 } 
+
 var cfs = {//dashboard全局方法
     request: {//请求后端数据
         common: {//通用请求
@@ -1135,3 +1306,43 @@ var cfs = {//dashboard全局方法
         },
     },
 };
+
+$(window).resize(function() {
+    console.log(detectZoom())
+    let proportion = window.devicePixelRatio;
+    let id = $(".tabulDom li").find(".active").attr("href");
+    if(id == "#tab1"){
+        echartstab1.resize();
+        echartstab2.resize(); 
+    }else if(id == "#tab2"){
+        echartstab3.resize();
+        echartstab4.resize();
+    }else if(id == "#tab3"){
+        echartstab5.resize();
+        echartstab6.resize();
+        echartstab7.resize();
+        echartstab8.resize();
+    }
+    var h1 = $("#tableTbody2 tr").length *  50  + 20;//420px
+    var h2 = "";
+    if(detectZoom() == 135){//150分辨率 90%缩放
+        h2 = $("#tableTbody3 tr").length *  39  + 20;
+    }else {
+        h2 = $("#tableTbody3 tr").length *  40.5  + 20;
+    }
+    $("#tab2chart11").css("height",h1);
+    $("#tab2chart22").css("height",h1);
+    $("#tab3chart11").css("height",h2);
+    $("#tab3chart22").css("height",h2);
+    // tab3chart11
+    if($("#pdf-modal").hasClass("show")){
+        echartstab11.resize();
+        echartstab22.resize(); 
+        echartstab33.resize();
+        echartstab44.resize(); 
+        echartstab55.resize();
+        echartstab66.resize();
+        oneEchart3.resize();
+        one2Echart3.resize();
+    }
+});

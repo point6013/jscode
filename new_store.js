@@ -1,62 +1,102 @@
-// main环境
-
+var cfs1 = new DevCustomFuncTools();
 var storeAgeEchart1Data;
 var storeAgeEchart2Data;
+
+// var exportIHtml = `<span class="exportParent" style="position: absolute;right: 251px;top: 10.5px;margin-right: 22px;cursor: pointer;" onclick="tableExportFunction();"><i class="icon-download4" style="margin-right: 6px;""></i><span class="exportSpan">EPS订单明细下载</span></span>`;
+// // $($(".dashBoardContent .dataSheet:nth-child(0)").children()[0]).css("position", "relative");
+// $($(".dashBoardContent")).append(exportIHtml);
+// debugger;
 var newSQLStr = "";
 function getPovParam(){
     domLoadingShow();
     newSQLStr = "";
-    setTimeout(function(){
+    // setTimeout(function(){
         var getSearchParam = showDashBoard.globalCurrentPovObj;
         console.log(getSearchParam)
-        var sqlStr = "and ";
-        $.each(getSearchParam,function(k,v){
-            if(v !== ""){
-                if(v == "JJJ" && k == "Region"){
-                    sqlStr += `Region='JJJ&N' and `;
-                }else if(k == "Opening"){
-                    sqlStr += `Store_Age='${v}' and `;
-                }else if(v == "DevMarket" || v == "CityType" || v == "StoreType" || v == "DTType" || v == "OpsMonths" || v == "Ownership" || v == "Region"){
-                    sqlStr += "";
-                }else {
-                    sqlStr += `${k}='${v}' and `;
-                }
-            }
-            // if(v !== "" && k !== "Opening" && k !== "Region"){
-            //     sqlStr += `${k}='${v}' and `;
-            // }else if(v !== "" && k == "Opening"){
-            //     sqlStr += `Store_Age='${v}' and `;
-            // }
+        // let para = JSON.stringify(getSearchParam)
+        let pyName = 'store_aging_dashboard';
+        let paraobj = {'filters':getSearchParam}
+        // let result = cfs.request.python.web(pyName,paraobj).res.result;
+        // let result= cfs.request.python.web('store_aging_dashboard.py', {'filters':getSearchParam}).res
+        // console.log(result)
+        debugger;
+        result =JSON.parse(cfs.request.python.pythonWeb('store_aging_dashboard', paraobj).res)
+        // result =JSON.parse(cfs.request.pythonWweb('store_aging_dashboard', paraobj))
+        debugger;
+        console.log(result)
+        newSQLStr=result.res;
+        renderModule1();
+        renderModule2();
+        renderModule3();
+        // var sqlStr = "and ";
+        // $.each(getSearchParam,function(k,v){
+        //     if(v !== ""){
+        //         if(v.indexOf("JJJ") > -1 && k == "Region"){
+        //             v.splice(v.indexOf("JJJ"),1,"JJJ&N");
+        //             var newS = JSON.stringify(v);
+        //             newS = newS.substr(1); //删除第一个字符
+        //             newS = newS.substr(0, newS.length - 1); //删除最后一字符
+        //             sqlStr += `Region in (${newS}) and `;
+        //         }else if(k == "Opening"){
+        //              var newS = JSON.stringify(v);
+        //             newS = newS.substr(1); //删除第一个字符
+        //             newS = newS.substr(0, newS.length - 1); //删除最后一字符
+        //             sqlStr += `Store_Age in (${newS}) and `;
+        //         }else if(v.indexOf("DevMarket") > -1 || v.indexOf("CityType") > -1 || v.indexOf("StoreType") > -1 || v.indexOf("DTType") > -1 
+        //         || v.indexOf("OpsMonths") > -1 || v.indexOf("Ownership") > -1 || v.indexOf("Region") > -1){
+        //             v.splice(v.indexOf("DevMarket"),1);
+        //             v.splice(v.indexOf("CityType"),1);
+        //             v.splice(v.indexOf("StoreType"),1);
+        //             v.splice(v.indexOf("DTType"),1);
+        //             v.splice(v.indexOf("OpsMonths"),1);
+        //             v.splice(v.indexOf("Ownership"),1);
+        //             v.splice(v.indexOf("Region"),1);
+        //         }else if(k == "Store_Type"){
+        //             sqlStr += `Store_Type='${$("select[aname='Store_Type']").find("option:selected").text()}' and `;
+        //         }else {
+        //             var newS = JSON.stringify(v);
+        //             newS = newS.substr(1); //删除第一个字符
+        //             newS = newS.substr(0, newS.length - 1); //删除最后一字符
+        //             sqlStr += `${k} in (${newS}) and `; 
+                    
+        //         }
+        //     }
+        //     // if(v !== "" && k !== "Opening" && k !== "Region"){
+        //     //     sqlStr += `${k}='${v}' and `;
+        //     // }else if(v !== "" && k == "Opening"){
+        //     //     sqlStr += `Store_Age='${v}' and `;
+        //     // }
 
-            // if(v !== "" && k == "Region" && v !== "JJJ"){
-            //     sqlStr += `${k}='${v}' and `;
-            // }else if(v == "JJJ" && k == "Region"){
-            //     sqlStr += `Region='JJJ&N' and `;
-            // }
-        });
-        if(getSearchParam.City_Type == "" && 
-        getSearchParam.DT == "" &&
-        getSearchParam.Dev_Market == "" &&
-        getSearchParam.Opening == "" &&
-        getSearchParam.Ops_months == "" &&
-        getSearchParam.Region == "" &&
-        getSearchParam.Store_Type == ""){
-            sqlStr = "";
-        }
-        newSQLStr = sqlStr.substring(0,sqlStr.length-4);
-        console.log(newSQLStr)
-        // renderModule1(newSQLStr)
-        // renderModule2(newSQLStr);
-        // renderModule3(newSQLStr);
-        // renderModule4(newSQLStr);
+        //     // if(v !== "" && k == "Region" && v !== "JJJ"){
+        //     //     sqlStr += `${k}='${v}' and `;
+        //     // }else if(v == "JJJ" && k == "Region"){
+        //     //     sqlStr += `Region='JJJ&N' and `;
+        //     // }
+        // });
+        // if(getSearchParam.City_Type == "" && 
+        // getSearchParam.DT == "" &&
+        // getSearchParam.Dev_Market == "" &&
+        // getSearchParam.Opening == "" &&
+        // getSearchParam.Ops_months == "" &&
+        // getSearchParam.Region == "" &&
+        // getSearchParam.Store_Type == ""){
+        //     sqlStr = "";
+        // }
+        // newSQLStr = sqlStr.substring(0,sqlStr.length-4);
+        // console.log(newSQLStr)
         setTimeout(function(){
             domLoadingHide();
         },2000)
         
-    },1000)
+    // },1000)
 }
 function renderModule1(){
-    var componentId = $(".dashBoardContent .dataSheet:nth-child(2) div .card .echart").attr("id");
+    console.log("render1")
+    var exportIHtml = `<span class="exportParent" style="position: absolute;right: 180px;top: 60px;margin-right: 15px;cursor: pointer;" onclick="tableExportFunction();"><i class="mi-cloud-download" style="margin-right: 1px;""></i><span class="exportSpan">New Store明细下载</span></span>`;
+    // $($(".dashBoardContent .dataSheet:nth-child(0)").children()[0]).css("position", "relative");
+    $($(".dashBoardContent")).append(exportIHtml);
+    debugger;
+    var componentId = $(".dashBoardContent .dataSheet:nth-child(1) div .card .echart").attr("id");
     var html2 = `
         <div class="row" style="height: 690px;overflow:auto;table-layout: fixed;border: 1px solid #c1c1c1;">
             <table class="table table-hover datatable-highlight dataTable no-footer table-striped table-xs" style="font-size:12px;">
@@ -64,8 +104,8 @@ function renderModule1(){
                     <tr>
                         <th style="padding: 0 4rem;"></th>
                         <th style="padding: 0 4rem;"></th>
-                        <th colspan='11' class='x27' style="border-left: 1px solid #c1c1c1;">PER STORE PER MONTH SALES ('000) </th>
-                        <th colspan='11' class='x27' style="border-left: 1px solid #c1c1c1;">COMP SALES % </th>
+                        <th colspan='12' class='x27' style="border-left: 1px solid #c1c1c1;">PER STORE PER MONTH SALES ('000) </th>
+                        <th colspan='12' class='x27' style="border-left: 1px solid #c1c1c1;">COMP SALES % </th>
                     </tr>
                     <tr>
                         <td>Store Age</td>
@@ -79,7 +119,8 @@ function renderModule1(){
                         <td>2017</td>
                         <td>2018</td>
                         <td>2019</td>
-                        <td>2020/TTM</td>
+                        <td>2020</td>
+                        <td>2021</td>
                         <td style="background: #c1c1c1;">TTM</td>
                         <td>2011</td>
                         <td>2012</td>
@@ -90,7 +131,8 @@ function renderModule1(){
                         <td>2017</td>
                         <td>2018</td>
                         <td>2019</td>
-                        <td>2020/TTM</td>
+                        <td>2020</td>
+                        <td>2021</td>
                         <td style="background: #c1c1c1;">TTM</td>
                     </tr>
                 </thead>
@@ -117,24 +159,27 @@ function renderModule1(){
                     counts>=1 then 1 else null end) sale_2018,
                     sum( CASE WHEN Cal_Year = '2019' THEN sales ELSE NULL END )/12/1000/count(case when Cal_Year='2019' and 
                     counts>=1 then 1 else null end) sale_2019,
-                    sum( CASE WHEN Cal_Year = '2020' THEN sales ELSE NULL END )/12/1000/count(case when Cal_Year='2020' and 
+                    sum( CASE WHEN Cal_Year = '2020' and counts>=1 THEN sales ELSE NULL END )/12/1000/count(case when Cal_Year='2020' and 
                     counts>=1 then 1 else null end) sale_2020,
-                    sum( CASE WHEN Cal_Year = 'ttm' THEN sales ELSE NULL END )/12/1000/count(case when Cal_Year='ttm' and 
+                    sum( CASE WHEN Cal_Year = '2021' and counts>=1 THEN sales ELSE NULL END )/12/1000/count(case when Cal_Year='2021' and 
+                    counts>=1 then 1 else null end) sale_2021,
+                    sum( CASE WHEN Cal_Year = 'ttm' and counts>=1 THEN sales ELSE NULL END )/12/1000/count(case when Cal_Year='ttm' and 
                     counts>=1 then 1 else null end) sale_ttm,
                     sum( CASE WHEN Cal_year = '2011' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2011' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2011,
-                    	sum( CASE WHEN Cal_year = '2012' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2012' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2012,
-                    	sum( CASE WHEN Cal_year = '2013' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2013' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2013,
-                    	sum( CASE WHEN Cal_year = '2014' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2014' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2014,
-                    	sum( CASE WHEN Cal_year = '2015' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2015' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2015,
-                    	sum( CASE WHEN Cal_year = '2016' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2016' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2016,
-                    	sum( CASE WHEN Cal_year = '2017' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2017' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2017,
-                    	sum( CASE WHEN Cal_year = '2018' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2018' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2018,
-                    	sum( CASE WHEN Cal_year = '2019' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2019' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2019,
-                    	sum( CASE WHEN Cal_year = '2020' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2020' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2020,
+                	sum( CASE WHEN Cal_year = '2012' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2012' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2012,
+                	sum( CASE WHEN Cal_year = '2013' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2013' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2013,
+                	sum( CASE WHEN Cal_year = '2014' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2014' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2014,
+                	sum( CASE WHEN Cal_year = '2015' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2015' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2015,
+                	sum( CASE WHEN Cal_year = '2016' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2016' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2016,
+                	sum( CASE WHEN Cal_year = '2017' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2017' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2017,
+                	sum( CASE WHEN Cal_year = '2018' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2018' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2018,
+                	sum( CASE WHEN Cal_year = '2019' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2019' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2019,
+                	sum( CASE WHEN Cal_year = '2020' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2020' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2020,
+                	sum( CASE WHEN Cal_year = '2021' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2021' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2021,                	
                     	sum( CASE WHEN Cal_year = 'ttm' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = 'ttm' THEN comp_py ELSE NULL END )- 1 AS comp_sale_ttm
                     from 	mcdcapex.app1_store_aging_data_df_sale 
                     WHERE
-                        counts >= 1 ${newSQLStr}
+                        1 = 1 and Ownership='McOpCo'  ${newSQLStr}
                     GROUP BY 1,2
 										
 										union all 
@@ -156,27 +201,31 @@ SELECT
                     counts>=1 then 1 else null end) sale_2018,
                     sum( CASE WHEN Cal_Year = '2019' THEN sales ELSE NULL END )/12/1000/count(case when Cal_Year='2019' and 
                     counts>=1 then 1 else null end) sale_2019,
-                    sum( CASE WHEN Cal_Year = '2020' THEN sales ELSE NULL END )/12/1000/count(case when Cal_Year='2020' and 
+                    sum( CASE WHEN Cal_Year = '2020' and counts>=1 THEN sales ELSE NULL END )/12/1000/count(case when Cal_Year='2020' and 
                     counts>=1 then 1 else null end) sale_2020,
-                    sum( CASE WHEN Cal_Year = 'ttm' THEN sales ELSE NULL END )/12/1000/count(case when Cal_Year='ttm' and 
+                    sum( CASE WHEN Cal_Year = '2021' and counts>=1 THEN sales ELSE NULL END )/12/1000/count(case when Cal_Year='2021' and 
+                    counts>=1 then 1 else null end) sale_2021,                    
+                    sum( CASE WHEN Cal_Year = 'ttm' and counts>=1 THEN sales ELSE NULL END )/12/1000/count(case when Cal_Year='ttm' and 
                     counts>=1 then 1 else null end) sale_ttm,
                     sum( CASE WHEN Cal_year = '2011' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2011' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2011,
-                    	sum( CASE WHEN Cal_year = '2012' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2012' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2012,
-                    	sum( CASE WHEN Cal_year = '2013' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2013' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2013,
-                    	sum( CASE WHEN Cal_year = '2014' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2014' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2014,
-                    	sum( CASE WHEN Cal_year = '2015' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2015' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2015,
-                    	sum( CASE WHEN Cal_year = '2016' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2016' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2016,
-                    	sum( CASE WHEN Cal_year = '2017' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2017' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2017,
-                    	sum( CASE WHEN Cal_year = '2018' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2018' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2018,
-                    	sum( CASE WHEN Cal_year = '2019' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2019' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2019,
-                    	sum( CASE WHEN Cal_year = '2020' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2020' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2020,
+                	sum( CASE WHEN Cal_year = '2012' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2012' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2012,
+                	sum( CASE WHEN Cal_year = '2013' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2013' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2013,
+                	sum( CASE WHEN Cal_year = '2014' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2014' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2014,
+                	sum( CASE WHEN Cal_year = '2015' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2015' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2015,
+                	sum( CASE WHEN Cal_year = '2016' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2016' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2016,
+                	sum( CASE WHEN Cal_year = '2017' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2017' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2017,
+                	sum( CASE WHEN Cal_year = '2018' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2018' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2018,
+                	sum( CASE WHEN Cal_year = '2019' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2019' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2019,
+                	sum( CASE WHEN Cal_year = '2020' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2020' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2020,
+                 	sum( CASE WHEN Cal_year = '2021' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = '2021' THEN comp_py ELSE NULL END )- 1 AS comp_sale_2021,                      	
                     	sum( CASE WHEN Cal_year = 'ttm' THEN comp_cy ELSE NULL END ) / sum( CASE WHEN Cal_year = 'ttm' THEN comp_py ELSE NULL END )- 1 AS comp_sale_ttm
                     from 	mcdcapex.app1_store_aging_data_df_sale 
                     WHERE
-                        counts >= 1 ${newSQLStr}
+                        1 = 1 and Ownership='McOpCo' ${newSQLStr}
                     GROUP BY 1,2
 										order by 2 ASC
                     `;
+                    debugger
     var res2 = cfs.request.foundation.runComm(sqlParam);
     var tbodyHtml = "";
     $.each(res2.res,function(k,v){
@@ -194,6 +243,7 @@ SELECT
                     <td>${v["sale_2018"] !== null ? format(Math.round(v["sale_2018"])) : ""}</td>
                     <td>${v["sale_2019"] !== null ? format(Math.round(v["sale_2019"])) : ""}</td>
                     <td>${v["sale_2020"] !== null ? format(Math.round(v["sale_2020"])) : ""}</td>
+                    <td>${v["sale_2021"] !== null ? format(Math.round(v["sale_2021"])) : ""}</td>
                     <td style="background: #c1c1c1;">${v["sale_ttm"] !== null ? format(Math.round(v["sale_ttm"])): ""}</td>
                     <td>${v["comp_sale_2011"] !== null ? (Number(v["comp_sale_2011"])*100).toFixed(1) + "%" : ""}</td>
                     <td>${v["comp_sale_2012"] !== null ? (Number(v["comp_sale_2012"])*100).toFixed(1) + "%" : ""}</td>
@@ -205,13 +255,14 @@ SELECT
                     <td>${v["comp_sale_2018"] !== null ? (Number(v["comp_sale_2018"])*100).toFixed(1) + "%" : ""}</td>
                     <td>${v["comp_sale_2019"] !== null ? (Number(v["comp_sale_2019"])*100).toFixed(1) + "%" : ""}</td>
                     <td>${v["comp_sale_2020"] !== null ? (Number(v["comp_sale_2020"])*100).toFixed(1) + "%" : ""}</td>
+                    <td>${v["comp_sale_2021"] !== null ? (Number(v["comp_sale_2021"])*100).toFixed(1) + "%" : ""}</td>
                     <td style="background: #c1c1c1;">${v["comp_sale_ttm"] !== null ? (Number(v["comp_sale_ttm"]) *100).toFixed(1) + "%" : ""}</td>
                 </tr>`;
     })
     $("#table1").html(tbodyHtml);
 }
 function renderModule2(){
-    var componentId = $(".dashBoardContent .dataSheet:nth-child(3) div .card .echart").attr("id");
+    var componentId = $(".dashBoardContent .dataSheet:nth-child(2) div .card .echart").attr("id");
     var html = `
     <div class="row" style="height: 722px;overflow:auto;table-layout: fixed;border: 1px solid #c1c1c1;">
         <table class="table table-hover datatable-highlight dataTable no-footer table-striped table-xs">
@@ -219,8 +270,8 @@ function renderModule2(){
                 <tr>
                     <td style="padding: 0 4rem;"></td>
                     <td style="padding: 0 4rem;"></td>
-                    <td colspan="11" class="x27" width="792" style="border-left: 1px solid #c1c1c1;">&nbsp;Yearly CASH FLOW ('000) </td>
-                    <td colspan="11" class="x27" width="792" style="border-left: 1px solid #c1c1c1;">&nbsp;PER STORE INVESTMENT ('000) </td>
+                    <td colspan="12" class="x27" width="792" style="border-left: 1px solid #c1c1c1;">&nbsp;Yearly CASH FLOW ('000) </td>
+                    <td colspan="12" class="x27" width="792" style="border-left: 1px solid #c1c1c1;">&nbsp;PER STORE INVESTMENT ('000) </td>
                 </tr>
                 <tr>
                     <td>Store Age</td>
@@ -235,6 +286,7 @@ function renderModule2(){
                     <td>2018</td>
                     <td>2019</td>
                     <td>2020</td>
+                    <td>2021</td>
                     <td style="background: #c1c1c1;"><span style="float:right;">TTM </td>
                     <td>2011</td>
                     <td>2012</td>
@@ -246,6 +298,7 @@ function renderModule2(){
                     <td>2018</td>
                     <td>2019</td>
                     <td>2020</td>
+                    <td>2021</td>
                     <td style="background: #c1c1c1;"><span style="float:right;">TTM </td>
                 </tr>
             </thead>
@@ -272,26 +325,29 @@ function renderModule2(){
                     counts>=1 then 1 else null end) CF_2018,
                     sum( CASE WHEN Cal_Year = '2019' THEN CF ELSE NULL END )/1000/count(case when Cal_Year='2019' and 
                     counts>=1 then 1 else null end) CF_2019,
-                    sum( CASE WHEN Cal_Year = '2020' THEN CF ELSE NULL END )/1000/count(case when Cal_Year='2020' and 
+                    sum( CASE WHEN Cal_Year = '2020' and counts>=1 THEN CF ELSE NULL END )/1000/count(case when Cal_Year='2020' and 
                     counts>=1 then 1 else null end) CF_2020,
-                    sum( CASE WHEN Cal_Year = 'ttm' THEN CF ELSE NULL END )/1000/count(case when Cal_Year='ttm' and 
+                    sum( CASE WHEN Cal_Year = '2021' and counts>=1 THEN CF ELSE NULL END )/1000/count(case when Cal_Year='2021' and 
+                    counts>=1 then 1 else null end) CF_2021,                    
+                    sum( CASE WHEN Cal_Year = 'ttm' and counts>=1 THEN CF ELSE NULL END )/1000/count(case when Cal_Year='ttm' and 
                     counts>=1 then 1 else null end) CF_ttm,
                     
                     
-                    	sum( CASE WHEN Cal_Year = '2011' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2011' then Inv_Counts else null end) Inv_2011,
-                    	sum( CASE WHEN Cal_Year = '2012' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2012' then Inv_Counts else null end) Inv_2012,
-                    	sum( CASE WHEN Cal_Year = '2013' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2013' then Inv_Counts else null end) Inv_2013,
-                    	sum( CASE WHEN Cal_Year = '2014' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2014' then Inv_Counts else null end) Inv_2014,
-                    	sum( CASE WHEN Cal_Year = '2015' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2015' then Inv_Counts else null end) Inv_2015,
-                    	sum( CASE WHEN Cal_Year = '2016' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2016' then Inv_Counts else null end) Inv_2016,
-                    	sum( CASE WHEN Cal_Year = '2017' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2017' then Inv_Counts  else null end) Inv_2017,
-                    	sum( CASE WHEN Cal_Year = '2018' THEN Inv ELSE NULL END ) /sum(case when  Cal_Year = '2018' then  Inv_Counts else null end)Inv_2018,
-                    	sum( CASE WHEN Cal_Year = '2019' THEN Inv ELSE NULL END ) /sum(case when  Cal_Year = '2019' then Inv_Counts else null end)Inv_2019,
-                    	sum( CASE WHEN Cal_Year = '2020' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2020' then Inv_Counts else null end) Inv_2020,
-                    	sum( CASE WHEN Cal_Year = 'ttm' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = 'ttm' then Inv_Counts else null end) Inv_ttm
+                	sum( CASE WHEN Cal_Year = '2011' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2011' then Inv_Counts else null end) Inv_2011,
+                	sum( CASE WHEN Cal_Year = '2012' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2012' then Inv_Counts else null end) Inv_2012,
+                	sum( CASE WHEN Cal_Year = '2013' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2013' then Inv_Counts else null end) Inv_2013,
+                	sum( CASE WHEN Cal_Year = '2014' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2014' then Inv_Counts else null end) Inv_2014,
+                	sum( CASE WHEN Cal_Year = '2015' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2015' then Inv_Counts else null end) Inv_2015,
+                	sum( CASE WHEN Cal_Year = '2016' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2016' then Inv_Counts else null end) Inv_2016,
+                	sum( CASE WHEN Cal_Year = '2017' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2017' then Inv_Counts  else null end) Inv_2017,
+                	sum( CASE WHEN Cal_Year = '2018' THEN Inv ELSE NULL END ) /sum(case when  Cal_Year = '2018' then  Inv_Counts else null end)Inv_2018,
+                	sum( CASE WHEN Cal_Year = '2019' THEN Inv ELSE NULL END ) /sum(case when  Cal_Year = '2019' then Inv_Counts else null end)Inv_2019,
+                	sum( CASE WHEN Cal_Year = '2020' and counts>=1 THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2020' then Inv_Counts else null end) Inv_2020,
+                	sum( CASE WHEN Cal_Year = '2021' and counts>=1 THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2021' then Inv_Counts else null end) Inv_2021,
+                	sum( CASE WHEN Cal_Year = 'ttm' and counts>=1 THEN Inv ELSE NULL END )/sum(case when  Cal_Year = 'ttm' then Inv_Counts else null end) Inv_ttm
                     
                     from 	mcdcapex.app1_store_aging_data_df_sale
-                    where counts>=1 ${newSQLStr}
+                    where 1=1 and Ownership='McOpCo' ${newSQLStr}
                     GROUP BY 1,2
                     union all 
                     
@@ -311,33 +367,35 @@ function renderModule2(){
                     counts>=1 then 1 else null end) CF_2018,
                     sum( CASE WHEN Cal_Year = '2019' THEN CF ELSE NULL END )/1000/count(case when Cal_Year='2019' and 
                     counts>=1 then 1 else null end) CF_2019,
-                    sum( CASE WHEN Cal_Year = '2020' THEN CF ELSE NULL END )/1000/count(case when Cal_Year='2020' and 
+                    sum( CASE WHEN Cal_Year = '2020' and counts>=1  THEN CF ELSE NULL END )/1000/count(case when Cal_Year='2020' and 
                     counts>=1 then 1 else null end) CF_2020,
-                    sum( CASE WHEN Cal_Year = 'ttm' THEN CF ELSE NULL END )/1000/count(case when Cal_Year='ttm' and 
+                    sum( CASE WHEN Cal_Year = '2021' and counts>=1  THEN CF ELSE NULL END )/1000/count(case when Cal_Year='2021' and 
+                    counts>=1 then 1 else null end) CF_2021,                    
+                    sum( CASE WHEN Cal_Year = 'ttm' and counts>=1  THEN CF ELSE NULL END )/1000/count(case when Cal_Year='ttm' and 
                     counts>=1 then 1 else null end) CF_ttm,
                     
                     
-                    	sum( CASE WHEN Cal_Year = '2011' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2011' then Inv_Counts else null end) Inv_2011,
-                    	sum( CASE WHEN Cal_Year = '2012' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2012' then Inv_Counts else null end) Inv_2012,
-                    	sum( CASE WHEN Cal_Year = '2013' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2013' then Inv_Counts else null end) Inv_2013,
-                    	sum( CASE WHEN Cal_Year = '2014' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2014' then Inv_Counts else null end) Inv_2014,
-                    	sum( CASE WHEN Cal_Year = '2015' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2015' then Inv_Counts else null end) Inv_2015,
-                    	sum( CASE WHEN Cal_Year = '2016' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2016' then Inv_Counts else null end) Inv_2016,
-                    	sum( CASE WHEN Cal_Year = '2017' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2017' then Inv_Counts  else null end) Inv_2017,
-                    	sum( CASE WHEN Cal_Year = '2018' THEN Inv ELSE NULL END ) /sum(case when  Cal_Year = '2018' then  Inv_Counts else null end)Inv_2018,
-                    	sum( CASE WHEN Cal_Year = '2019' THEN Inv ELSE NULL END ) /sum(case when  Cal_Year = '2019' then Inv_Counts else null end)Inv_2019,
-                    	sum( CASE WHEN Cal_Year = '2020' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2020' then Inv_Counts else null end) Inv_2020,
-                    	sum( CASE WHEN Cal_Year = 'ttm' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = 'ttm' then Inv_Counts else null end) Inv_ttm
+                	sum( CASE WHEN Cal_Year = '2011' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2011' then Inv_Counts else null end) Inv_2011,
+                	sum( CASE WHEN Cal_Year = '2012' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2012' then Inv_Counts else null end) Inv_2012,
+                	sum( CASE WHEN Cal_Year = '2013' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2013' then Inv_Counts else null end) Inv_2013,
+                	sum( CASE WHEN Cal_Year = '2014' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2014' then Inv_Counts else null end) Inv_2014,
+                	sum( CASE WHEN Cal_Year = '2015' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2015' then Inv_Counts else null end) Inv_2015,
+                	sum( CASE WHEN Cal_Year = '2016' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2016' then Inv_Counts else null end) Inv_2016,
+                	sum( CASE WHEN Cal_Year = '2017' THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2017' then Inv_Counts  else null end) Inv_2017,
+                	sum( CASE WHEN Cal_Year = '2018' THEN Inv ELSE NULL END ) /sum(case when  Cal_Year = '2018' then  Inv_Counts else null end)Inv_2018,
+                	sum( CASE WHEN Cal_Year = '2019' THEN Inv ELSE NULL END ) /sum(case when  Cal_Year = '2019' then Inv_Counts else null end)Inv_2019,
+                	sum( CASE WHEN Cal_Year = '2020' and counts>=1 THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2020' then Inv_Counts else null end) Inv_2020,
+                	sum( CASE WHEN Cal_Year = '2021' and counts>=1 THEN Inv ELSE NULL END )/sum(case when  Cal_Year = '2021' then Inv_Counts else null end) Inv_2021,
+                	sum( CASE WHEN Cal_Year = 'ttm' and counts>=1 THEN Inv ELSE NULL END )/sum(case when  Cal_Year = 'ttm' then Inv_Counts else null end) Inv_ttm
                     
                     from 	mcdcapex.app1_store_aging_data_df_sale
-                    where counts>=1 ${newSQLStr}
+                    where 1=1 and Ownership='McOpCo' ${newSQLStr}
                     GROUP BY 1,2
                     order by 2
                     `;
     var res2 = cfs.request.foundation.runComm(sqlParam);
     var tbodyHtml = "";
     $.each(res2.res,function(k,v){
-        console.log(v["CF_2011"])
         tbodyHtml += `
                 <tr>
                     <td>${v.Store_Age}</td>
@@ -352,6 +410,7 @@ function renderModule2(){
                     <td>${v["CF_2018"] !== null ? format(Math.round(v["CF_2018"])) : ""}</td>
                     <td>${v["CF_2019"] !== null ? format(Math.round(v["CF_2019"])) : ""}</td>
                     <td>${v["CF_2020"] !== null ? format(Math.round(v["CF_2020"])) : ""}</td>
+                    <td>${v["CF_2021"] !== null ? format(Math.round(v["CF_2021"])) : ""}</td>
                     <td style="background: #c1c1c1;">${v["CF_ttm"] !== null ? format(Math.round(v["CF_ttm"])) : ""}</td>
                     <td>${v["Inv_2011"] !== null ? format(Math.round(v["Inv_2011"])) : ""}</td>
                     <td>${v["Inv_2012"] !== null ? format(Math.round(v["Inv_2012"])) : ""}</td>
@@ -363,13 +422,14 @@ function renderModule2(){
                     <td>${v["Inv_2018"] !== null ? format(Math.round(v["Inv_2018"])) : ""}</td>
                     <td>${v["Inv_2019"] !== null ? format(Math.round(v["Inv_2019"])) : ""}</td>
                     <td>${v["Inv_2020"] !== null ? format(Math.round(v["Inv_2020"])) : ""}</td>
+                    <td>${v["Inv_2021"] !== null ? format(Math.round(v["Inv_2021"])) : ""}</td>
                     <td style="background: #c1c1c1;">${v["Inv_ttm"] !== null ? format(Math.round(v["Inv_ttm"])) : ""}</td>
                 </tr>`;
     })
     $("#table2").html(tbodyHtml);
 }
 function renderModule3(){
-    var componentId = $(".dashBoardContent .dataSheet:nth-child(4) div .card .echart").attr("id");
+    var componentId = $(".dashBoardContent .dataSheet:nth-child(3) div .card .echart").attr("id");
     var html = `
     <div class="row" style="height: 690px;overflow:auto;table-layout: fixed;border: 1px solid #c1c1c1;">
     <table class="table table-hover datatable-highlight dataTable no-footer table-striped table-xs" style="font-size:12px;">
@@ -377,8 +437,8 @@ function renderModule3(){
             <tr>
                 <td  style="padding: 0 4rem;"></td>
                 <td  style="padding: 0 4rem;"></td>
-                <td colspan='11' class='x40' width='792' style="border-left: 1px solid #c1c1c1;">&nbsp;Cash ROI % = CF / Investment </td>
-                <td colspan='11' class='x27' width='792' style="border-left: 1px solid #c1c1c1;">&nbsp;McOpCo Margin %<span style='mso-spacerun:yes;'>&nbsp; </span></td>
+                <td colspan='12' class='x40' width='792' style="border-left: 1px solid #c1c1c1;">&nbsp;Cash ROI % = CF / Investment </td>
+                <td colspan='12' class='x27' width='792' style="border-left: 1px solid #c1c1c1;">&nbsp;McOpCo Margin %<span style='mso-spacerun:yes;'>&nbsp; </span></td>
             </tr>
             <tr>
                 <td>Store Age</td>
@@ -393,6 +453,7 @@ function renderModule3(){
                 <td>2018</td>
                 <td>2019</td>
                 <td>2020</td>
+                <td>2021</td>
                 <td style="background: #c1c1c1;">TTM</td>
                 <td>2011</td>
                 <td>2012</td>
@@ -401,9 +462,10 @@ function renderModule3(){
                 <td>2015</td>
                 <td>2016</td>
                 <td>2017</td>
-                <td>2018</span></td>
-                <td>2019</span></td>
-                <td>2020</span></td>
+                <td>2018</td>
+                <td>2019</td>
+                <td>2020</td>
+                <td>2021</td>
                 <td style="background: #c1c1c1;">TTM </td>
             </tr>
         </thead>
@@ -430,23 +492,25 @@ function renderModule3(){
                 sum(case when Cal_Year='2018' then CF else null end)/1000 /sum(case when Cal_Year='2018' then Inv else null end) cash_roi_2018,
                 sum(case when Cal_Year='2019' then CF else null end)/1000 /sum(case when Cal_Year='2019' then Inv else null end) cash_roi_2019,
                 
-                sum(case when Cal_Year='2020' then CF else null end)/1000 /sum(case when Cal_Year='2020' then Inv else null end) cash_roi_2020,
-                sum(case when Cal_Year='ttm' then CF else null end) /1000/sum(case when Cal_Year='ttm' then Inv else null end) cash_roi_ttm,
+                sum(case when Cal_Year='2020' and counts>=1 then CF else null end)/1000 /sum(case when Cal_Year='2020'and counts>=1  then Inv else null end) cash_roi_2020,
+                sum(case when Cal_Year='2021' and counts>=1 then CF else null end)/1000 /sum(case when Cal_Year='2021'and counts>=1  then Inv else null end) cash_roi_2021,
+                sum(case when Cal_Year='ttm' and counts>=1 then CF else null end) /1000/sum(case when Cal_Year='ttm' and counts>=1  then Inv else null end) cash_roi_ttm,
                 
                 sum( CASE WHEN Cal_Year = '2011'  THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2011' then TNS else null end)  M_margin_2011,
-                		sum( CASE WHEN Cal_Year = '2012' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2012' then TNS else null end)  M_margin_2012,
-                	sum( CASE WHEN Cal_Year = '2013' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2013' then TNS else null end)  M_margin_2013,
-                		sum( CASE WHEN Cal_Year = '2014' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2014' then TNS else null end)  M_margin_2014,
-                		sum( CASE WHEN Cal_Year = '2015' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2015' then TNS else null end)  M_margin_2015,
-                	sum( CASE WHEN Cal_Year = '2016' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2016' then TNS else null end)  M_margin_2016,
-                		sum( CASE WHEN Cal_Year = '2017' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2017' then TNS else null end)  M_margin_2017,
-                		sum( CASE WHEN Cal_Year = '2018' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2018' then TNS else null end)  M_margin_2018,
-                	sum( CASE WHEN Cal_Year = '2019' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2019' then TNS else null end)  M_margin_2019,
-                		sum( CASE WHEN Cal_Year = '2020' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2020' then TNS else null end)  M_margin_2020,
-                		sum( CASE WHEN Cal_Year = 'ttm' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='ttm' then TNS else null end)  M_margin_ttm
+                sum( CASE WHEN Cal_Year = '2012' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2012' then TNS else null end)  M_margin_2012,
+                sum( CASE WHEN Cal_Year = '2013' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2013' then TNS else null end)  M_margin_2013,
+                sum( CASE WHEN Cal_Year = '2014' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2014' then TNS else null end)  M_margin_2014,
+                sum( CASE WHEN Cal_Year = '2015' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2015' then TNS else null end)  M_margin_2015,
+                sum( CASE WHEN Cal_Year = '2016' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2016' then TNS else null end)  M_margin_2016,
+                sum( CASE WHEN Cal_Year = '2017' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2017' then TNS else null end)  M_margin_2017,
+                sum( CASE WHEN Cal_Year = '2018' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2018' then TNS else null end)  M_margin_2018,
+                sum( CASE WHEN Cal_Year = '2019' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2019' then TNS else null end)  M_margin_2019,
+                sum( CASE WHEN Cal_Year = '2020' and counts>=1 THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2020' and counts>=1 then TNS else null end)  M_margin_2020,
+                sum( CASE WHEN Cal_Year = '2021' and counts>=1 THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2021' and counts>=1 then TNS else null end)  M_margin_2021,
+                sum( CASE WHEN Cal_Year = 'ttm' and counts>=1 THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='ttm' and counts>=1 then TNS else null end)  M_margin_ttm
                 
                 from 	mcdcapex.app1_store_aging_data_df_sale
-                where counts>=1 ${newSQLStr}
+                where 1=1 and Ownership='McOpCo' ${newSQLStr}
                 GROUP BY 1,2
                 
                 union all
@@ -468,23 +532,25 @@ function renderModule3(){
                 sum(case when Cal_Year='2018' then CF else null end)/1000 /sum(case when Cal_Year='2018' then Inv else null end) cash_roi_2018,
                 sum(case when Cal_Year='2019' then CF else null end)/1000 /sum(case when Cal_Year='2019' then Inv else null end) cash_roi_2019,
                 
-                sum(case when Cal_Year='2020' then CF else null end)/1000 /sum(case when Cal_Year='2020' then Inv else null end) cash_roi_2020,
-                sum(case when Cal_Year='ttm' then CF else null end) /1000/sum(case when Cal_Year='ttm' then Inv else null end) cash_roi_ttm,
+                sum(case when Cal_Year='2020' and counts>=1 then CF else null end)/1000 /sum(case when Cal_Year='2020' then Inv else null end) cash_roi_2020,
+                sum(case when Cal_Year='2021' and counts>=1 then CF else null end)/1000 /sum(case when Cal_Year='2021' then Inv else null end) cash_roi_2021,
+                sum(case when Cal_Year='ttm' and counts>=1 then CF else null end) /1000/sum(case when Cal_Year='ttm' then Inv else null end) cash_roi_ttm,
                 
                 sum( CASE WHEN Cal_Year = '2011'  THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2011' then TNS else null end)  M_margin_2011,
-                		sum( CASE WHEN Cal_Year = '2012' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2012' then TNS else null end)  M_margin_2012,
-                	sum( CASE WHEN Cal_Year = '2013' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2013' then TNS else null end)  M_margin_2013,
-                		sum( CASE WHEN Cal_Year = '2014' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2014' then TNS else null end)  M_margin_2014,
-                		sum( CASE WHEN Cal_Year = '2015' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2015' then TNS else null end)  M_margin_2015,
-                	sum( CASE WHEN Cal_Year = '2016' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2016' then TNS else null end)  M_margin_2016,
-                		sum( CASE WHEN Cal_Year = '2017' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2017' then TNS else null end)  M_margin_2017,
-                		sum( CASE WHEN Cal_Year = '2018' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2018' then TNS else null end)  M_margin_2018,
-                	sum( CASE WHEN Cal_Year = '2019' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2019' then TNS else null end)  M_margin_2019,
-                		sum( CASE WHEN Cal_Year = '2020' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2020' then TNS else null end)  M_margin_2020,
-                		sum( CASE WHEN Cal_Year = 'ttm' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='ttm' then TNS else null end)  M_margin_ttm
+                sum( CASE WHEN Cal_Year = '2012' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2012' then TNS else null end)  M_margin_2012,
+                sum( CASE WHEN Cal_Year = '2013' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2013' then TNS else null end)  M_margin_2013,
+                sum( CASE WHEN Cal_Year = '2014' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2014' then TNS else null end)  M_margin_2014,
+                sum( CASE WHEN Cal_Year = '2015' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2015' then TNS else null end)  M_margin_2015,
+                sum( CASE WHEN Cal_Year = '2016' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2016' then TNS else null end)  M_margin_2016,
+                sum( CASE WHEN Cal_Year = '2017' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2017' then TNS else null end)  M_margin_2017,
+                sum( CASE WHEN Cal_Year = '2018' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2018' then TNS else null end)  M_margin_2018,
+                sum( CASE WHEN Cal_Year = '2019' THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2019' then TNS else null end)  M_margin_2019,
+                sum( CASE WHEN Cal_Year = '2020' and counts>=1 THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2020' and counts>=1 then TNS else null end)  M_margin_2020,
+                sum( CASE WHEN Cal_Year = '2021' and counts>=1 THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='2021' and counts>=1 then TNS else null end)  M_margin_2021,
+                sum( CASE WHEN Cal_Year = 'ttm' and counts>=1 THEN margin_fee ELSE NULL END )	/sum(case when Cal_Year='ttm' and counts>=1 then TNS else null end)  M_margin_ttm
                 
                 from 	mcdcapex.app1_store_aging_data_df_sale
-                where counts>=1  ${newSQLStr}
+                where 1=1 and Ownership='McOpCo' ${newSQLStr}
                 GROUP BY 1,2
                 order by 2
                     `;
@@ -506,6 +572,7 @@ function renderModule3(){
                     <td>${v["cash_roi_2018"] !== null ? (Number(v["cash_roi_2018"]) * 100).toFixed(1) + "%" : ""}</td>
                     <td>${v["cash_roi_2019"] !== null ? (Number(v["cash_roi_2019"]) * 100).toFixed(1) + "%" : ""}</td>
                     <td>${v["cash_roi_2020"] !== null ? (Number(v["cash_roi_2020"]) * 100).toFixed(1) + "%" : ""}</td>
+                    <td>${v["cash_roi_2021"] !== null ? (Number(v["cash_roi_2021"]) * 100).toFixed(1) + "%" : ""}</td>
                     <td style="background: #c1c1c1;">${v["cash_roi_ttm"] !== null ? (Number(v["cash_roi_ttm"]) * 100).toFixed(1) + "%" : ""}</td>
                     <td>${v["M_margin_2011"] !== null ? (Number(v["M_margin_2011"]) * 100).toFixed(1) + "%" : ""}</td>
                     <td>${v["M_margin_2012"] !== null ? (Number(v["M_margin_2012"]) * 100).toFixed(1) + "%" : ""}</td>
@@ -517,6 +584,7 @@ function renderModule3(){
                     <td>${v["M_margin_2018"] !== null ? (Number(v["M_margin_2018"]) * 100).toFixed(1) + "%" : ""}</td>
                     <td>${v["M_margin_2019"] !== null ? (Number(v["M_margin_2019"]) * 100).toFixed(1) + "%" : ""}</td>
                     <td>${v["M_margin_2020"] !== null ? (Number(v["M_margin_2020"]) * 100).toFixed(1) + "%" : ""}</td>
+                    <td>${v["M_margin_2021"] !== null ? (Number(v["M_margin_2021"]) * 100).toFixed(1) + "%" : ""}</td>
                     <td style="background: #c1c1c1;">${v["M_margin_ttm"] !== null ? (Number(v["M_margin_ttm"]) * 100).toFixed(1) + "%" : ""}</td>
                 </tr>`;
     })
@@ -579,7 +647,7 @@ function echartsFunction1(){
                     case when Cal_Year in ('2011','2012','2013','2014','2015','2016') then round(sum(CF)/1000*12/sum(count_after)/(sum( Inv)/sum( Inv_Counts)),3)*100 else round(sum(CF)/1000/count(case when counts>=1 then 1 else null end)/(sum( Inv)/sum( Inv_Counts)),3)*100 end  Cash_ROI,
                     round(sum(margin_fee)	/sum(TNS),3)*100 M_margin
                     from app1_store_aging_data_df_sale 
-                    where counts >= 1 and Cal_year<> 'ttm'${newSQLStr}
+                    where 1= 1 and Cal_year<> 'ttm'${newSQLStr}
                     group by Cal_Year,
                     Store_Age,
                     open_year2
@@ -587,12 +655,6 @@ function echartsFunction1(){
                     `;
     var res2 = cfs.request.foundation.runComm(sqlParam);
     storeAgeEchart1Data = res2;
-    if(res2.res.length == 0){
-        $.jGrowl("", {
-            header:  "该筛选条件下无数据",
-            theme: 'bg-danger alert-danger alert-styled-left alert-styled-custom'
-        });
-    }
     renderEcharts1();
 }
 
@@ -610,12 +672,11 @@ function echartsFunction2(){
                     case when Cal_Year in ('2011','2012','2013','2014','2015','2016') then round(sum(CF)/1000*12/sum(count_after)/(sum( Inv)/sum( Inv_Counts)),3)*100 else round(sum(CF)/1000/count(case when counts>=1 then 1 else null end)/(sum( Inv)/sum( Inv_Counts)),3)*100 end  Cash_ROI,
                     round(sum(margin_fee)	/sum(TNS),3)*100 M_margin
                     from app1_store_aging_data_df_sale 
-                    where counts >= 1 and Cal_year<>'ttm' ${newSQLStr}
+                    where 1= 1 and Cal_year<>'ttm' ${newSQLStr}
                     group by Cal_Year,
                     Store_Age,age
                     order by age1 ASC`;
     var res2 = cfs.request.foundation.runComm(sqlParam);
-    console.log(res2)
     storeAgeEchart2Data = res2;
     renderEcharts2();
 }
@@ -653,7 +714,6 @@ function renderEcharts1(){
         })
         lineData.push(bbb)
     })
-    console.log(lineData)
     var seriesData = [];
     $.each(titleData,function(k,v){
         var obj = {};
@@ -906,20 +966,45 @@ var cfs = {
       return cfs.request.common.sendRequest(url, "POST", paramObj, false, true);
     },
     },
-    python: {
-    //同步调用python
-    web: function (pyName, params) {
-      var url = Api.python + "start/web";
-      paramObj = $.extend(
-      {
-          pyName: pyName,
-          params: params,
-      },
-      cfs.common.userParams
-      );
-      return cfs.request.common.sendRequest(url, "POST", paramObj, true, true);
-    },
-    },
+        python: {
+            //同步调用python
+            web: function (pyName, params) {
+                var url = Api.python + "start/web";
+                paramObj = $.extend(
+                    {
+                        pyName: pyName,
+                        params: params,
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, true, true);
+            },
+            //异步调用python
+            job: function (pyName, params) {
+                var url = Api.python + "start/web/job";
+                paramObj = $.extend(
+                    {
+                        pyName: pyName,
+                        params: params,
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, true, true);
+            },
+            //同步调用python
+            pythonWeb: function (pythonName, parameter, runType = 1) {
+                var url = Api.pythonWeb + "doPythonWeb";
+                paramObj = $.extend(
+                    {
+                        pythonName: pythonName,
+                        parameter: JSON.stringify(parameter),
+                        runType: runType,//1-同步，2-异步
+                    },
+                    cfs.common.userParams
+                );
+                return cfs.request.common.sendRequest(url, "POST", paramObj, true, true);
+            },
+        },
     },
     card: {
     //dashboard单个卡片方法 bootstrap4图标：http://easyview.seepln.com/Limitless_2.0.1/Bootstrap%204/Template/layout_1/LTR/material/full/icons_icomoon.html
@@ -1390,11 +1475,11 @@ function unique(arr){
     return newArr;
 }
 $(document).ready(function(){
-    setTimeout(function(){
+    // setTimeout(function(){
         $("#globalPovPart .searchSeleteStyle:last-child").click(function(){
             getPovParam();
         });
-    },3000)
+    // },3000)
 });
 // 显示对应dom的loading效果
 function domLoadingShow(){
@@ -1462,3 +1547,45 @@ function format(num) {
         });
     });
 } 
+
+function tableExportFunction(){
+    console.log("下载")
+
+    var cfs = new DevCustomFuncTools();
+    // var year_down = $("[dc='Year']").eq(0).val()
+
+    var getSearchParam = showDashBoard.globalCurrentPovObj;
+    console.log(getSearchParam)
+    // let para = JSON.stringify(getSearchParam)
+    let pyName = 'store_aging_dashboard';
+    let paraobj = {'filters':getSearchParam}
+    result =JSON.parse(cfs.request.python.pythonWeb('store_aging_dashboard', paraobj).res).res1
+    debugger;
+    $(".loadingicon").show();
+    var downloadSQL = `select`+result+
+    `from mcdcapex.app1_store_aging_data`
+
+    console.log(downloadSQL)
+    var resDownload = cfs.request.foundation.runComm(downloadSQL);
+    
+    var theadData = result.split(",");
+    if (resDownload.res.length !== 0) {
+        cfs.export.toCsv("New_Store_Detail_Download",resDownload.res,theadData);
+        // cfs.export.toXlsx("EPS_Actual_Data_Download", resDownload.res, null, function (spread) {
+            //填充完data数据后的自定义spread操作
+            // var sheet = spread.getSheet(0);
+            // sheet.setRowCount(1000)
+            // sheet.setValue(0, 0, "100");
+            // sheet.setValue(0, 1, "100");
+        // });
+    } else {
+        $.jGrowl('', {
+            header: "暂无数据下载",
+            theme: 'alert-styled-left bg-danger'
+        });
+    }
+    $(".loadingicon").hide();
+}
+
+
+
