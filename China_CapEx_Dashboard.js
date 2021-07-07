@@ -1,13 +1,27 @@
 /*
+ *  ┌───┐   ┌───┬───┬───┬───┐ ┌───┬───┬───┬───┐ ┌───┬───┬───┬───┐ ┌───┬───┬───┐
+ *  │Esc│   │ F1│ F2│ F3│ F4│ │ F5│ F6│ F7│ F8│ │ F9│F10│F11│F12│ │P/S│S L│P/B│  ┌┐    ┌┐    ┌┐
+ *  └───┘   └───┴───┴───┴───┘ └───┴───┴───┴───┘ └───┴───┴───┴───┘ └───┴───┴───┘  └┘    └┘    └┘
+ *  ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───────┐ ┌───┬───┬───┐ ┌───┬───┬───┬───┐
+ *  │~ `│! 1│@ 2│# 3│$ 4│% 5│^ 6│& 7│* 8│( 9│) 0│_ -│+ =│ BacSp │ │Ins│Hom│PUp│ │N L│ / │ * │ - │
+ *  ├───┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─────┤ ├───┼───┼───┤ ├───┼───┼───┼───┤
+ *  │ Tab │ Q │ W │ E │ R │ T │ Y │ U │ I │ O │ P │{ [│} ]│ | \ │ │Del│End│PDn│ │ 7 │ 8 │ 9 │   │
+ *  ├─────┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴─────┤ └───┴───┴───┘ ├───┼───┼───┤ + │
+ *  │ Caps │ A │ S │ D │ F │ G │ H │ J │ K │ L │: ;│" '│ Enter  │               │ 4 │ 5 │ 6 │   │
+ *  ├──────┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴────────┤     ┌───┐     ├───┼───┼───┼───┤
+ *  │ Shift  │ Z │ X │ C │ V │ B │ N │ M │< ,│> .│? /│  Shift   │     │ ↑ │     │ 1 │ 2 │ 3 │   │
+ *  ├─────┬──┴─┬─┴──┬┴───┴───┴───┴───┴───┴──┬┴───┼───┴┬────┬────┤ ┌───┼───┼───┐ ├───┴───┼───┤ E││
+ *  │ Ctrl│    │Alt │         Space         │ Alt│    │    │Ctrl│ │ ← │ ↓ │ → │ │   0   │ . │←─┘│
+ *  └─────┴────┴────┴───────────────────────┴────┴────┴────┴────┘ └───┴───┴───┘ └───────┴───┴───┘
+ * 
  * @Author: Huang Meng
  * @Date: 2021-06-30 11:22:52
- * @LastEditTime: 2021-07-05 11:24:37
+ * @LastEditTime: 2021-07-07 18:56:32
  * @LastEditors: your name
  * @Description: 
  * @FilePath: \jscode\China_CapEx_Dashboard.js
  * 可以输入预定的版权声明、个性签名、空行等
  */
-
 
 
 
@@ -21,7 +35,6 @@ $(() => {
   //   debugger;
   // a = getResponse();
   // console.log(a);
-  
   loadVue();
   $('.freshBS').on('click', function () {
     debugger;
@@ -141,11 +154,13 @@ function loadEcharts() {
   body.appendChild(jsNode);
 }
 
+//        <el-button @click.native="refresh">刷新</el-button>
 function main() {
   let dom = `
   <div id="app" style="font-family:Microsoft YaHei">
     <div class="page">
-        <el-button @click.native="refresh">刷新</el-button>
+        <br /><br />
+        <div style="background-color: #fcb404; font-weight: bold; font-size: larger; vertical-align: middle; text-align: center;">China CapEx Dashboard</div>
         <!----------------------------------------------     1.China CapEx Spending Summary   --------------------------------------------------------------->
         <el-row :gutter="20">
           <el-col :span="24">
@@ -260,6 +275,7 @@ function main() {
                   </template>
                 </el-col>
               </el-row>
+              <span  style="font-size: 8px;line-height:1;font-family:'Helvetica Neue';">已完成%为已完成金额/Total Plan，下同</span>
             </el-card>
             <!-- /card2 -->
           </el-col>
@@ -328,22 +344,22 @@ function main() {
                   <template>
                     <el-table id='BETable' :data="BETable"
                       :header-cell-style="{background:'#ffc000', color:'black', 'text-align':'center'}"
-                      :cell-style="BECellStyle" :row-class-name="BERowStyle" class="table" max-height="500" style="font-size: 8px">
-                      <el-table-column prop="Project" label="Project" width="180">
+                      :cell-style="BECellStyle" :row-class-name="BERowStyle" class="table" style="font-size: 8px">
+                      <el-table-column prop="Project" label="Project" width="265">
                       </el-table-column>
-                      <el-table-column prop="Plan" label="Plan" :formatter="stateFormat">
+                      <el-table-column prop="Plan" label="Plan" :formatter="stateFormat" width="70">
                       </el-table-column>
-                      <el-table-column prop="Proj" label="Proj." :formatter="stateFormat">
+                      <el-table-column prop="Proj" label="Proj." :formatter="stateFormat" width="70">
                       </el-table-column>
-                      <el-table-column prop="Var_pct" label="Var %" :formatter="statePercent">
+                      <el-table-column prop="Var_pct" label="Var %" :formatter="statePercent" width="70">
                       </el-table-column>
-                      <el-table-column prop="已完成" label="已完成" :formatter="stateFormat">
+                      <el-table-column prop="已完成" label="已完成" :formatter="stateFormat" width="70">
                       </el-table-column>
-                      <el-table-column prop="在途" label="在途" :formatter="stateFormat">
+                      <el-table-column prop="在途" label="在途" :formatter="stateFormat" width="70">
                       </el-table-column>
-                      <el-table-column prop="已报价" label="已报价" :formatter="stateFormat">
+                      <el-table-column prop="已报价" label="已报价" :formatter="stateFormat" width="70">
                       </el-table-column>
-                      <el-table-column prop="已完成_pct" label="已完成%" :formatter="statePercent">
+                      <el-table-column prop="已完成_pct" label="已完成%" :formatter="statePercent" width="70">
                       </el-table-column>
                     </el-table>
                   </template>
@@ -496,7 +512,6 @@ function main() {
           textStyle: {
             fontFamily: 'Microsoft YaHei',
           },
-          color :['#174fdb','#f4bf43','#8f94a1'],
           title: {
             text: 'Budget Spending%',
             x:'center',
@@ -551,7 +566,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#3161b6'
+                  color: '#174fdb'
                 }
               },
               //鼠标悬停时：
@@ -570,7 +585,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#e88b00'
+                  color: '#f4bf43'
                 }
               },
               //鼠标悬停时：
@@ -589,7 +604,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#bdbdbd'
+                  color: '#8f94a1'
                 }
               },
               //鼠标悬停时：
@@ -609,7 +624,6 @@ function main() {
           textStyle: {
             fontFamily: 'Microsoft YaHei',
           },
-        color :['#174fdb','#f4bf43','#8f94a1'],
           title: {
             text: 'Budget Spending%',
             x:'center',
@@ -664,7 +678,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#3161b6'
+                  color: '#174fdb'
                 }
               },
               //鼠标悬停时：
@@ -683,7 +697,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#e88b00'
+                  color: '#f4bf43'
                 }
               },
               //鼠标悬停时：
@@ -702,7 +716,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#bdbdbd'
+                  color: '#8f94a1'
                 }
               },
               //鼠标悬停时：
@@ -721,7 +735,6 @@ function main() {
           textStyle: {
             fontFamily: 'Microsoft YaHei',
           },
-            color :['#174fdb','#f4bf43','#8f94a1'],
           title: {
             text: 'Budget Spending%',
             x:'center',
@@ -776,7 +789,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#3161b6'
+                  color: '#174fdb'
                 }
               },
               //鼠标悬停时：
@@ -795,7 +808,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#e88b00'
+                  color: '#f4bf43'
                 }
               },
               //鼠标悬停时：
@@ -814,7 +827,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#bdbdbd'
+                  color: '#8f94a1'
                 }
               },
               //鼠标悬停时：
@@ -833,7 +846,6 @@ function main() {
           textStyle: {
             fontFamily: 'Microsoft YaHei',
           },
-            color:['#174fdb','#f4bf43','#8f94a1'],
           title: {
             text: 'Budget Spending%',
             x:'center',
@@ -884,7 +896,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#3161b6'
+                  color: '#174fdb'
                 }
               },
               //鼠标悬停时：
@@ -903,7 +915,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#e88b00'
+                  color: '#f4bf43'
                 }
               },
               //鼠标悬停时：
@@ -922,7 +934,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#bdbdbd'
+                  color: '#8f94a1'
                 }
               },
               //鼠标悬停时：
@@ -998,7 +1010,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#3161b6'
+                  color: '#174fdb'
                 }
               },
               //鼠标悬停时：
@@ -1017,7 +1029,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#e88b00'
+                  color: '#f4bf43'
                 }
               },
               //鼠标悬停时：
@@ -1036,7 +1048,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#bdbdbd'
+                  color: '#8f94a1'
                 }
               },
               //鼠标悬停时：
@@ -1056,7 +1068,6 @@ function main() {
           textStyle: {
             fontFamily: 'Microsoft YaHei',
           },
-        color:['#174fdb','#f4bf43'],
           title: {
             text: 'Budget Spending%',
             x:'center',
@@ -1111,7 +1122,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#3161b6'
+                  color: '#174fdb'
                 }
               },
               //鼠标悬停时：
@@ -1130,7 +1141,7 @@ function main() {
                 //通常情况下：
                 normal: {
                   //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                  color: '#e88b00'
+                  color: '#f4bf43'
                 }
               },
               //鼠标悬停时：
@@ -1797,9 +1808,9 @@ function main() {
   <style>
     .page {
         width: 1175px;
-        height: 1900px;
+        height: 1950px;
         padding: 0cm;
-        margin: 0cm auto;
+        margin: 0cm;
         background: white;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     }
@@ -1863,8 +1874,11 @@ function main() {
   `;
   $('#showDashBoard').append(dom);
 
+//   let btnDom = `
+//   <button type="button" id="btn" class="btn btn-light" data-toggle="modal" data-target="#modal_full">预览PDF<i class="icon-play3 ml-2"></i></button>
+//   `;
   let btnDom = `
-  <button type="button" id="btn" class="btn btn-light" data-toggle="modal" data-target="#modal_full">预览PDF<i class="icon-play3 ml-2"></i></button>
+  <button type="button" id="downloadPDF" class="btn btn-light">下载PDF<i class="icon-play3 ml-2"></i></button>
   `;
 
   modalDom = `
@@ -1912,7 +1926,7 @@ function main() {
     });
   });
 
-  $('#exportPDF').on('click', function () {
+  $('#downloadPDF').on('click', function () {
     document.getElementById('app').scrollTop = 0;
     // downloadPDF();
     downloadPdf1();
