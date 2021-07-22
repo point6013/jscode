@@ -1,0 +1,86 @@
+<!--
+ * @Author: Huang Meng
+ * @Date: 2021-07-16 16:09:31
+ * @LastEditTime: 2021-07-19 13:20:22
+ * @LastEditors: your name
+ * @Description: 
+ * @FilePath: \jscode\base_js.html
+ * 可以输入预定的版权声明、个性签名、空行等
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="firstApp/lib/vue.js"></script>
+    <!-- 引入样式 -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"
+    />
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <style>
+      .customer-table th {
+        border: solid 1px black;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <ul>
+        <li v-for="data in datalist">{{data}}</li>
+      </ul>
+
+      <el-table
+        :data="datalist['Dev']"
+        style="width: 40%; border: 1px solid black"
+        :header-cell-style="tableHeaderCellStyle"
+      >
+        <el-table-column
+          prop="Project"
+          label="Project"
+          width="180"
+          style="border: 2px black"
+        >
+        </el-table-column>
+        <el-table-column prop="Plan" label="Plan" width="180"></el-table-column>
+        <el-table-column prop="Proj" label="Proj"> </el-table-column>
+      </el-table>
+
+      {{obj}}
+    </div>
+    <script type="text/javascript">
+        var mv = new Vue({
+          el: "#app",
+          data: {
+            obj: {
+              John: 12,
+              Jack: 13,
+              Matt: 14,
+              Maxx: 15,
+            },
+            datalist: {},
+            tableData:[]
+        },
+          methods:{
+
+          tableHeaderCellStyle () {
+          return 'border-color: #868686; color: #606266;'}
+          },
+          mounted(){
+                // let _this = this
+              axios.get("./capex.json").then((res)=>{
+                  this.datalist = res.data
+                  console.log(res.data)
+              })
+          }
+
+      });
+    </script>
+  </body>
+</html>
