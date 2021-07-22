@@ -1,10 +1,10 @@
 <!--
  * @Author: Huang Meng
  * @Date: 2021-07-16 16:09:31
- * @LastEditTime: 2021-07-19 13:20:22
+ * @LastEditTime: 2021-07-22 16:48:46
  * @LastEditors: your name
  * @Description: 
- * @FilePath: \jscode\base_js.html
+ * @FilePath: \01code\html\base_js.html
  * 可以输入预定的版权声明、个性签名、空行等
 -->
 <!DOCTYPE html>
@@ -14,7 +14,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <script src="firstApp/lib/vue.js"></script>
+    <script src="../firstApp/lib/vue.js"></script>
     <!-- 引入样式 -->
     <link
       rel="stylesheet"
@@ -74,7 +74,7 @@
           },
           mounted(){
                 // let _this = this
-              axios.get("./capex.json").then((res)=>{
+              axios.get("../json/capex.json").then((res)=>{
                   this.datalist = res.data
                   console.log(res.data)
               })
