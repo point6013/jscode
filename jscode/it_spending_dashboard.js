@@ -391,14 +391,12 @@ function tableExportFunction(){
     var resDownload = cfs.request.foundation.runComm(downloadSQL);
     var theadData = ['ProductName','ITBP','BizDept','BizOwner','Plan','ActualPayment','PDAmount','PurchasePlan','ApprovedProjection'];
     if (resDownload.res.length !== 0) {
-        cfs.export.toCsv("IT_Spending_Detail_Download",resDownload.res,theadData);
-        // cfs.export.toXlsx("EPS_Actual_Data_Download", resDownload.res, null, function (spread) {
-            //填充完data数据后的自定义spread操作
-            // var sheet = spread.getSheet(0);
-            // sheet.setRowCount(1000)
-            // sheet.setValue(0, 0, "100");
-            // sheet.setValue(0, 1, "100");
-        // });
+        // cfs.export.toCsv("IT_Spending_Detail_Download",resDownload.res,theadData);
+        cfs.export.toXlsx("EPS_Actual_Data_Download", resDownload.res, theadData, function (spread) {
+            填充完data数据后的自定义spread操作
+            var sheet = spread.getSheet(0);
+            sheet.setRowCount(10000)
+        });
     } else {
         $.jGrowl('', {
             header: "暂无数据下载",
@@ -953,7 +951,7 @@ function downloadPdf(){
                 // downloadFile('测试.png', getCanvas);
                 var pdf = new jsPDF('p', 'mm', wh);
                 pdf.addImage(getCanvas, 'JPEG', 5,0,'','','','FAST')
-                pdf.save('myTest.pdf');
+                pdf.save('IT Spending Dashboard.pdf');
             },
         });
     },500)

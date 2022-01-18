@@ -1,40 +1,6 @@
-/*
- *  ┌───┐   ┌───┬───┬───┬───┐ ┌───┬───┬───┬───┐ ┌───┬───┬───┬───┐ ┌───┬───┬───┐
- *  │Esc│   │ F1│ F2│ F3│ F4│ │ F5│ F6│ F7│ F8│ │ F9│F10│F11│F12│ │P/S│S L│P/B│  ┌┐    ┌┐    ┌┐
- *  └───┘   └───┴───┴───┴───┘ └───┴───┴───┴───┘ └───┴───┴───┴───┘ └───┴───┴───┘  └┘    └┘    └┘
- *  ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───────┐ ┌───┬───┬───┐ ┌───┬───┬───┬───┐
- *  │~ `│! 1│@ 2│# 3│$ 4│% 5│^ 6│& 7│* 8│( 9│) 0│_ -│+ =│ BacSp │ │Ins│Hom│PUp│ │N L│ / │ * │ - │
- *  ├───┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─────┤ ├───┼───┼───┤ ├───┼───┼───┼───┤
- *  │ Tab │ Q │ W │ E │ R │ T │ Y │ U │ I │ O │ P │{ [│} ]│ | \ │ │Del│End│PDn│ │ 7 │ 8 │ 9 │   │
- *  ├─────┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴─────┤ └───┴───┴───┘ ├───┼───┼───┤ + │
- *  │ Caps │ A │ S │ D │ F │ G │ H │ J │ K │ L │: ;│" '│ Enter  │               │ 4 │ 5 │ 6 │   │
- *  ├──────┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴────────┤     ┌───┐     ├───┼───┼───┼───┤
- *  │ Shift  │ Z │ X │ C │ V │ B │ N │ M │< ,│> .│? /│  Shift   │     │ ↑ │     │ 1 │ 2 │ 3 │   │
- *  ├─────┬──┴─┬─┴──┬┴───┴───┴───┴───┴───┴──┬┴───┼───┴┬────┬────┤ ┌───┼───┼───┐ ├───┴───┼───┤ E││
- *  │ Ctrl│    │Alt │         Space         │ Alt│    │    │Ctrl│ │ ← │ ↓ │ → │ │   0   │ . │←─┘│
- *  └─────┴────┴────┴───────────────────────┴────┴────┴────┴────┘ └───┴───┴───┘ └───────┴───┴───┘
- * 
- * @Author: Huang Meng
- * @Date: 2021-06-30 11:22:52
- * @LastEditTime: 2021-07-07 18:56:32
- * @LastEditors: your name
- * @Description: 
- * @FilePath: \jscode\China_CapEx_Dashboard.js
- * 可以输入预定的版权声明、个性签名、空行等
- */
-
-
-
-
 var cfs = new DevCustomFuncTools();
 $(() => {
-  //   let cube_name = 'Year';
-  //   let script = 'Base(TotalYear,0)';
-  //   debugger;
-  //   res = cfs.request.foundation.getAccessDimensionMemberLevel(cube_name, script);
-  //   debugger;
-  // a = getResponse();
-  // console.log(a);
+  window.devicePixelRatio = 2; //修改设备像素比例，用于增加echarts的清晰度
   loadVue();
   $('.freshBS').on('click', function () {
     debugger;
@@ -158,11 +124,15 @@ function loadEcharts() {
 function main() {
   let dom = `
   <div id="app" style="font-family:Microsoft YaHei">
-    <div class="page">
+    <div class="page" style="margin:0 auto;">
         <br /><br />
-        <div style="background-color: #fcb404; font-weight: bold; font-size: larger; vertical-align: middle; text-align: center;">China CapEx Dashboard</div>
+        <div style="background-color: #ffbc0d; font-weight: bold; font-size: larger; vertical-align: middle; text-align: center;">China CapEx Dashboard</div>
         <!----------------------------------------------     1.China CapEx Spending Summary   --------------------------------------------------------------->
         <el-row :gutter="20">
+          <el-col :span="24">
+            <span style="margin-right: 560px; float: right;">('000 RMB)</span>
+          </el-col>
+          
           <el-col :span="24">
             <!-- card1 -->
             <el-card class="box-card">
@@ -172,31 +142,31 @@ function main() {
               <el-row :gutter="24">
                 <el-col :span="2"></el-col>
                 <el-col :span="24">
-                  <span style="font-weight: bold;">Store CapEx</span></br></br>
+                  <span style="font-weight: bold;">Store CapEx（Item 2-6）</span></br></br>
                   <div class="borders">
                     <!-- Store Capex表格 -->
-                    <el-table id='table1' :data="storeCapex" :show-header="false" :cell-style="alignCellStyle">
-                      <el-table-column prop="c1" style="font-weight: bold;">
-                      </el-table-column>
-                      <el-table-column prop="c2" :formatter="stateFormat" style="font-weight: bold;">
-                      </el-table-column>
-                      <el-table-column prop="c3">
-                      </el-table-column>
-                      <el-table-column prop="c4" :formatter="stateFormat">
-                      </el-table-column>
-                      <el-table-column prop="c5" >
-                      </el-table-column>
-                      <el-table-column prop="c6" :formatter="stateFormat">
-                      </el-table-column>
-                      <el-table-column prop="c7">
-                      </el-table-column>
-                      <el-table-column prop="c8" :formatter="stateFormat">
-                      </el-table-column>
-                      <el-table-column prop="c9">
-                      </el-table-column>
-                      <el-table-column prop="c10" :formatter="stateFormat">
-                      </el-table-column>
-                    </el-table>
+                      <el-table id='table1' :data="storeCapex" :show-header="false" :cell-style="alignCellStyle">
+                        <el-table-column prop="c9" width="135">
+                        </el-table-column>
+                        <el-table-column prop="c10" :formatter="stateFormat" width="110">
+                        </el-table-column>
+                        <el-table-column prop="c1" style="font-weight: bold;" width="130">
+                        </el-table-column>
+                        <el-table-column prop="c2" :formatter="stateFormat" style="font-weight: bold;" width="110">
+                        </el-table-column>
+                        <el-table-column prop="c3" width="110">
+                        </el-table-column>
+                        <el-table-column prop="c4" :formatter="stateFormat" width="80">
+                        </el-table-column>
+                        <el-table-column prop="c5" width="120">
+                        </el-table-column>
+                        <el-table-column prop="c6" :formatter="stateFormat" width="80">
+                        </el-table-column>
+                        <el-table-column prop="c7" width="100">
+                        </el-table-column>
+                        <el-table-column prop="c8" :formatter="stateFormat" width="80">
+                        </el-table-column>
+                      </el-table>
                   </div>
                 </el-col>
                 <el-col :span="2"></el-col>
@@ -204,31 +174,31 @@ function main() {
               <el-row :gutter="24">
                 <el-col :span="2"></el-col>
                 <el-col :span="24">
-                  <span style="font-weight: bold;font-family:Microsoft YaHei">Office IT CapEx</span></br></br>
+                  <span style="font-weight: bold;font-family:Microsoft YaHei">Office IT CapEx（Item 7）</span></br></br>
                   <div class="borders">
                     <!-- Office IT Capex表格 -->
-                    <el-table id='table2' :data="officeITCapex" :show-header="false" :cell-style="alignCellStyle">
-                      <el-table-column prop="c1" width="150">
-                      </el-table-column>
-                      <el-table-column prop="c2" :formatter="stateFormat">
-                      </el-table-column>
-                      <el-table-column prop="c3">
-                      </el-table-column>
-                      <el-table-column prop="c4" :formatter="stateFormat">
-                      </el-table-column>
-                      <el-table-column prop="c5" width="150">
-                      </el-table-column>
-                      <el-table-column prop="c6" :formatter="stateFormat">
-                      </el-table-column>
-                      <el-table-column prop="c7">
-                      </el-table-column>
-                      <el-table-column prop="c8" :formatter="stateFormat">
-                      </el-table-column>
-                      <el-table-column prop="c9">
-                      </el-table-column>
-                      <el-table-column prop="c10">
-                      </el-table-column>
-                    </el-table>
+                      <el-table id='table2' :data="officeITCapex" :show-header="false" :cell-style="alignCellStyle">
+                        <el-table-column prop="c7" width="135">
+                        </el-table-column>
+                        <el-table-column prop="c8" :formatter="stateFormat" width="110">
+                        </el-table-column>
+                        <el-table-column prop="c1" width="130">
+                        </el-table-column>
+                        <el-table-column prop="c2" :formatter="stateFormat" width="110">
+                        </el-table-column>
+                        <el-table-column prop="c3" width="110">
+                        </el-table-column>
+                        <el-table-column prop="c4" :formatter="stateFormat"  width="80">
+                        </el-table-column>
+                        <el-table-column prop="c5" width="120">
+                        </el-table-column>
+                        <el-table-column prop="c6" :formatter="stateFormat" width="80">
+                        </el-table-column>
+                        <el-table-column prop="c9" width="100">
+                        </el-table-column>
+                        <el-table-column prop="c10" width="80">
+                        </el-table-column>
+                      </el-table>
                   </div>
                 </el-col>
                 <el-col :span="2">
@@ -253,29 +223,32 @@ function main() {
                 <el-col :span="16">
                   <template>
                     <el-table id='DevTable' :data="DevTable"
-                      :header-cell-style="{background:'#ffc000', color:'black', 'text-align':'center'}"
-                      :cell-style="DevCellStyle" :row-class-name="DevRowStyle" class="table" style="font-size: 8px">
-                      <el-table-column prop="Project" label="Project" width="180">
+                      :header-cell-style="headCellStyle"
+                      :cell-style="DevCellStyle" :row-class-name="DevRowStyle" class="table customer-table" style="font-size: 8px">
+                      <el-table-column prop="Project" label="Project" width="155">
                       </el-table-column>
-                      <el-table-column prop="Plan" label="Plan" :formatter="stateFormat">
+                      <el-table-column prop="Plan" label="Plan" :formatter="stateFormat" width="80">
                       </el-table-column>
-                      <el-table-column prop="Proj" label="Proj." :formatter="stateFormat">
+                      <el-table-column prop="Proj" label="Proj." :formatter="stateFormat" width="80">
                       </el-table-column>
-                      <el-table-column prop="Var_pct" label="Var %" :formatter="statePercent">
+                      <el-table-column label="Var %">
+                        <el-table-column prop="Var_pct" label="Proj. vs. Plan" :formatter="statePercent" width="100">
                       </el-table-column>
-                      <el-table-column prop="已完成" label="已完成" :formatter="stateFormat">
                       </el-table-column>
-                      <el-table-column prop="在途" label="在途" :formatter="stateFormat">
+                      <el-table-column prop="已完成" label="已完成" :formatter="stateFormat" width="80">
                       </el-table-column>
-                      <el-table-column prop="已报价" label="已报价" :formatter="stateFormat">
+                      <el-table-column prop="在途" label="在途" :formatter="stateFormat" width="80">
                       </el-table-column>
-                      <el-table-column prop="已完成_pct" label="已完成%" :formatter="statePercent">
+                      <el-table-column prop="已报价" label="已报价" :formatter="stateFormat" width="80">
+                      </el-table-column>
+                      <el-table-column label="已完成%">
+                          <el-table-column prop="已完成_pct" label="vs. Plan" :formatter="statePercent" width="80">
+                          </el-table-column>
                       </el-table-column>
                     </el-table>
                   </template>
                 </el-col>
               </el-row>
-              <span  style="font-size: 8px;line-height:1;font-family:'Helvetica Neue';">已完成%为已完成金额/Total Plan，下同</span>
             </el-card>
             <!-- /card2 -->
           </el-col>
@@ -298,23 +271,24 @@ function main() {
                   <template>
                     <!-- table -->
                     <el-table id='OpsTable' :data="OpsTable"
-                      :header-cell-style="{background:'#ffc000', color:'black', 'text-align':'center'}"
-                      :cell-style="OpsCellStyle" :row-class-name="OpsRowStyle" class="table" style="font-size: 8px">
-                      <el-table-column prop="Project" label="Project" width="180">
+                      :header-cell-style="headCellStyle" :cell-style="OpsCellStyle" :row-class-name="OpsRowStyle" class="table customer-table" style="font-size: 8px">
+                      <el-table-column prop="Project" label="Project" width="160">
                       </el-table-column>
-                      <el-table-column prop="Plan" label="Plan" :formatter="stateFormat">
+                      <el-table-column prop="Plan" label="Plan" :formatter="stateFormat" width="90">
                       </el-table-column>
-                      <el-table-column prop="Proj" label="Proj." :formatter="stateFormat">
+                      <el-table-column prop="Proj" label="Proj." :formatter="stateFormat" width="90">
                       </el-table-column>
-                      <el-table-column prop="Var_pct" label="Var %" :formatter="statePercent">
+                      <el-table-column label="Var %">
+                        <el-table-column prop="Var_pct" label="Proj. vs. Plan" :formatter="statePercent" width="100"></el-table-column>
                       </el-table-column>
-                      <el-table-column prop="已完成" label="已完成" :formatter="stateFormat">
+                      <el-table-column prop="已完成" label="已完成" :formatter="stateFormat" width="70">
                       </el-table-column>
-                      <el-table-column prop="在途" label="在途" :formatter="stateFormat">
+                      <el-table-column prop="在途" label="在途" :formatter="stateFormat" width="70">
                       </el-table-column>
-                      <el-table-column prop="已报价" label="已报价" :formatter="stateFormat">
+                      <el-table-column prop="已报价" label="已报价" :formatter="stateFormat" width="70">
                       </el-table-column>
-                      <el-table-column prop="已完成_pct" label="已完成%" :formatter="statePercent">
+                      <el-table-column label="已完成%">
+                        <el-table-column prop="已完成_pct" label="vs. Plan" :formatter="statePercent" width="80"></el-table-column>
                       </el-table-column>
                     </el-table>
                     <!-- /table -->
@@ -326,9 +300,15 @@ function main() {
           </el-col>
         </el-row>
     </div>
-    <div class="page">
+    <br /><br />
+    <div class="page" style="margin:0 auto;">
+        <div style="background-color: #ffbc0d; font-weight: bold; font-size: larger; vertical-align: middle; text-align: center;">China CapEx Dashboard</div>
         <!----------------------------------------    4. BE CapEx Spending Tracking    --------------------------------------------->
         <el-row :gutter="20">
+          <el-col :span="24">
+        <span style="margin-right: 560px; float: right;">('000 RMB)</span>
+        </el-col>
+        
           <el-col :span="24">
             <!-- card4 -->
             <el-card class="box-card">
@@ -343,23 +323,24 @@ function main() {
                   <!-- BE CapEx Spending Tracking -->
                   <template>
                     <el-table id='BETable' :data="BETable"
-                      :header-cell-style="{background:'#ffc000', color:'black', 'text-align':'center'}"
-                      :cell-style="BECellStyle" :row-class-name="BERowStyle" class="table" style="font-size: 8px">
-                      <el-table-column prop="Project" label="Project" width="265">
+                      :header-cell-style="headCellStyle" :cell-style="BECellStyle" :row-class-name="BERowStyle" class="table customer-table" style="font-size: 8px">
+                      <el-table-column prop="Project" label="Project" width="172">
                       </el-table-column>
                       <el-table-column prop="Plan" label="Plan" :formatter="stateFormat" width="70">
                       </el-table-column>
-                      <el-table-column prop="Proj" label="Proj." :formatter="stateFormat" width="70">
+                      <el-table-column prop="Proj" label="Proj." :formatter="stateFormat" width="90">
                       </el-table-column>
-                      <el-table-column prop="Var_pct" label="Var %" :formatter="statePercent" width="70">
+                      <el-table-column label="Var %">
+                        <el-table-column prop="Var_pct" label="Proj. vs. Plan" :formatter="statePercent" width="100"></el-table-column>
                       </el-table-column>
-                      <el-table-column prop="已完成" label="已完成" :formatter="stateFormat" width="70">
+                      <el-table-column prop="已完成" label="已完成" :formatter="stateFormat" width="80">
                       </el-table-column>
-                      <el-table-column prop="在途" label="在途" :formatter="stateFormat" width="70">
+                      <el-table-column prop="在途" label="在途" :formatter="stateFormat" width="80">
                       </el-table-column>
-                      <el-table-column prop="已报价" label="已报价" :formatter="stateFormat" width="70">
+                      <el-table-column prop="已报价" label="已报价" :formatter="stateFormat" width="80">
                       </el-table-column>
-                      <el-table-column prop="已完成_pct" label="已完成%" :formatter="statePercent" width="70">
+                      <el-table-column label="已完成%">
+                        <el-table-column prop="已完成_pct" label="vs. Plan" :formatter="statePercent" width="80"></el-table-column>
                       </el-table-column>
                     </el-table>
                   </template>
@@ -384,23 +365,25 @@ function main() {
                 <el-col :span="16">
                   <template>
                     <el-table id='MRTable' :data="MRTable"
-                      :header-cell-style="{background:'#ffc000', color:'black', 'text-align':'center'}"
-                      :cell-style="MRCellStyle" :row-class-name="MRRowStyle" class="table" style="font-size: 8px">
-                      <el-table-column prop="Market" label="Market" width="180">
+                      :header-cell-style="headCellStyle"
+                      :cell-style="MRCellStyle" :row-class-name="MRRowStyle" class="table customer-table" style="font-size: 8px">
+                      <el-table-column prop="Market" label="Market" width="160">
                       </el-table-column>
-                      <el-table-column prop="Plan" label="Plan" :formatter="stateFormat">
+                      <el-table-column prop="Plan" label="Plan" :formatter="stateFormat" width="90">
                       </el-table-column>
-                      <el-table-column prop="Proj" label="Proj." :formatter="stateFormat">
+                      <el-table-column prop="Proj" label="Proj." :formatter="stateFormat" width="90">
                       </el-table-column>
-                      <el-table-column prop="Var_pct" label="Var %" :formatter="statePercent">
+                      <el-table-column label="Var %">
+                        <el-table-column prop="Var_pct" label="Proj. vs. Plan" :formatter="statePercent" width="100"></el-table-column>
                       </el-table-column>
-                      <el-table-column prop="已完成" label="已完成" :formatter="stateFormat">
+                      <el-table-column prop="已完成" label="已完成" :formatter="stateFormat" width="70">
                       </el-table-column>
-                      <el-table-column prop="在途" label="在途" :formatter="stateFormat">
+                      <el-table-column prop="在途" label="在途" :formatter="stateFormat" width="70">
                       </el-table-column>
-                      <el-table-column prop="已报价" label="已报价" :formatter="stateFormat">
+                      <el-table-column prop="已报价" label="已报价" :formatter="stateFormat" width="70">
                       </el-table-column>
-                      <el-table-column prop="已完成_pct" label="已完成%" :formatter="statePercent">
+                      <el-table-column label="已完成%">
+                        <el-table-column prop="已完成_pct" label="vs. Plan" :formatter="statePercent" width="80"></el-table-column>
                       </el-table-column>
                     </el-table>
                   </template>
@@ -415,7 +398,7 @@ function main() {
             <!-- card4 -->
             <el-card class="box-card">
               <div slot="header" class="clearfix">
-                <span style="font-weight: bold;"><em>6.Store IT Capex Spending Tracking</em></span>
+                <span style="font-weight: bold;"><em>6.Store IT CapEx Spending Tracking</em></span>
               </div>
               <el-row>
                 <el-col :span="8">
@@ -424,15 +407,16 @@ function main() {
                 <el-col :span="16">
                   <template>
                     <el-table id='StoreITTable' :data="StoreITTable"
-                      :header-cell-style="{background:'#ffc000', color:'black', 'text-align':'center'}"
-                      :cell-style="StoreITCellStyle" :row-class-name="StoreITRowStyle" class="table" max-height="500" style="font-size: 8px">
-                      <el-table-column prop="Project" label="Project" width="180">
+                      :header-cell-style="headCellStyle"
+                      :cell-style="StoreITCellStyle" :row-class-name="StoreITRowStyle" class="table customer-table" max-height="500" style="font-size: 8px">
+                      <el-table-column prop="Project" label="Project" width="175">
                       </el-table-column>
                       <el-table-column prop="Plan" label="Plan" :formatter="stateFormat">
                       </el-table-column>
                       <el-table-column prop="Proj" label="Proj." :formatter="stateFormat">
                       </el-table-column>
-                      <el-table-column prop="Var_pct" label="Var %" :formatter="statePercent">
+                      <el-table-column label="Var %">
+                        <el-table-column prop="Var_pct" label="Proj. vs. Plan" :formatter="statePercent" width="100"></el-table-column>
                       </el-table-column>
                       <el-table-column prop="已完成" label="已完成" :formatter="stateFormat">
                       </el-table-column>
@@ -440,7 +424,8 @@ function main() {
                       </el-table-column>
                       <el-table-column prop="已报价" label="已报价" :formatter="stateFormat">
                       </el-table-column>
-                      <el-table-column prop="已完成_pct" label="已完成%" :formatter="statePercent">
+                      <el-table-column label="已完成%">
+                        <el-table-column prop="已完成_pct" label="vs. Plan" :formatter="statePercent"></el-table-column>
                       </el-table-column>
                     </el-table>
                   </template>
@@ -449,13 +434,26 @@ function main() {
             </el-card>
           </el-col>
         </el-row>
-        <!----------------------------------------      7. Office IT Capex Spending Tracking    --------------------------------------------->
+      </div>
+      <br />
+      <div class="page" style="margin:0 auto;">
+        <div style="background-color: #ffbc0d; font-weight: bold; font-size: larger; vertical-align: middle; text-align: center;">China CapEx Dashboard</div>
+        
+        
+        
+        <!----------------------------------------      7. Office IT CapEx Spending Tracking    --------------------------------------------->
         <el-row :gutter="20">
           <el-col :span="24">
+          
+        <el-col :span="24">
+            <span style="margin-right: 560px; float: right;">('000 RMB)</span>  
+        </el-col>
+          
+          
             <!-- card4 -->
             <el-card class="box-card">
               <div slot="header" class="clearfix">
-                <span style="font-weight: bold;"><em>7. Office IT Capex Spending Tracking</em></span>
+                <span style="font-weight: bold;"><em>7. Office IT CapEx Spending Tracking</em></span>
               </div>
               <el-row>
                 <el-col :span="8">
@@ -465,20 +463,22 @@ function main() {
                   <template>
                     <el-table id='OfficeITTable' :data="OfficeITTable"
                       :header-cell-style="{background:'#ffc000', color:'black', 'text-align':'center'}"
-                      :cell-style="OfficeITCellStyle" :row-class-name="OfficeITRowStyle" class="table" max-height="500" style="font-size: 8px">
-                      <el-table-column prop="Project" label="Project" width="160">
+                      :cell-style="OfficeITCellStyle" :row-class-name="OfficeITRowStyle" class="table customer-table" max-height="500" style="font-size: 8px">
+                      <el-table-column prop="Project" label="Project" width="150">
                       </el-table-column>
                       <el-table-column prop="Plan" label="Plan" :formatter="stateFormat">
                       </el-table-column>
                       <el-table-column prop="Proj" label="Proj." :formatter="stateFormat">
                       </el-table-column>
-                      <el-table-column prop="Var_pct" label="Var %" :formatter="statePercent">
+                      <el-table-column label="Var %">
+                        <el-table-column prop="Var_pct" label="Proj. vs. Plan" :formatter="statePercent" width="100"></el-table-column>
                       </el-table-column>
                       <el-table-column prop="Actual" label="Actual Payment" :formatter="stateFormat" width="120">
                       </el-table-column>
-                      <el-table-column prop="PD Not Paid" label="PD Not Paid" :formatter="stateFormat">
+                      <el-table-column prop="PD Not Paid" label="PD Not Paid" :formatter="stateFormat" width="100">
                       </el-table-column>
-                      <el-table-column prop="Paid_pct" label="Paid%" :formatter="statePercent">
+                      <el-table-column label="Paid%">
+                        <el-table-column prop="Paid_pct" label="vs. Plan" :formatter="statePercent"></el-table-column>
                       </el-table-column>
                     </el-table>
                   </template>
@@ -488,6 +488,7 @@ function main() {
             <!-- /card3 -->
           </el-col>
         </el-row>
+      </div>
     </div>
   </div>
   <script>
@@ -496,12 +497,12 @@ function main() {
       data: {
         //Store Capex
         storeCapex: [
-          { c1: '已完成', c2: 0, c3: '在途', c4: 0, c5: '已报价', c6: 0, c7: '未使用', c8: 0, c9: 'Total', c10: 0 },
+          { c1: '已完成', c2: 0, c3: '在途', c4: 0, c5: '已报价', c6: 0, c7: '未使用', c8: 0, c9: 'Total Projection', c10: 0 },
           { c2: '', c4: '', c6: ''}
         ],
         //Office IT Capex
         officeITCapex: [
-          { c1: 'Actual Payment', c2: 0, c3: 'PD Not Paid', c4: 0, c5: 'Purchase Plan', c6: 0, c7: 'Total', c8: 0 },
+          { c1: 'Actual Payment', c2: 0, c3: 'PD Not Paid', c4: 0, c5: 'Purchase Plan', c6: 0, c7: 'Total Projection', c8: 0 },
           { c2: '', c4: '', c6: '' }
         ],
         //dev CapEx Spending Tracking
@@ -541,11 +542,17 @@ function main() {
           xAxis: {
             name: '%',
             type: 'value',
-            max:100,
+            max: 100,
             axisLine: {
+            //   show: true,
               symbol: ['none', 'arrow'], //两端都显示箭头
               symbolOffset: [0, 5] //箭头距离两端的距离,可为负数
-            }
+            },
+            // axisLabel: {  
+            //   show: true,  
+            //   interval: 'auto',  
+            //   formatter: '{value}%'  
+            // }, 
           },
           yAxis: {
             name: "",
@@ -653,11 +660,17 @@ function main() {
           xAxis: {
             name: '%',
             type: 'value',
-            max:100,
+            max: 100,
             axisLine: {
+            //   show: true,
               symbol: ['none', 'arrow'], //两端都显示箭头
               symbolOffset: [0, 5] //箭头距离两端的距离,可为负数
-            }
+            },
+            // axisLabel: {  
+            //   show: true,  
+            //   interval: 'auto',  
+            //   formatter: '{value}%'  
+            // }, 
           },
           yAxis: {
             name: "",
@@ -764,11 +777,17 @@ function main() {
           xAxis: {
             name: '%',
             type: 'value',
-            max:100,
+            max: 100,
             axisLine: {
+            //   show: true,
               symbol: ['none', 'arrow'], //两端都显示箭头
               symbolOffset: [0, 5] //箭头距离两端的距离,可为负数
-            }
+            },
+            // axisLabel: {  
+            //   show: true,  
+            //   interval: 'auto',  
+            //   formatter: '{value}%'  
+            // }, 
           },
           yAxis: {
             name: "",
@@ -877,9 +896,15 @@ function main() {
             type: 'value',
             max:100,
             axisLine: {
+            //   show: true,
               symbol: ['none', 'arrow'], //两端都显示箭头
               symbolOffset: [0, 5] //箭头距离两端的距离,可为负数
-            }
+            },
+            // axisLabel: {  
+            //   show: true,  
+            //   interval: 'auto',  
+            //   formatter: '{value}%'  
+            // }, 
           },
           yAxis: {
             name: "",
@@ -954,7 +979,7 @@ function main() {
           textStyle: {
             fontFamily: 'Microsoft YaHei',
           },
-           color :['#174fdb','#f4bf43','#8f94a1'],
+          color :['#174fdb','#f4bf43','#8f94a1'],
           title: {
             text: 'Budget Spending%',
             x:'center',
@@ -986,9 +1011,15 @@ function main() {
             type: 'value',
             max:100,
             axisLine: {
+            //   show: true,
               symbol: ['none', 'arrow'], //两端都显示箭头
               symbolOffset: [0, 5] //箭头距离两端的距离,可为负数
-            }
+            },
+            axisLabel: {  
+            //   show: true,  
+              interval: 'auto',  
+              formatter: '{value}'  
+            }, 
           },
           yAxis: {
             name: "",
@@ -1099,9 +1130,15 @@ function main() {
             type: 'value',
             max:100,
             axisLine: {
+            //   show: true,
               symbol: ['none', 'arrow'], //两端都显示箭头
               symbolOffset: [0, 5] //箭头距离两端的距离,可为负数
-            }
+            },
+            // axisLabel: {  
+            //   show: true,  
+            //   interval: 'auto',  
+            //   formatter: '{value}%'  
+            // },
           },
           yAxis: {
             name: "",
@@ -1222,7 +1259,20 @@ function main() {
         this.OpsChart.series[1].data = InTransit.reverse();
         this.OpsChart.series[2].data = Quoted.reverse();
 
-        this.BETable = resObj['BE'];
+
+
+        var table_part_new = []
+        for (item of resObj['BE']) {
+          for (let key in item) {
+            if (key==='Project') {
+              item[key] = item[key].substring(0,19)
+            }            
+          }
+          table_part_new.push(item);          
+        }
+        console.log(table_part_new)
+        this.BETable = table_part_new;
+
         Label = [];
         Finished = [];
         InTransit = [];
@@ -1335,16 +1385,22 @@ function main() {
           document.getElementById('OfficeITChart').setAttribute('style', 'height: ' + document.getElementById('OfficeITTable').offsetHeight + 'px !important');
           //绘制Echarts
           //dev CapEx Spending Tracking
+          console.log('DevChart', this.DevChart);
           this.drawBarChart('DevChart', this.DevChart);
           //Ops CapEx Spending Tracking
+          console.log('OpsChart', this.OpsChart);
           this.drawBarChart('OpsChart', this.OpsChart);
           //BE CapEx Spending Tracking
+          console.log('BEChart', this.BEChart);
           this.drawBarChart('BEChart', this.BEChart);
           //CapEx M&R Spending Tracking
+          console.log('MRChart', this.MRChart);
           this.drawBarChart('MRChart', this.MRChart);
           //Store IT Capex Spending Tracking
+          console.log('StoreITChart', this.StoreITChart);
           this.drawBarChart('StoreITChart', this.StoreITChart);
           //Office IT Capex Spending Tracking
+          console.log('OfficeITChart', this.OfficeITChart);
           this.drawBarChart('OfficeITChart', this.OfficeITChart);
         })
       },
@@ -1552,9 +1608,14 @@ function main() {
         },
         alignCellStyle(index) {
           //console.log(index)
-          if (index.columnIndex === 1 || index.columnIndex === 3 || index.columnIndex === 5 || index.columnIndex === 7 || index.columnIndex === 9) {
-          return 'text-align: center; '
-          }        
+          if (index.columnIndex === 0 || index.columnIndex === 1) {
+            
+            return 'font-weight:bold; text-align: left; '
+          }
+          else
+          {
+            return 'text-align: left; '                
+          }    
         },
         //dev CapEx Spending Tracking
         DevRowStyle(row) {
@@ -1572,27 +1633,30 @@ function main() {
           //console.log(index)
           if (this.DevTable[index.rowIndex]['Project'] === 'Total') {
             if (index.columnIndex === 0) {
-            return 'text-align: left; background:"#dce4f4" '
+            return 'text-align: left; background:"#dce4f4"; "font-size": "8px" '
             }
             else{
-              return 'text-align: right; background:"#dce4f4" '
+              return 'text-align: right; background:"#dce4f4"; "font-size": "8px" '
             }
           }
           else if (this.DevTable[index.rowIndex]['is_bold'] === 1) {
             if (index.columnIndex === 0) {
-            return 'text-align: left; '
+            return 'text-align: left; "font-size": "8px" '
             }
             else{
-              return 'text-align: right; '
+              return 'text-align: right; "font-size": "8px" '
             }
           }
           else if (this.DevTable[index.rowIndex]['is_bold'] === 0) {
             if (index.columnIndex === 0) {
-            return 'text-align: left; padding-left:15px;'
+            return 'text-align: left; padding-left:15px; "font-size": "8px"'
             }
             else{
-              return 'text-align: right; '
+              return 'text-align: right; "font-size": "8px" '
             }
+          }
+          else{
+            return '"font-size": "8px" '  
           }
         },
         //Ops CapEx Spending Tracking
@@ -1801,11 +1865,25 @@ function main() {
         statePercent(row, column, cellValue){
           return cellValue+'%';
         },
+        headCellStyle(index){
+          console.log( "headCell" , index);
+          if( index.rowIndex === 1){
+            return {background:'#ffbc0d', color:'black', 'text-align':'center', 'font-size': '6px', 'font-weight': 'normal', 'vertical-align': 'top', 'height': '25px'}
+          }
+          else if( index.columnIndex === 3 || index.columnIndex === 7){
+            return {background:'#ffbc0d', color:'black', 'text-align':'center' , 'font-size': '6px', 'font-weight': 'normal', 'vertical-align': 'bottom', 'height': '25px'}                
+          }
+          else
+          {
+            return {background:'#ffbc0d', color:'black', 'text-align':'center' , 'font-size': '6px', 'font-weight': 'normal', 'height': '50px'}                
+          }
+        },
       },
     })
     console.log(app);
   </script>
   <style>
+
     .page {
         width: 1175px;
         height: 1950px;
@@ -1866,17 +1944,24 @@ function main() {
       font-weight: bold;
       font-size: larger;
     }
-
-    /* .table .normal-row {
-      background: white;
-    } */
+    
+    .customer-table thead th{
+      border: 0px;
+      height: 30px;
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+    
+    .customer-table tr td{
+      border: 0px !important;
+      height: 30px;
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
   </style>
   `;
   $('#showDashBoard').append(dom);
 
-//   let btnDom = `
-//   <button type="button" id="btn" class="btn btn-light" data-toggle="modal" data-target="#modal_full">预览PDF<i class="icon-play3 ml-2"></i></button>
-//   `;
   let btnDom = `
   <button type="button" id="downloadPDF" class="btn btn-light">下载PDF<i class="icon-play3 ml-2"></i></button>
   `;
@@ -1934,83 +2019,6 @@ function main() {
   });
 }
 
-function downloadPDF() {
-  var target = document.getElementById('app');
-  target.style.background = '#FFFFFF';
-  let canvas = $('canvas')[0];
-  html2canvas(target, {
-    // 画布配置项
-    width: 1385,
-    dpi: 1000,
-    canvas: canvas,
-    useCORS: true, // 【重要】开启跨域配置
-    onrendered: function (canvas) {
-      var contentWidth = canvas.width;
-      var contentHeight = canvas.height;
-      //一页pdf显示html页面生成的canvas高度;
-      var pageHeight = (contentWidth / 592.28) * 841.89;
-      //未生成pdf的html页面高度
-      var leftHeight = contentHeight;
-      //页面偏移
-      var position = 0;
-      //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
-      var imgWidth = 595.28;
-      var imgHeight = (592.28 / contentWidth) * contentHeight;
-
-      var pageData = canvas.toDataURL();
-
-      var pdf = new jsPDF('', 'pt', [592.28, 841.89]);
-
-      // let pdf = new jsPDF({
-      //   orientation: 'p',
-      //   unit: 'pt',
-      //   format: 'a4',
-      //   precision: '12',
-      //   putOnlyUsedFonts: false,
-      //   floatPrecision: 'smart', // default is 16
-      // });
-
-      //有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
-      //当内容未超过pdf一页显示的范围，无需分页
-      if (leftHeight < pageHeight) {
-        pdf.addImage(
-          pageData,
-          'JPEG',
-          5,
-          0,
-          contentWidth,
-          contentHeight,
-          '',
-          'FAST'
-        );
-
-        // pdf.addImage(pageData, 'JPEG', 20, 0, contentWidth, contentHeight);
-      } else {
-        while (leftHeight > 0) {
-          pdf.addImage(
-            pageData,
-            'JPEG',
-            5,
-            position,
-            imgWidth,
-            imgHeight,
-            '',
-            'FAST'
-          );
-          //   pdf.addImage(pageData, 'JPEG', 20, position, imgWidth, imgHeight);
-          leftHeight -= pageHeight;
-          position -= 920;
-          //避免添加空白页
-          if (leftHeight > 0) {
-            pdf.addPage();
-          }
-        }
-      }
-      pdf.save('China_CapEx_Dashboard.pdf');
-    },
-  });
-}
-
 function detectZoom() {
   var ratio = 0,
     screen = window.screen,
@@ -2051,10 +2059,10 @@ function downloadPdf1() {
   if (win_o > win_i) {
     abs = (win_o - win_i) / 2; // 获得滚动条长度的一半
   }
-//   canvas.width = w * 4; // 将画布宽&&高放大两倍
-//   canvas.height = h * 8;
-  canvas.width = w * 2 ;
-  canvas.height = h * 8 ;
+  //   canvas.width = w * 4; // 将画布宽&&高放大两倍
+  //   canvas.height = h * 8;
+  canvas.width = w * 2;
+  canvas.height = h * 8;
   var context = canvas.getContext('2d');
   context.scale(2, 2);
   context.translate(-offsetLeft - abs, -offsetTop);
@@ -2076,7 +2084,7 @@ function downloadPdf1() {
       element,
       {
         scale: detectZoom() * 3,
-        dpi: 600,
+        dpi: 3000, //600
         canvas: canvas,
         useCORS: true, // 【重要】开启跨域配置
         onrendered: function (canvas) {
@@ -2098,16 +2106,17 @@ function downloadPdf1() {
           //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
           var imgWidth = 595.28;
           var imgHeight = (592.28 / contentWidth) * contentHeight;
-          var pageData = canvas.toDataURL();
+          //var pageData = canvas.toDataURL();
+          var pageData = canvas.toDataURL('image/png', 1.0);
           var pdf = new jsPDF('', 'pt', [592.28, 841.89]);
-          
+
           //有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
           //当内容未超过pdf一页显示的范围，无需分页
           if (leftHeight < pageHeight) {
             pdf.addImage(
               pageData,
-              'JPEG',
-              5,
+              'PNG',
+              0,
               0,
               contentWidth,
               contentHeight,
@@ -2117,11 +2126,12 @@ function downloadPdf1() {
 
             // pdf.addImage(pageData, 'JPEG', 20, 0, contentWidth, contentHeight);
           } else {
+            let page = 1; //页码
             while (leftHeight > 0) {
               pdf.addImage(
                 pageData,
-                'JPEG',
-                5,
+                'PNG',
+                0,
                 position,
                 imgWidth,
                 imgHeight,
@@ -2131,13 +2141,21 @@ function downloadPdf1() {
               debugger;
               //   pdf.addImage(pageData, 'JPEG', 20, position, imgWidth, imgHeight);
               leftHeight = leftHeight - 4 * pageHeight;
-              position -= 920;
+              position -= 925;
+              pdf.addFont('Times-Roman');
+              pdf.setFont('Times-Roman'); //字体
+              pdf.setFontStyle('italic'); //斜体
+              pdf.setFontSize(8); //字号
+              pdf.text('Page ' + page, 290, 813); //print number
+              page++;
               //避免添加空白页
               if (leftHeight > 0) {
                 pdf.addPage();
               }
             }
           }
+          var pageCount = pdf.internal.getNumberOfPages();
+          pdf.deletePage(pageCount);
           pdf.save('China_CapEx_Dashboard.pdf');
         },
       },
